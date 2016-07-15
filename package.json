@@ -23,5 +23,12 @@
   "bugs": {
     "url": "https://github.com/netceteragroup/girders-elements/issues"
   },
-  "homepage": "https://github.com/netceteragroup/girders-elements#readme"
+  "homepage": "https://github.com/netceteragroup/girders-elements#readme",
+  "dependencies": {
+    "react": "^15.2.1",
+    "react-redux": "^4.4.5",
+    "redux": "^3.5.2",
+    "redux-elm": "^2.1.7",
+    "redux-saga": "^0.10.5"
+  }
 }
