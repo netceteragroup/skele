@@ -30,5 +30,8 @@
     "redux": "^3.5.2",
     "redux-elm": "^2.1.7",
     "redux-saga": "^0.10.5"
+  },
+  "devDependencies": {
+    "remote-redux-devtools": "^0.3.3"
   }
 }
