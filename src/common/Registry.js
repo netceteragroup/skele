@@ -1,3 +1,5 @@
+'use strict';
+
 import { Map, List } from 'immutable';
 import isFunction  from 'lodash/isFunction';
 import isString from 'lodash/isString';

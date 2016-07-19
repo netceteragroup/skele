@@ -1,3 +1,5 @@
+'use strict';
+
 import { expect } from './support/utils';
 import elements, { ui } from '../src';
 import uiDirect from '../src/ui';

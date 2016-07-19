@@ -1,3 +1,5 @@
+'use strict';
+
 import { expect } from '../support/utils';
 import { List, Map, fromJS } from 'immutable';
 

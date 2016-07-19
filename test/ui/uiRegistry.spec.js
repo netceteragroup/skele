@@ -1,3 +1,5 @@
+'use strict';
+
 import React from 'react';
 import { fromJS } from 'immutable';
 import * as ui from '../../src/ui';
