@@ -3,15 +3,18 @@
 import ui from './ui';
 import read from './read';
 import update from './update';
+import boot from './boot';
 
 export {
   ui,
   read,
-  update
+  update,
+  boot
 }
 
 export default {
   ui,
   read,
-  update
+  update,
+  boot
 }
