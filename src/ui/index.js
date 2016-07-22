@@ -1,19 +1,21 @@
-/* @flow */
 'use strict';
 
 import {
   register,
-  reset
+  reset,
+  forElement
 } from './uiRegistry';
 
 
 export {
   register,
-  reset
+  reset,
+  forElement
 };
 
 export default {
   register,
-  reset
+  reset,
+  forElement
 };
 
