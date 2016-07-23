@@ -7,18 +7,14 @@ import { combineReducers } from 'redux-immutable';
 import devTools from 'remote-redux-devtools';
 import { fromJS } from 'immutable';
 import Cursor from 'immutable/contrib/cursor';
-import reduxElmStoreEnhancer from './storeEnhancer';
+
+import { isOfKind } from '../common/element';
 
 import * as ui from '../ui';
-import * as update from '../update/updateRegistry';
+import * as update from '../update';
 
-import { ui as bookmarkUI, update as bookmarkUpdate } from './bookmark';
+import Boot from './ui/boot';
 
-import {
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
 
 const identity = v => v;
 
@@ -30,20 +26,8 @@ const getDevTools = () => {
   }
 };
 
-const buildStore = (initialAppState = fromJS({ui: {
-  kind: ['__boot'],
-  test: 'example value',
-  toggle1: {
-    kind: ['element', 'bookmark'],
-    bookmarked: false
-  },
-  toggle2: {
-    kind: ['element', 'bookmark'],
-    bookmarked: false
-  }
-}})) => {
+const buildStore = (initialAppState) => {
   const storeFactory = compose(
-    reduxElmStoreEnhancer,
     getDevTools()
   )(createStore);
 
@@ -62,18 +46,8 @@ const buildStore = (initialAppState = fromJS({ui: {
   }), initialAppState);
 };
 
-const rootElement = ({ element, dispatch }) => {
-  const Element = ui.forElement(element.get('toggle1'));
-  return (
-    <View style={{paddingTop: 20}}>
-      <Text>Hello from Root View. Test: {element.get('test')}</Text>
-      { ui.forElement(element.get('toggle1')) }
-      { ui.forElement(element.get('toggle2')) }
-    </View>
-  )
-};
 
-const buildView = store => () => {
+const buildView = rootElement => store => () => {
   var mapStateToProps = appState => ({ element: Cursor.from(appState, ['ui']) });
   const ConnectedView = connect(mapStateToProps)(rootElement);
 
@@ -84,6 +58,23 @@ const buildView = store => () => {
   );
 };
 
-export default () => {
-  return buildView(buildStore());
+const defaultAppState = fromJS({ ui: { kind: ['__boot']}});
+const defaultRootElement = ({ element }) => {
+  if (isOfKind(['__boot'], element)) {
+    return Boot;
+  }
+  return ui.forElement(element);
+};
+
+/**
+ * Engine that manages the application state.
+ *
+ * @param initialAppState Optional application state. If not provided, a default will be used.
+ * @param initialRootElement Optional root element. If not provided, a default will be used.
+ */
+export default (
+  initialAppState = defaultAppState,
+  initialRootElement = defaultRootElement
+) => {
+  return buildView(initialRootElement)(buildStore(initialAppState));
 }

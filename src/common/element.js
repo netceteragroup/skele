@@ -46,8 +46,10 @@ export function isElementRef(obj: any): boolean {
 
   return false;
 }
+
 /**
  * Like isOfKind but checks for exactly the provided type.
+ *
  * @param kind the kind
  * @param element tne element
  * @returns {*}
@@ -80,7 +82,7 @@ export function kindOf(element: KeyedIterable): ?ElementRefCanonical {
 }
 
 /**
- * given a an element kind., returns all ancestor kinds.
+ * Given an element kind, returns all ancestor kinds.
  *
  * Eg.e for ['nav'. 'stack', 'modern'] will return a list of
  *

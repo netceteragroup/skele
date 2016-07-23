@@ -20,17 +20,17 @@
 
 # Element UI
 
-An element ui can be any React component that takes three props: `element`, `dispatch` and `uiFor`.
-It is registered using
+An element UI can be any React component that takes two props: `element` and `dispatch`.
+It is registered using:
 
-    UI.register(<element kind>, <element>)
+    ui.register(<element kind>, <element>)
 
 e.g.
 
-    UI.register('teaser', function({element, dispatch}) {
+    UI.register('teaser', ({ element, dispatch }) => {
       return (
         <View>
-          <TouchableOpacity onPress={dispatch('bla')} />
+          <TouchableOpacity onPress={dispatch('ACTION_TYPE')} />
         </View>
       )
     })
@@ -39,23 +39,23 @@ e.g.
 
 Any element can render a sub element by:
 
-    UI.register(['navigation', 'stack'], function({element, dispatch, uiFor}) {
-          return (
-            <View>
-              {uiFor('children').last()}
-            </View>
-          )
+    UI.register(['navigation', 'stack'], ({ element, dispatch }) => {
+      return (
+        <View>
+          {ui.forElement(element.get('children').last())}
+        </View>
+      )
     })
 
 
-A list of children can be rendered
+A list of children can be rendered using:
 
-    UI.register(['article'], function({element, dispatch, uiFor}) {
-          return (
-            <View>
-              {uiFor('children')}
-            </View>
-          )
+    UI.register(['article'], ({ element, dispatch }) => {
+      return (
+        <View>
+          {ui.forElements(element.get('children'))}
+        </View>
+      )
     })
 
 ## Dispatching Updates
@@ -66,10 +66,10 @@ local to the element itself.
 It is not required that an update is registered for that specific action for the element. A container is able to
 "catch" an action using pattern matching.
 
-    UI.register('teaser', function({element, dispatch}) {
+    UI.register('teaser', ({  element, dispatch }) => {
       return (
         <View>
-          <TouchableOpacity onPress={dispatch('bla')} />
+          <TouchableOpacity onPress={dispatch('ACTION_TYPE')} />
         </View>
       )
     })
@@ -144,7 +144,7 @@ Updates are registered in a similar way ui is registered, by using the element k
 
 # Reads
 
-Reads are meant to standadize the way content is "read" into the application state and provide extension points for
+Reads are meant to standardize the way content is "read" into the application state and provide extension points for
 transformations.
 
 A read is in essence a saga.
@@ -198,6 +198,7 @@ Invoking Reads:
 
 
     dispatch('read', "http://example.com", 'content', 'article')
+
 ## Transformers
 
 # Organizing an element
@@ -206,4 +207,3 @@ Invoking Reads:
 
 # Engine
 
-#

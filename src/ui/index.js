@@ -3,19 +3,22 @@
 import {
   register,
   reset,
-  forElement
+  forElement,
+  forElements
 } from './uiRegistry';
 
 
 export {
   register,
   reset,
-  forElement
+  forElement,
+  forElements
 };
 
 export default {
   register,
   reset,
-  forElement
+  forElement,
+  forElements
 };
 

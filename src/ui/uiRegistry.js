@@ -1,9 +1,7 @@
 'use strict';
 
 import React from 'react';
-import { Map } from 'immutable';
 import invariant from 'invariant';
-import isFunction from 'lodash/isFunction';
 import { connect } from 'react-redux';
 import createElement from 'recompose/createElement';
 
@@ -26,7 +24,7 @@ export function register(kind, Component) {
   uiRegistry.register(kind, Component);
   return Component;
 }
-export function forElement(element) {
+export function forElement(element, reactKey) {
   const kind = element.get('kind').toJS();
   const path = element._keyPath;
   const Component = uiRegistry.get(kind); // TODO andon: maybe use recognizer when creating the registry
@@ -52,8 +50,12 @@ export function forElement(element) {
         return createElement(Component, { ...this.props, element, dispatch })
       }
     });
-    return <UI />;
+    return <UI key={reactKey} />;
   }
+}
+
+export function forElements(elementSeq) {
+  return elementSeq.map(forElement).filter(ui => !!ui);
 }
 
 export function reset() {
