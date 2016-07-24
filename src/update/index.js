@@ -2,17 +2,23 @@
 
 import {
   register,
-  forAction
+  forAction,
+  forKindAndType
 } from './updateRegistry';
+import reducer from './reducer';
 
 
 export {
   register,
-  forAction
+  forAction,
+  forKindAndType,
+  reducer
 };
 
 export default {
   register,
-  forAction
+  forAction,
+  forKindAndType,
+  reducer
 };
 

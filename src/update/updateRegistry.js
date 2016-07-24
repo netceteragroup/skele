@@ -12,19 +12,26 @@ export function register(kind, definitions) {
   invariant(
     isElementRef(kind),
     "You must provide a valid element reference to register");
+
   let elementRegistry = updateRegistry.get(kind);
   if (!elementRegistry) {
     elementRegistry = new Registry();
     updateRegistry.register(kind, elementRegistry);
   }
+
   definitions(elementRegistry);
+
   return elementRegistry;
 }
 
 export function forAction(action) {
-  const elementRegistry = updateRegistry.get(action.kind);
-  if (elementRegistry && action.type && action.type !== '@@INIT') {
-    const update = elementRegistry.get(action.type);
+  return forKindAndType(action.kind, action.type);
+}
+
+export function forKindAndType(kind, type) {
+  const elementRegistry = updateRegistry.get(kind);
+  if (elementRegistry && type) {
+    const update = elementRegistry.get(type);
     if (update) {
       return update;
     }
