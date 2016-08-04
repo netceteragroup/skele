@@ -21,19 +21,19 @@ export default function(cursor, action) {
     cursor != null && cursor._keyPath != null,
     "The reducer is meant to work only with cursors");
 
-  const kind = action.kind;
-  const path = action.path;
-  if (kind && path) {
+  const fromKind = action.fromKind;
+  const fromPath = action.fromPath;
+  if (fromKind && fromPath) {
     const type = action.type;
 
     // handle global updates
     if (type.startsWith('.')) {
-      const { element, update } = parents(cursor.getIn(path))
+      const { element, update } = parents(cursor.getIn(fromPath))
         .filter(parent => !!parent.get('kind'))
         .map(parent => {
-          const parentKind = parent.get('kind').toJS();
+          const parentKind = parent.get('kind');
           const updatesPerAncestor = ancestorKinds(parentKind)
-            .map(ancestorKind => forKindAndType(ancestorKind.toJS(), type))
+            .map(ancestorKind => forKindAndType(ancestorKind, type))
             .filter(update => !!update);
           return {
             element: parent,
@@ -42,16 +42,16 @@ export default function(cursor, action) {
         })
         .filter(parent => !!parent.update)
         .first();
-        if (element && update) {
-          return cursor.setIn(element._keyPath, update(element.deref(), action));
-        }
+      if (element && update) {
+        return cursor.setIn(element._keyPath, update(element.deref(), action));
+      }
     }
 
     // handle local updates
     const update = forAction(action);
     if (update) {
-      const element = cursor.getIn(path);
-      return cursor.setIn(path, update(element.deref(), action));
+      const element = cursor.getIn(fromPath);
+      return cursor.setIn(fromPath, update(element.deref(), action));
     }
 
   }

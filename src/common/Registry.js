@@ -52,7 +52,7 @@ export default class Registry {
     return List.of(key);
   }
 
-  _getBySpecificity(key, useSpecificity: boolean): ?Definition {
+  _getBySpecificity(key, useSpecificity) {
     if (key.isEmpty()) {
       return undefined;
     }

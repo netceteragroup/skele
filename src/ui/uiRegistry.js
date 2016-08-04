@@ -3,15 +3,17 @@
 import React from 'react';
 import invariant from 'invariant';
 import { connect } from 'react-redux';
-import createElement from 'recompose/createElement';
 
 import Registry from '../common/Registry';
-import { isElementRef } from '../common/element';
+import { isElementRef, canonical } from '../common/element';
 import { isSubclassOf } from '../common/classes';
 
 import { List } from 'immutable';
 
 const uiRegistry = new Registry();
+
+import ImmutableProps from '../common/ImmutableProps';
+import { mix } from 'mixwith';
 
 export function register(kind, Component) {
   invariant(
@@ -22,43 +24,39 @@ export function register(kind, Component) {
     "You must provide a react component class or a pure-function component"
   );
 
-  uiRegistry.register(kind, Component);
+  class ElementView extends mix(React.Component).with(ImmutableProps) {
+
+    static propTypes = {
+      dispatch: React.PropTypes.func.isRequired,
+      element: React.PropTypes.object.isRequired
+    };
+
+    constructor(props) {
+      super(props);
+    }
+
+    dispatch = (action) => {
+      const { element } = this.props;
+      const fromKind = canonical(element.get('kind'));
+      const fromPath = element._keyPath;
+      return this.props.dispatch({ ...action, fromKind, fromPath });
+    };
+
+    render() {
+      return <Component element={this.props.element} dispatch={this.dispatch} />;
+    }
+  }
+
+  uiRegistry.register(kind, connect()(ElementView));
   return Component;
 }
 
 export function forElement(element, reactKey) {
   if (element.get && element._keyPath) {
-    const kind = element.get('kind').toJS();
-    const path = element._keyPath;
-    const Component = uiRegistry.get(kind);
+    const fromKind = canonical(element.get('kind'));
+    const Component = uiRegistry.get(fromKind);
     if (Component) {
-      const UI = connect()(class ElementView extends React.Component {
-
-        static defaultProps = {
-          element: element
-        };
-
-        static propTypes = {
-          dispatch: React.PropTypes.func.isRequired,
-          element: React.PropTypes.object.isRequired
-        };
-
-        constructor(props) {
-          super(props);
-        }
-
-        render() {
-          const dispatch = (action) => {
-            return this.props.dispatch({
-              ...action,
-              kind,
-              path
-            });
-          };
-          return createElement(Component, {...this.props, dispatch});
-        }
-      });
-      return <UI key={reactKey} />;
+      return <Component element={element} key={reactKey} />;
     }
   }
 }

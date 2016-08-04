@@ -25,7 +25,7 @@ export function register(kind, definitions) {
 }
 
 export function forAction(action) {
-  return forKindAndType(action.kind, action.type);
+  return forKindAndType(action.fromKind, action.type);
 }
 
 export function forKindAndType(kind, type) {
