@@ -1,8 +1,6 @@
 'use strict';
 
-import {expect} from 'chai';
-import {shallow} from 'enzyme';
-import {spy, stub} from 'sinon';
+import { expect, shallow, spy } from '../support/utils';
 
 import React from 'react';
 import I from 'immutable';
