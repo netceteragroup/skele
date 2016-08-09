@@ -1,8 +1,9 @@
 'use strict';
 
 import React from 'react';
-import { compose, createStore } from 'redux';
+import { compose, createStore, applyMiddleware } from 'redux';
 import { Provider, connect } from 'react-redux';
+import createSagaMiddleware from 'redux-saga';
 import devTools from 'remote-redux-devtools';
 import { fromJS } from 'immutable';
 import Cursor from 'immutable/contrib/cursor';
@@ -14,6 +15,7 @@ import { reducer } from '../update';
 
 import Boot from './ui/boot';
 
+import { watchReadLoad } from '../read/reducer';
 
 const identity = v => v;
 
@@ -25,8 +27,11 @@ const getDevTools = () => {
   }
 };
 
+const sagaMiddleware = createSagaMiddleware();
+
 const buildStore = (initialAppState) => {
   const storeFactory = compose(
+    applyMiddleware(sagaMiddleware),
     getDevTools()
   )(createStore);
 
@@ -63,5 +68,7 @@ export default (
   initialAppState = defaultAppState,
   initialRootElement = defaultRootElement
 ) => {
-  return buildView(initialRootElement)(buildStore(Cursor.from(initialAppState)));
+  const view = buildView(initialRootElement)(buildStore(Cursor.from(initialAppState)));
+  sagaMiddleware.run(watchReadLoad);
+  return view;
 }

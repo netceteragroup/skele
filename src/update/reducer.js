@@ -9,6 +9,8 @@ import { isSubclassOf } from '../common/classes';
 
 import { forAction, forKindAndType } from './';
 
+import readReducer from '../read/reducer';
+
 /**
  * Main application reducer.
  *
@@ -17,6 +19,7 @@ import { forAction, forKindAndType } from './';
  * @returns {*} The new state represented by updated cursor.
  */
 export default function(cursor, action) {
+  // console.log('Reducer: action:', action);
   invariant(
     cursor != null && cursor._keyPath != null,
     "The reducer is meant to work only with cursors");
@@ -25,6 +28,11 @@ export default function(cursor, action) {
   const fromPath = action.fromPath;
   if (fromKind && fromPath) {
     const type = action.type;
+
+    // handle reads
+    if (type.startsWith('READ')) {
+      return readReducer(cursor, action);
+    }
 
     // handle global updates
     if (type.startsWith('.')) {

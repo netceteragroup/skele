@@ -47,8 +47,10 @@ export function register(kind, Component) {
     }
   }
 
-  uiRegistry.register(kind, connect()(ElementView));
-  return Component;
+  const ConnectedElementView = connect()(ElementView);
+  uiRegistry.register(kind, ConnectedElementView);
+
+  return ConnectedElementView;
 }
 
 export function forElement(element, reactKey) {

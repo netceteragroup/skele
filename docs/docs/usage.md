@@ -198,6 +198,12 @@ Invoking Reads:
 
 
     dispatch('read', "http://example.com", 'content', 'article')
+    dispatch({
+        type: 'READ',
+        uri: 'http://example.com',
+        where: 'content',
+        kind: ['article']
+    })
 
 ## Transformers
 
