@@ -3,9 +3,7 @@
 import React from 'react';
 
 import {
-  Text,
-  View,
-  TouchableHighlight
+  ActivityIndicator
 } from 'react-native';
 
 import ui from '../../ui';
@@ -14,9 +12,11 @@ class Loading extends React.Component {
 
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
-    // TODO andon: prop validation for kind
-    // kind: React.PropTypes.object.isRequired,
-    contentRef: React.PropTypes.string.isRequired,
+    kind: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.arrayOf(React.PropTypes.string)
+    ]).isRequired,
+    uri: React.PropTypes.string.isRequired,
     where: React.PropTypes.string.isRequired
   };
 
@@ -25,15 +25,14 @@ class Loading extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch, kind, contentRef, where } = this.props;
-    dispatch({type: 'READ_LOAD', contentRef, where, kind});
+    const { dispatch, kind, uri, where } = this.props;
+    dispatch({type: 'READ_PERFORM', uri, where, kind});
   }
 
   render() {
+    // TODO andon: create universal component
     return (
-      <View>
-        <Text>Loading View</Text>
-      </View>
+      <ActivityIndicator />
     );
   }
 }
@@ -41,8 +40,8 @@ class Loading extends React.Component {
 ui.register(['__loading'], ({ element, dispatch}) => {
   return (
     <Loading
-      kind={element.get('kind')}
-      contentRef={element.get('contentRef')}
+      kind={element.get('kind').toJS()}
+      uri={element.get('uri')}
       where={element.get('where', 'content')}
       dispatch={dispatch} />
   );

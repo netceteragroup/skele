@@ -15,7 +15,7 @@ import { reducer } from '../update';
 
 import Boot from './ui/boot';
 
-import { watchReadLoad } from '../read/reducer';
+import { watchReadPerform } from '../read/reducer';
 
 const identity = v => v;
 
@@ -69,6 +69,6 @@ export default (
   initialRootElement = defaultRootElement
 ) => {
   const view = buildView(initialRootElement)(buildStore(Cursor.from(initialAppState)));
-  sagaMiddleware.run(watchReadLoad);
+  sagaMiddleware.run(watchReadPerform);
   return view;
 }

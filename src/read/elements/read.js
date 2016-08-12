@@ -8,9 +8,11 @@ class Read extends React.Component {
 
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
-    // TODO andon: prop validation for kind
-    // kind: React.PropTypes.object.isRequired,
-    contentRef: React.PropTypes.string.isRequired,
+    kind: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.arrayOf(React.PropTypes.string)
+    ]).isRequired,
+    uri: React.PropTypes.string.isRequired,
     where: React.PropTypes.string.isRequired
   };
 
@@ -19,8 +21,8 @@ class Read extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch, kind, contentRef, where } = this.props;
-    dispatch({type: 'READ', contentRef, where, kind});
+    const { dispatch, kind, uri, where } = this.props;
+    dispatch({type: 'READ', uri, where, kind});
   }
 
   render() {
@@ -31,8 +33,8 @@ class Read extends React.Component {
 ui.register(['__read'], ({ element, dispatch }) => {
   return (
     <Read
-      kind={element.get('kind')}
-      contentRef={element.get('contentRef')}
+      kind={element.get('kind').toJS()}
+      uri={element.get('uri')}
       where={element.get('where', 'content')}
       dispatch={dispatch} />
   );

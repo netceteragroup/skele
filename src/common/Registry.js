@@ -23,7 +23,7 @@ export default class Registry {
     }
   }
 
-  get(element, useSpecificity = false) {
+  get(element, useSpecificity = true) {
     const resolvedKey = this._adaptKey(this.keyExtractor ? this.keyExtractor(element) : element);
     const obj = this._getBySpecificity(resolvedKey, useSpecificity);
 
