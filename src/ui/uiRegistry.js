@@ -13,7 +13,7 @@ import { List } from 'immutable';
 const uiRegistry = new Registry();
 
 import ImmutableProps from '../common/ImmutableProps';
-import { mix } from 'mixwith';
+import { mix } from '../vendor/mixwith';
 
 export function register(kind, Component) {
   invariant(
