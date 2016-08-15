@@ -2,11 +2,6 @@
 
 import React from 'react';
 
-import {
-  Text,
-  View
-} from 'react-native';
-
 import MetaError from './pure/metaError';
 
 import ui from '../../ui';
