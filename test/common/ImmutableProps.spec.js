@@ -8,7 +8,7 @@ import Cursor from 'immutable/contrib/cursor';
 
 
 import ImmutableProps from '../../src/common/ImmutableProps';
-import { mix } from 'mixwith';
+import { mix } from '../../src/vendor/mixwith';
 
 
 describe('ImmutableProps', function() {
