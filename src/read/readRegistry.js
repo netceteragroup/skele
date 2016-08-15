@@ -71,7 +71,7 @@ function errorResponseForUrl(url): ErrorFn {
   });
 }
 
-function responseMeta(resp: Object): Meta {
+export function responseMeta(resp: Object): Meta {
   const {url, status, statusMessage: message} = merge({status: 200, statusMessage: "OK"}, resp);
 
   return {

@@ -18,6 +18,7 @@ import { ReadFn } from './readRegistry';
  * @returns {*} The new state represented by updated cursor.
  */
 export default function(cursor, action) {
+  // console.log('read action', action);
   const canonicalKind = canonical(cursor.getIn(action.fromPath).get('kind'));
   const pathToKind = List.of(...action.fromPath, 'kind');
   switch (action.type) {
@@ -28,7 +29,7 @@ export default function(cursor, action) {
       const pathToWhere = List.of(...action.fromPath, action.where);
       return cursor
         .setIn(pathToKind, kind)
-        .setIn(pathToWhere, action.value);
+        .setIn(pathToWhere, fromJS(action.value));
     case 'READ_FAILED':
       const pathToMeta = List.of(...action.fromPath, 'meta');
       return cursor

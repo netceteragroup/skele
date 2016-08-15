@@ -2,9 +2,7 @@
 
 import React from 'react';
 
-import {
-  ActivityIndicator
-} from 'react-native';
+import ActivityIndicator from './pure/activityIndicator';
 
 import ui from '../../ui';
 
@@ -30,7 +28,6 @@ class Loading extends React.Component {
   }
 
   render() {
-    // TODO andon: create universal component
     return (
       <ActivityIndicator />
     );

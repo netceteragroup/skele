@@ -1,3 +1,13 @@
 {
-  "presets": ["react-native"]
+  "presets": ["react-native"],
+  "env": {
+    "test": {
+      "plugins": [
+        ["transform-runtime", {
+          "polyfill": false,
+          "regenerator": true
+        }]
+      ]
+    }
+  }
 }

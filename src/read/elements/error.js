@@ -7,17 +7,17 @@ import {
   View
 } from 'react-native';
 
+import MetaError from './pure/metaError';
+
 import ui from '../../ui';
 
 ui.register(['__error'], ({ element }) => {
   const meta = element.get('meta');
-  // TODO andon: create universal component
+  let message = meta.get('message');
+  if (typeof message === 'object') {
+    message = message.toString();
+  }
   return (
-    <View>
-      <Text>Read Error</Text>
-      <Text>{meta.get('url')}</Text>
-      <Text>{meta.get('status')}</Text>
-      <Text>{meta.get('message')}</Text>
-    </View>
+    <MetaError url={meta.get('url')} status={meta.get('status')} message={message} />
   );
 });

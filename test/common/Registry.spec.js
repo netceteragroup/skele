@@ -79,10 +79,10 @@ describe('Registry', () => {
       registry.register((key) => key.first() === 'teaser', 'teaserByRecoValue');
 
       /*
-       * Here we use default (useSpecificity off), so we should get the value
+       * Here we use (useSpecificity off), so we should get the value
        * returned by going with recognizer
        */
-      expect(registry.get(['teaser', 'top'])).to.equal('teaserByRecoValue');
+      expect(registry.get(['teaser', 'top'], false)).to.equal('teaserByRecoValue');
     });
   });
 
