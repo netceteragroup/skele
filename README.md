@@ -108,7 +108,9 @@ ui.register(['article'], ({ element, dispatch }) => {
 })
 ```
 
-##### Dispatching Updates
+##### Dispatching Actions
+
+An action is just a string identifying what needs to be performed on the state. When one triggers an action, one can also supply additional parameters (payload) to the action that will be provided later on to the update.
 
 The dispatch prop is used to dispatch an action. Actions can be
 - local - meaning that the action will be handled by an updater for the element from which it was dispatched
@@ -117,6 +119,23 @@ The dispatch prop is used to dispatch an action. Actions can be
 Global actions are identified by starting dot in the action type (for now, might change in near future)
 
 #### Update
+
+Updates are registered in a similar way ui is registered, by using the element kind.
+
+    update.register(<element-kind>, <update-definitions>)
+
+Here is an example:
+
+```javascript
+update.register(['article'], elementRegistry => {
+  elementRegistry.register('TOGGLE_BOOKMARK', (element, action) => element.set('bookmarked', element.get('bookmarked')));
+  elementRegistry.register('.LOAD', (element, action) => element.set('data', action.payload.data)); 
+})
+```
+
+In this example, for the `article` **element** we register two **updates**:
+- a local update, in case `TOGGLE_BOOKMARK` is dispatch only from the `article` element, we change the `bookmarked` flag
+- a global update, in case `.LOAD` is dispatch from the `article` element or any of its children
 
 #### Read
 
