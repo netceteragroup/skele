@@ -1,8 +1,6 @@
 /* @flow */
 'use strict';
 
-import flow from 'lodash/flow';
-
 // register default read elements
 import './elements/read';
 import './elements/loading';

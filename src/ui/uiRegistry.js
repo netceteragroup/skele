@@ -8,8 +8,6 @@ import Registry from '../common/Registry';
 import { isElementRef, canonical } from '../common/element';
 import { isSubclassOf } from '../common/classes';
 
-import { List } from 'immutable';
-
 const uiRegistry = new Registry();
 
 import ImmutableProps from '../common/ImmutableProps';

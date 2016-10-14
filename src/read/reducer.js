@@ -22,21 +22,25 @@ export default function(cursor, action) {
   const canonicalKind = canonical(cursor.getIn(action.fromPath).get('kind'));
   const pathToKind = List.of(...action.fromPath, 'kind');
   switch (action.type) {
-    case 'READ':
+    case 'READ': {
       return cursor.setIn(pathToKind, canonicalKind.set(0, '__loading'));
-    case 'READ_SUCCEEDED':
+    }
+    case 'READ_SUCCEEDED': {
       const kind = canonicalKind.size === 1 ? canonicalKind.set(0, '__container') : canonicalKind.rest();
       const pathToWhere = List.of(...action.fromPath, action.where);
       return cursor
         .setIn(pathToKind, kind)
         .setIn(pathToWhere, fromJS(action.value));
-    case 'READ_FAILED':
+    }
+    case 'READ_FAILED': {
       const pathToMeta = List.of(...action.fromPath, 'meta');
       return cursor
         .setIn(pathToKind, canonicalKind.set(0, '__error'))
         .setIn(pathToMeta, fromJS(action.meta));
-    default:
+    }
+    default: {
       return cursor;
+    }
   }
 }
 

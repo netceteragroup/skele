@@ -10,4 +10,8 @@ function PlainContainer({ elements }) {
   );
 }
 
+PlainContainer.propTypes = {
+  elements: React.PropTypes.object
+};
+
 export default PlainContainer;

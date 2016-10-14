@@ -55,7 +55,7 @@ describe("UI", () => {
         });
 
         it("accepts pure-function components", () => {
-          function Template(props) {
+          function Template() {
             return (
               <div></div>
             );
@@ -76,12 +76,12 @@ describe("UI", () => {
 
   describe("Looking Up UI for elements", () => {
     beforeEach(() => {
-      ui.register('comp1', ({ element, dispatch }) => {
+      ui.register('comp1', () => {
         return (
           <div>Watson</div>
         );
       });
-      ui.register('comp2', ({ element, dispatch }) => {
+      ui.register('comp2', () => {
         return (
           <div>Hudson</div>
         );

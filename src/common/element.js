@@ -1,7 +1,6 @@
 /* @flow */
 'use strict';
 
-import isString from 'lodash/isString';
 import every from 'lodash/every';
 
 import invariant from 'invariant';

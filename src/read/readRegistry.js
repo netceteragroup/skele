@@ -8,10 +8,10 @@ import Registry from '../common/Registry';
 import {
   Meta,
   ReadResponse,
-  SuccessfulResponse,
-  FailureResponse,
+  // SuccessfulResponse,
+  // FailureResponse,
   ErrorFn,
-  RegKey,
+  // RegKey,
   ReadDef,
   ReadFn
 } from './types';

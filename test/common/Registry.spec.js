@@ -1,7 +1,7 @@
 'use strict';
 
 import { expect } from '../support/utils';
-import { List, Map, fromJS } from 'immutable';
+import { List, fromJS } from 'immutable';
 
 import Registry from '../../src/common/Registry';
 

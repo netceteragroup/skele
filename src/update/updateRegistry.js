@@ -1,6 +1,5 @@
 'use strict';
 
-import React from 'react';
 import invariant from 'invariant';
 import Registry from '../common/Registry';
 import { isElementRef } from '../common/element';

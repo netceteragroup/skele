@@ -4,8 +4,7 @@ import invariant from 'invariant';
 import { Seq, List } from 'immutable';
 import Cursor from 'immutable/contrib/cursor'
 
-import { ancestorKinds, isExactlyOfKind } from '../common/element';
-import { isSubclassOf } from '../common/classes';
+import { ancestorKinds } from '../common/element';
 
 import { forAction, forKindAndType } from './';
 
@@ -64,7 +63,7 @@ export default function(cursor, action) {
 
   }
   return cursor;
-};
+}
 
 /**
  * Gets the parent value of this cursor. returns null if this is the root cursors.

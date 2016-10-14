@@ -20,6 +20,7 @@ import { watchReadPerform } from '../read/reducer';
 const identity = v => v;
 
 const getDevTools = () => {
+  // eslint-disable-next-line
   if (process.env.NODE_ENV === 'development') {
     return devTools();
   } else {
