@@ -87,7 +87,7 @@ ui.register(['teaser', 'default'], ({ element, dispatch }) => {
 
 ##### Rendering (Lookup) of an Element
 
-Rendering an element is done via the **ui.forElement** or **ui.forElements** methods. Lets say that the model that drives your UI is in the store represented like the example [above](#markdown-header-usage). In case we do:
+Rendering an element is done via the **ui.forElement** or **ui.forElements** methods. Lets say that the model that drives your UI is in the store represented like the example [above](#usage). In case we do:
 ```javascript
 ui.forElement({
   "kind": ["teaser", "default"],
