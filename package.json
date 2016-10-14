@@ -31,7 +31,6 @@
     "omniscient": "^4.1.1",
     "react": "^15.2.1",
     "react-redux": "^4.4.5",
-    "recompose": "^0.19.0",
     "redux": "^3.5.2",
     "redux-saga": "^0.10.5"
   },
