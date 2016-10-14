@@ -13,13 +13,17 @@ It uses **[redux](http://github.com/reactjs/redux)** for managing the state of t
 ```
 npm install --save girders-elements
 ```
+or
+```
+yarn add girders-elements
+```
 
 ### Importing
 
 ```javascript
 import { ui } from 'girders-elements';
 // equivalent with
-import ui from 'elements/ui';
+import ui from 'girders-elements/ui';
 
 import elements from 'girders-elements';
 
@@ -46,13 +50,13 @@ boot.engine
 
 ### Usage
 
-The idea behind the Girders Elements framework is to have `elements` that can be driven by the back-end. An element is represented in JSON format
+The idea behind the Girders Elements framework is to have **elements** that can be driven by the back-end. An element is represented in JSON format
 
 ```javascript
 {
   "kind": ["teaser", "default"],
-  "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Holmes_-_Steele_1903_-_The_Empty_House_-_The_Return_of_Sherlock_Holmes.jpg"
-  "title": "Sherlock at Reichenbach Falls"
+  "imageUrl": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg"
+  "title": "Sherlock Holmes"
 }
 ```
 
@@ -81,9 +85,34 @@ ui.register(['teaser', 'default'], ({ element, dispatch }) => {
 }
 ```
 
+##### Rendering (Lookup) of an Element
+
+Rendering an element is done via the **ui.forElement** or **ui.forElements** methods. Lets say that the model that drives your UI is in the store represented like the example [above](#markdown-header-usage). In case we do:
+```javascript
+ui.forElement({
+  "kind": ["teaser", "default"],
+  "imageUrl": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg"
+  "title": "Sherlock Holmes"
+})
+```
+Then this will return us the **registered** component with kind `['teaser', 'default']`.
+
+##### Canonical Resolution
+
+We can also do the following:
+```javascript
+ui.forElement({
+  "kind": ["teaser", "default", "top"],
+  "imageUrl": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg"
+  "title": "Sherlock Holmes",
+  "topStoryColor": "red"
+})
+```
+Notice that the element kind is more specific, `['teaser', 'default', 'red']`. If we haven't registered such an element, its still not a problem, because canonical resolution is done. There is already a element registered for `['teaser', 'default']`, and this element will be rendered. In case we implement a new element, with the more specific kind `['teaser', 'default', 'red']`, and register it, then, of course that element will be returned. This canonical resolution is very useful, in case you introduce new features, but don't want to break clients that are still using older version of registered elements.
+
 ##### Rendering Children
 
-Any element can render a sub-element like o:
+Any element can render a sub-element like so:
 
 ```javascript
 ui.register(['navigation', 'stack'], ({ element, dispatch }) => {
@@ -94,7 +123,6 @@ ui.register(['navigation', 'stack'], ({ element, dispatch }) => {
   )
 })
 ```
-
 
 A list of children can be rendered using:
 
