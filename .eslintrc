@@ -5,7 +5,8 @@
     "mocha": true
   },
   "plugins": [
-    "react"
+    "react",
+    "redux-saga"
   ],
   "extends": [
     "eslint:recommended",
