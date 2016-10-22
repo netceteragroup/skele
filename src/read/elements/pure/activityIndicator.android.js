@@ -7,5 +7,5 @@ import {
 } from 'react-native';
 
 export default () => (
-  <ActivityIndicator />
+  <ActivityIndicator style={{ flex: 1 }} />
 );
