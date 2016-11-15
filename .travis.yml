@@ -9,5 +9,8 @@ install:
   - npm install
 
 script:
-  - npm run test
+  - npm run coverage
   - npm run lint
+
+after_success:
+  - npm run coverage-report
