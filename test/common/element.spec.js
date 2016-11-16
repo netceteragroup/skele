@@ -2,11 +2,11 @@
 
 import { expect } from '../support/utils';
 import { List, Seq, fromJS } from 'immutable';
-import { isOfKind, canonical } from '../../src/common/element';
+import { isOfKind, isExactlyOfKind, kindOf, ancestorKinds, canonical } from '../../src/common/element';
 
 describe('element', function() {
 
-  it('properly resolves element kinds', function() {
+  it('properly checks for element kinds', function() {
     const emptyKind = fromJS({
       'kind': []
     });
@@ -42,6 +42,42 @@ describe('element', function() {
     expect(isOfKind(['component', 'test', 'detail'], doubleKind)).to.equal(false);
     expect(isOfKind(['detail'], tripleKind)).to.equal(false);
     expect(isOfKind(['component', 'test', 'detail', 'unknown'], tripleKind)).to.equal(false);
+  });
+
+  it('properly checks for exact element kinds', function() {
+    const element = fromJS({
+      'kind': ['component', 'test']
+    });
+
+    expect(isExactlyOfKind(null, null)).to.equal(false);
+    expect(isExactlyOfKind(['component'], element)).to.equal(false);
+    expect(isExactlyOfKind(['component', 'test'], element)).to.equal(true);
+  });
+
+  it('returns the element kind', function() {
+    const kind = ['component', 'test'];
+    const element1 = fromJS({
+      'kind': null
+    });
+    const element2 = fromJS({
+      'kind': kind
+    });
+
+    expect(kindOf(element1)).to.equal(null);
+    expect(kindOf(element2)).to.equal(List(kind));
+  });
+
+  it('returns the ancestor kinds', function() {
+    const kinds = ['component', 'test', 'detail'];
+    const ancestors = Seq.of(
+      List.of('component', 'test', 'detail'),
+      List.of('component', 'test'),
+      List.of('component')
+    );
+
+    expect(ancestorKinds([])).to.equal(List());
+    expect(ancestorKinds('component')).to.equal(Seq.of(List.of('component')));
+    expect(ancestorKinds(kinds)).to.equal(ancestors);
   });
 
   it('properly normalizes element kinds', function() {
