@@ -109,7 +109,7 @@ export function ancestorKinds(ref: ElementRef): IndexedIterable<ElementRefCanoni
     }
   }
 
-  if (ref === []) {
+  if (Array.isArray(ref) && ref.length === 0) {
     return List();
   }
 
