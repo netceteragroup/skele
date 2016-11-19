@@ -18,13 +18,13 @@ describe('Updates', function() {
     };
 
     update.register(action1.fromKind, elementRegistry => {
-      elementRegistry.register(action1.type, (element, action) => console.log('Toggled!'));
+      elementRegistry.register(action1.type, () => {});
     });
     update.register(action2.fromKind, elementRegistry => {
-      elementRegistry.register(action2.type, (element, action) => console.log('Loading...'));
+      elementRegistry.register(action2.type, () => {});
     });
     update.register(action2.fromKind, elementRegistry => {
-      elementRegistry.register(action2.type, (element, action) => console.log('Loading...'));
+      elementRegistry.register(action2.type, () => {});
     });
     expect(update.forAction(action1)).to.exist;
     expect(update.forAction(action2)).to.exist;
@@ -69,13 +69,13 @@ describe('Updates', function() {
       type: 'READ'
     };
     update.register(localUpdate.fromKind, elementRegistry => {
-      elementRegistry.register(localUpdate.type, (element, action) => {});
+      elementRegistry.register(localUpdate.type, () => {});
     });
     update.register(globalUpdate.fromKind, elementRegistry => {
-      elementRegistry.register(globalUpdate.type, (element, action) => {});
+      elementRegistry.register(globalUpdate.type, () => {});
     });
     update.register(readUpdate.fromKind, elementRegistry => {
-      elementRegistry.register(readUpdate.type, (element, action) => {});
+      elementRegistry.register(readUpdate.type, () => {});
     });
 
     expect(update.reducer(cursor, {})).to.equal(cursor);
