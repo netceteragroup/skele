@@ -2,7 +2,7 @@
 
 import { List, fromJS } from 'immutable';
 
-import { takeLatest } from 'redux-saga';
+import { takeEvery } from 'redux-saga';
 import { call, put } from 'redux-saga/effects';
 
 import { canonical } from '../common/element';
@@ -69,7 +69,6 @@ function* readPerform(action) {
 
 export function* watchReadPerform() {
   // TODO andon: we need to have an ID for each saga execution. Identifying by element path can lead to errors.
-  // move to takeEvery
-  yield* takeLatest('READ_PERFORM', readPerform)
+  yield* takeEvery('READ_PERFORM', readPerform)
 }
 
