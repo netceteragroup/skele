@@ -1,0 +1,73 @@
+'use strict';
+
+import React, {Component} from 'react';
+import { compose, createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import createSagaMiddleware from 'redux-saga';
+import devTools from 'remote-redux-devtools';
+import { fromJS } from 'immutable';
+import Cursor from 'immutable/contrib/cursor';
+
+import * as ui from '../ui';
+import { reducer } from '../update';
+
+const identity = v => v;
+
+const getDevTools = () => {
+  // eslint-disable-next-line
+  if (process.env.NODE_ENV === 'development') {
+    return devTools();
+  } else {
+    return identity;
+  }
+};
+
+const sagaMiddleware = createSagaMiddleware();
+
+const buildStore = (initialAppState) => {
+  const storeFactory = compose(
+      applyMiddleware(sagaMiddleware),
+      getDevTools()
+  )(createStore);
+
+  return storeFactory(reducer, initialAppState);
+};
+
+function toImmutable(initState) {
+  return initState.get ? initState : fromJS(initState);
+}
+
+function createState(initState) {
+  const immutableInitState = toImmutable(initState);
+  const store = buildStore(Cursor.from(immutableInitState));
+  return {
+    store: store,
+    initState: immutableInitState
+  };
+}
+
+export default class Engine extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.state = createState(props.initState);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const newState = toImmutable(nextProps.initState);
+    if (!this.state.initState.equals(newState)) {
+      this.setState(createState(newState));
+    }
+  }
+
+  render() {
+    return (
+        <Provider store={this.state.store}>
+          { ui.forElement(Cursor.from(this.state.initState)) }
+        </Provider>
+    );
+  }
+}
+
+Engine.propTypes = {
+  initState: React.PropTypes.object.isRequired
+};
