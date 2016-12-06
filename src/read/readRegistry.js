@@ -1,7 +1,7 @@
 /* @flow */
 'use strict';
 
-import merge from 'lodash/merge';
+import { merge } from 'ramda';
 import { List, fromJS } from 'immutable';
 
 import Registry from '../common/Registry';
