@@ -1,6 +1,0 @@
-src/
-.babelrc
-.eslintignore
-.eslintrc
-.nyc_output
-.travis.yml
