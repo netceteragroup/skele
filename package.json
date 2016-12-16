@@ -59,7 +59,6 @@
     "react-dom": "^15.2.1",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
-    "remote-redux-devtools": "^0.5.0",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0"
   },
