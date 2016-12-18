@@ -19,11 +19,31 @@ import { ReadFn } from './readRegistry';
  */
 export default function(cursor, action) {
   // console.log('read action', action);
-  const canonicalKind = canonical(cursor.getIn(action.fromPath).get('kind'));
+  const element = cursor.getIn(action.fromPath);
+  if(!element) {
+    // the path for the action can't be accessed in the latest cursor
+    // cursor has changed, so we can only discard the action
+    return cursor;
+  }
+  const canonicalKind = canonical(element.get('kind'));
   const pathToKind = List.of(...action.fromPath, 'kind');
+  if (action.random) {
+    const pathToRandom = List.of(...action.fromPath, 'random');
+    if (action.random !== cursor.getIn(pathToRandom)) {
+      // we have an obsolete mutation, discard
+      return cursor;
+    }
+    // console.log('action-type-with-random: ', action.type);
+    // console.log('random from action: ', action.random);
+    // console.log('random from cursor: ', cursor.getIn(pathToRandom));
+    // console.log('random equals: ', action.random === cursor.getIn(pathToRandom));
+  }
   switch (action.type) {
     case 'READ': {
-      return cursor.setIn(pathToKind, canonicalKind.set(0, '__loading'));
+      const pathToRandom = List.of(...action.fromPath, 'random');
+      return cursor
+        .setIn(pathToKind, canonicalKind.set(0, '__loading'))
+        .setIn(pathToRandom, Math.random());
     }
     case 'READ_SUCCEEDED': {
       const kind = canonicalKind.size === 1 ? canonicalKind.set(0, '__container') : canonicalKind.rest();
@@ -47,7 +67,6 @@ export default function(cursor, action) {
 function* readPerform(action) {
   const pattern = action.uri;
   const reader: ?ReadFn = registry.get(pattern) || registry.get(registry.fallback);
-
   if (reader != null) {
     const readResponse = yield call(reader, pattern);
     if (readResponse.value) {
