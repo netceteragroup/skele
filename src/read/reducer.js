@@ -29,7 +29,7 @@ export default function(cursor, action) {
   const pathToKind = List.of(...action.fromPath, 'kind');
   if (action.random) {
     const pathToRandom = List.of(...action.fromPath, 'random');
-    if (action.random === cursor.getIn(pathToRandom)) {
+    if (action.random !== cursor.getIn(pathToRandom)) {
       // we have an obsolete mutation, discard
       return cursor;
     }
