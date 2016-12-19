@@ -1,8 +1,7 @@
 /* @flow */
 'use strict';
 
-import every from 'lodash/every';
-
+import { all } from 'ramda';
 import invariant from 'invariant';
 import { List, Seq, is, KeyedIterable, IndexedIterable } from 'immutable';
 
@@ -40,7 +39,7 @@ export function isElementRef(obj: any): boolean {
   const isString = o => typeof o === 'string';
 
   if (isString(obj)) return true;
-  if (Array.isArray(obj) && (every(obj, isString) || obj.length === 0)) return true;
+  if (Array.isArray(obj) && (all(isString)(obj) || obj.length === 0)) return true;
   if (obj instanceof List && (obj.every(isString) || obj.isEmpty())) return true;
 
   return false;
