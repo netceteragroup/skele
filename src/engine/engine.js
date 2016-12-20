@@ -4,30 +4,17 @@ import React, {Component} from 'react';
 import { compose, createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
-import devTools from 'remote-redux-devtools';
 import { fromJS } from 'immutable';
 import Cursor from 'immutable/contrib/cursor';
 
 import * as ui from '../ui';
 import { reducer } from '../update';
 
-const identity = v => v;
-
-const getDevTools = () => {
-  // eslint-disable-next-line
-  if (process.env.NODE_ENV === 'development') {
-    return devTools();
-  } else {
-    return identity;
-  }
-};
-
 const sagaMiddleware = createSagaMiddleware();
 
 const buildStore = (initialAppState) => {
   const storeFactory = compose(
-      applyMiddleware(sagaMiddleware),
-      getDevTools()
+      applyMiddleware(sagaMiddleware)
   )(createStore);
 
   return storeFactory(reducer, initialAppState);

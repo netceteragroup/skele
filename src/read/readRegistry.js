@@ -1,7 +1,6 @@
 /* @flow */
 'use strict';
 
-import merge from 'lodash/merge';
 import { List, fromJS } from 'immutable';
 
 import Registry from '../common/Registry';
@@ -72,11 +71,13 @@ function errorResponseForUrl(url): ErrorFn {
 }
 
 export function responseMeta(resp: Object): Meta {
-  const {url, status, statusMessage: message} = merge({status: 200, statusMessage: "OK"}, resp);
-
+  let message = resp.statusText;
+  if (!message) {
+    message = resp.ok ? "OK" : "NOK";
+  }
   return {
-    url,
-    status,
-    message
+    url: resp.url,
+    status: resp.status ? resp.status : 200,
+    message: message
   };
 }

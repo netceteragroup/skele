@@ -1,7 +1,6 @@
 'use strict';
 
 import { Map, List } from 'immutable';
-import isNil from 'lodash/isNil';
 
 
 export default class Registry {
@@ -25,7 +24,7 @@ export default class Registry {
     const resolvedKey = this._adaptKey(this.keyExtractor ? this.keyExtractor(element) : element);
     const obj = this._getBySpecificity(resolvedKey, useSpecificity);
 
-    if (isNil(obj)) {
+    if (obj == null) {
       return this._getWithRecognizer(resolvedKey);
     }
 
