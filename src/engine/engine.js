@@ -10,6 +10,8 @@ import Cursor from 'immutable/contrib/cursor';
 import * as ui from '../ui';
 import { reducer } from '../update';
 
+import { watchReadPerform } from '../read/reducer';
+
 const sagaMiddleware = createSagaMiddleware();
 
 const buildStore = (initialAppState) => {
@@ -37,6 +39,17 @@ export default class Engine extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = createState(props.initState);
+  }
+
+  updateComponentState() {
+    const store = this.state.store;
+    const newState = toImmutable(store.getState());
+    this.setState({store, initState: newState})
+  }
+
+  componentWillMount() {
+    sagaMiddleware.run(watchReadPerform);
+     this.state.store.subscribe(this.updateComponentState.bind(this));
   }
 
   componentWillReceiveProps(nextProps) {
