@@ -23,8 +23,8 @@ class Loading extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch, kind, uri, where, random } = this.props;
-    dispatch({type: 'READ_PERFORM', uri, where, kind, random});
+    const { dispatch, kind, uri, where, readId } = this.props;
+    dispatch({type: 'READ_PERFORM', uri, where, kind, readId});
   }
 
   render() {
@@ -41,6 +41,6 @@ ui.register(['__loading'], ({ element, dispatch}) => {
       uri={element.get('uri')}
       where={element.get('where', 'content')}
       dispatch={dispatch}
-      random={element.get('random')}/>
+      readId={element.get('readId')}/>
   );
 });

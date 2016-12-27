@@ -33,7 +33,8 @@
     "invariant": "^2.2.2",
     "omniscient": "^4.1.1",
     "ramda": "^0.22.1",
-    "redux-saga": "^0.12.0"
+    "redux-saga": "^0.12.0",
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",

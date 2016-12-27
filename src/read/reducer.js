@@ -5,6 +5,8 @@ import { List, fromJS } from 'immutable';
 import { takeEvery } from 'redux-saga';
 import { call, put } from 'redux-saga/effects';
 
+import uuid from 'uuid';
+
 import { canonical } from '../common/element';
 
 import * as registry from './readRegistry';
@@ -27,23 +29,19 @@ export default function(cursor, action) {
   }
   const canonicalKind = canonical(element.get('kind'));
   const pathToKind = List.of(...action.fromPath, 'kind');
-  if (action.random) {
-    const pathToRandom = List.of(...action.fromPath, 'random');
-    if (action.random !== cursor.getIn(pathToRandom)) {
+  if (action.readId) {
+    const pathToReadId = List.of(...action.fromPath, 'readId');
+    if (action.readId !== cursor.getIn(pathToReadId)) {
       // we have an obsolete mutation, discard
       return cursor;
     }
-    // console.log('action-type-with-random: ', action.type);
-    // console.log('random from action: ', action.random);
-    // console.log('random from cursor: ', cursor.getIn(pathToRandom));
-    // console.log('random equals: ', action.random === cursor.getIn(pathToRandom));
   }
   switch (action.type) {
     case 'READ': {
-      const pathToRandom = List.of(...action.fromPath, 'random');
+      const pathToReadId = List.of(...action.fromPath, 'readId');
       return cursor
         .setIn(pathToKind, canonicalKind.set(0, '__loading'))
-        .setIn(pathToRandom, Math.random());
+        .setIn(pathToReadId, uuid());
     }
     case 'READ_SUCCEEDED': {
       const kind = canonicalKind.size === 1 ? canonicalKind.set(0, '__container') : canonicalKind.rest();
@@ -87,7 +85,6 @@ function* readPerform(action) {
 }
 
 export function* watchReadPerform() {
-  // TODO andon: we need to have an ID for each saga execution. Identifying by element path can lead to errors.
   yield* takeEvery('READ_PERFORM', readPerform)
 }
 
