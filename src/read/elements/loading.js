@@ -15,7 +15,8 @@ class Loading extends React.Component {
       React.PropTypes.arrayOf(React.PropTypes.string)
     ]).isRequired,
     uri: React.PropTypes.string.isRequired,
-    where: React.PropTypes.string.isRequired
+    where: React.PropTypes.string.isRequired,
+    readId: React.PropTypes.string.isRequired
   };
 
   constructor(props) {
