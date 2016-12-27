@@ -83,7 +83,7 @@ ui.register(['teaser', 'default'], ({ element, dispatch }) => {
       <Text>{element.get('title')}</Text>
     </View>
   )
-}
+})
 ```
 
 ##### Rendering (Lookup) of an Element

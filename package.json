@@ -3,12 +3,16 @@
   "version": "1.0.0-beta.0",
   "description": "Girders Elements is an architectural framework that assists with building data-driven apps with React or React Native.",
   "main": "index.js",
+  "browser": "lib/index.js",
   "scripts": {
     "test": "cross-env BABEL_ENV=test mocha --recursive --compilers js:babel-core/register --require test/support/utils",
     "coverage": "nyc npm test",
     "coverage-report": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint .",
-    "lint-stats": "eslint . --format node_modules/eslint-stats/byErrorAndWarning.js"
+    "lint-stats": "eslint . --format node_modules/eslint-stats/byErrorAndWarning.js",
+    "clean": "del-cli lib/",
+    "build": "babel src --out-dir lib/",
+    "prepublish": "npm run clean && npm run test && npm run build"
   },
   "repository": {
     "type": "git",
@@ -36,6 +40,7 @@
     "redux-saga": "^0.12.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.10.4",
     "babel-core": "^6.10.4",
     "babel-eslint": "^7.1.0",
     "babel-plugin-transform-runtime": "^6.12.0",
@@ -47,6 +52,7 @@
     "chai-immutable": "^1.6.0",
     "coveralls": "^2.11.15",
     "cross-env": "^3.1.2",
+    "del-cli": "^0.2.0",
     "enzyme": "^2.4.1",
     "eslint": "^3.10.1",
     "eslint-plugin-react": "^6.7.1",
