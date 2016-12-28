@@ -1,6 +1,6 @@
 'use strict';
 
-import React, {Component} from 'react';
+import React, {Component, Children} from 'react';
 import { compose, createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
@@ -35,21 +35,44 @@ function createState(initState) {
   };
 }
 
+class ContextWrapper extends Component {
+  getChildContext() {
+    return { store: this.store }
+  }
+
+  constructor(props, context) {
+    super(props, context);
+    this.store = props.store
+  }
+
+  render() {
+    return Children.only(this.props.children)
+  }
+}
+
+ContextWrapper.childContextTypes = {
+  store: React.PropTypes.any
+};
+
 export default class Engine extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = createState(props.initState);
+
+    this.updateComponentState = this.updateComponentState.bind(this);
+
+    sagaMiddleware.run(watchReadPerform);
+    this.state.store.subscribe(this.updateComponentState);
   }
 
   updateComponentState() {
     const store = this.state.store;
     const newState = toImmutable(store.getState());
-    this.setState({store, initState: newState})
+    this.setState({initState: newState})
   }
 
-  componentWillMount() {
-    sagaMiddleware.run(watchReadPerform);
-     this.state.store.subscribe(this.updateComponentState.bind(this));
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState.initState !== this.state.initState;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -61,9 +84,9 @@ export default class Engine extends Component {
 
   render() {
     return (
-        <Provider store={this.state.store}>
+        <ContextWrapper store={this.state.store}>
           { ui.forElement(Cursor.from(this.state.initState)) }
-        </Provider>
+        </ContextWrapper>
     );
   }
 }
