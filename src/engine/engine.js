@@ -2,7 +2,6 @@
 
 import React, {Component, Children} from 'react';
 import { compose, createStore, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
 import { fromJS } from 'immutable';
 import Cursor from 'immutable/contrib/cursor';
@@ -16,7 +15,7 @@ const sagaMiddleware = createSagaMiddleware();
 
 const buildStore = (initialAppState) => {
   const storeFactory = compose(
-      applyMiddleware(sagaMiddleware)
+    applyMiddleware(sagaMiddleware)
   )(createStore);
 
   return storeFactory(reducer, initialAppState);
@@ -30,8 +29,7 @@ function createState(initState) {
   const immutableInitState = toImmutable(initState);
   const store = buildStore(Cursor.from(immutableInitState));
   return {
-    store: store,
-    initState: immutableInitState
+    store: store
   };
 }
 
@@ -42,7 +40,7 @@ class ContextWrapper extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.store = props.store
+    this.store = props.store;
   }
 
   render() {
@@ -54,25 +52,21 @@ ContextWrapper.childContextTypes = {
   store: React.PropTypes.any
 };
 
+ContextWrapper.propTypes = {
+  store: React.PropTypes.any.isRequired,
+  children: React.PropTypes.any
+};
+
 export default class Engine extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = createState(props.initState);
-
-    this.updateComponentState = this.updateComponentState.bind(this);
-
     sagaMiddleware.run(watchReadPerform);
-    this.state.store.subscribe(this.updateComponentState);
+    this.state.store.subscribe(this._reRender.bind(this));
   }
 
-  updateComponentState() {
-    const store = this.state.store;
-    const newState = toImmutable(store.getState());
-    this.setState({initState: newState})
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextState.initState !== this.state.initState;
+  shouldComponentUpdate() {
+    return true;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -82,11 +76,15 @@ export default class Engine extends Component {
     }
   }
 
+  _reRender() {
+    this.forceUpdate();
+  }
+
   render() {
     return (
-        <ContextWrapper store={this.state.store}>
-          { ui.forElement(Cursor.from(this.state.initState)) }
-        </ContextWrapper>
+      <ContextWrapper store={this.state.store}>
+        { ui.forElement(this.state.store.getState()) }
+      </ContextWrapper>
     );
   }
 }
