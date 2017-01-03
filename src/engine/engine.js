@@ -44,7 +44,10 @@ class ContextWrapper extends Component {
   }
 
   render() {
-    return Children.only(this.props.children)
+    if (!this.props.children) {
+      return null;
+    }
+    return Children.only(this.props.children);
   }
 }
 
