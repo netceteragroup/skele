@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "cross-env BABEL_ENV=test mocha --recursive --compilers js:babel-core/register --require test/support/utils",
+    "test-watch": "npm run test -- -w",
     "coverage": "nyc npm test",
     "coverage-report": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint .",

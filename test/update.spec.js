@@ -129,7 +129,7 @@ class Scene extends React.Component {
 }
 
 function registerStackAndScene() {
-  ui.register(['navigation', 'stack'], ({element}) => {
+  ui.register(['navigation', 'stack'], ({ element }) => {
     return (
       <div>
         <h1>{element.get('title')}</h1>
@@ -137,7 +137,7 @@ function registerStackAndScene() {
       </div>
     );
   });
-  ui.register(['navigation', 'scene'], ({element, dispatch}) => {
+  ui.register(['navigation', 'scene'], ({ element, dispatch }) => {
     return (
       <Scene
         title={element.get('title')}
