@@ -35,7 +35,7 @@ export default function(cursor, action) {
 
     // handle global updates
     if (type.startsWith('.')) {
-      const { element, update } = parents(cursor.getIn(fromPath))
+      const resultFromLookup = parents(cursor.getIn(fromPath))
         .filter(parent => !!parent.get('kind'))
         .map(parent => {
           const parentKind = parent.get('kind');
@@ -49,9 +49,13 @@ export default function(cursor, action) {
         })
         .filter(parent => !!parent.update)
         .first();
-      if (element && update) {
-        return cursor.setIn(element._keyPath, update(element.deref(), action));
+      if (resultFromLookup) {
+        const { element, update } = resultFromLookup;
+        if (element && update) {
+          return cursor.setIn(element._keyPath, update(element.deref(), action));
+        }
       }
+      return cursor;
     }
 
     // handle local updates
