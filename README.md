@@ -6,8 +6,8 @@
 Girders Elements is an architectural framework that assists building **data-driven** apps with **[React](https://facebook.github.io/react/)** or **[React Native](https://facebook.github.io/react-native/)**.
 It is extremely well-suited for creating highly **dynamic UI**s, that are driven from back-end systems (like Content Management Systems).
 
-It uses **[redux](http://github.com/reactjs/redux)** for managing the state of the application. All great tools around the redux eco-system can be leveraged, because `girders-elements` is built on top of it.
-**[Immutable](https://facebook.github.io/immutable-js/)** data structures are used for redux's single store and also when using `girders-elements` core features.
+It uses **[redux](http://github.com/reactjs/redux)** for managing the state of the application. All great tools around the redux eco-system can be leveraged, because **girders-elements** is built on top of it.
+**[Immutable](https://facebook.github.io/immutable-js/)** data structures are used for redux's single store and also when using **girders-elements** core features.
 
 ### Installation
 
