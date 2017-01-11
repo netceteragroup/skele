@@ -5,6 +5,8 @@ import { List, fromJS } from 'immutable';
 import { takeEvery } from 'redux-saga';
 import { call, put } from 'redux-saga/effects';
 
+import uuid from 'uuid';
+
 import { canonical } from '../common/element';
 
 import * as registry from './readRegistry';
@@ -19,11 +21,27 @@ import { ReadFn } from './readRegistry';
  */
 export default function(cursor, action) {
   // console.log('read action', action);
-  const canonicalKind = canonical(cursor.getIn(action.fromPath).get('kind'));
+  const element = cursor.getIn(action.fromPath);
+  if(!element) {
+    // the path for the action can't be accessed in the latest cursor
+    // cursor has changed, so we can only discard the action
+    return cursor;
+  }
+  const canonicalKind = canonical(element.get('kind'));
   const pathToKind = List.of(...action.fromPath, 'kind');
+  if (action.readId) {
+    const pathToReadId = List.of(...action.fromPath, 'readId');
+    if (action.readId !== cursor.getIn(pathToReadId)) {
+      // we have an obsolete mutation, discard
+      return cursor;
+    }
+  }
   switch (action.type) {
     case 'READ': {
-      return cursor.setIn(pathToKind, canonicalKind.set(0, '__loading'));
+      const pathToReadId = List.of(...action.fromPath, 'readId');
+      return cursor
+        .setIn(pathToKind, canonicalKind.set(0, '__loading'))
+        .setIn(pathToReadId, uuid());
     }
     case 'READ_SUCCEEDED': {
       const kind = canonicalKind.size === 1 ? canonicalKind.set(0, '__container') : canonicalKind.rest();
@@ -47,7 +65,6 @@ export default function(cursor, action) {
 function* readPerform(action) {
   const pattern = action.uri;
   const reader: ?ReadFn = registry.get(pattern) || registry.get(registry.fallback);
-
   if (reader != null) {
     const readResponse = yield call(reader, pattern);
     if (readResponse.value) {
@@ -68,7 +85,6 @@ function* readPerform(action) {
 }
 
 export function* watchReadPerform() {
-  // TODO andon: we need to have an ID for each saga execution. Identifying by element path can lead to errors.
   yield* takeEvery('READ_PERFORM', readPerform)
 }
 

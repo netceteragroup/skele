@@ -2,7 +2,6 @@
 
 import React from 'react';
 import invariant from 'invariant';
-import { connect } from 'react-redux';
 
 import Registry from '../common/Registry';
 import { isElementRef, canonical } from '../common/element';
@@ -25,8 +24,11 @@ export function register(kind, Component) {
   class ElementView extends mix(React.Component).with(ImmutableProps) {
 
     static propTypes = {
-      dispatch: React.PropTypes.func.isRequired,
       element: React.PropTypes.object.isRequired
+    };
+
+    static contextTypes = {
+      store: React.PropTypes.object
     };
 
     constructor(props) {
@@ -34,10 +36,11 @@ export function register(kind, Component) {
     }
 
     dispatch = (action) => {
+      const { dispatch } = this.context.store;
       const { element } = this.props;
       const fromKind = canonical(element.get('kind'));
       const fromPath = element._keyPath;
-      return this.props.dispatch({ ...action, fromKind, fromPath });
+      return dispatch({ ...action, fromKind, fromPath });
     };
 
     render() {
@@ -45,10 +48,9 @@ export function register(kind, Component) {
     }
   }
 
-  const ConnectedElementView = connect()(ElementView);
-  uiRegistry.register(kind, ConnectedElementView);
+  uiRegistry.register(kind, ElementView);
 
-  return ConnectedElementView;
+  return ElementView;
 }
 
 export function forElement(element, reactKey) {

@@ -36,3 +36,7 @@ export function forKindAndType(kind, type) {
     }
   }
 }
+
+export function reset() {
+  updateRegistry.reset();
+}

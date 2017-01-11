@@ -15,7 +15,8 @@ class Loading extends React.Component {
       React.PropTypes.arrayOf(React.PropTypes.string)
     ]).isRequired,
     uri: React.PropTypes.string.isRequired,
-    where: React.PropTypes.string.isRequired
+    where: React.PropTypes.string.isRequired,
+    readId: React.PropTypes.string.isRequired
   };
 
   constructor(props) {
@@ -23,8 +24,8 @@ class Loading extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch, kind, uri, where } = this.props;
-    dispatch({type: 'READ_PERFORM', uri, where, kind});
+    const { dispatch, kind, uri, where, readId } = this.props;
+    dispatch({type: 'READ_PERFORM', uri, where, kind, readId});
   }
 
   render() {
@@ -40,6 +41,7 @@ ui.register(['__loading'], ({ element, dispatch}) => {
       kind={element.get('kind').toJS()}
       uri={element.get('uri')}
       where={element.get('where', 'content')}
-      dispatch={dispatch} />
+      dispatch={dispatch}
+      readId={element.get('readId')}/>
   );
 });

@@ -1,5 +1,6 @@
 'use strict';
 
+import 'jsdom-global/register';
 import chai, { expect } from 'chai';
 import chaiEnzyme from 'chai-enzyme';
 import { spy, stub, mock } from 'sinon';

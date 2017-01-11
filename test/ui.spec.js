@@ -8,7 +8,7 @@ import * as ui from '../src/ui';
 import { List, fromJS } from 'immutable';
 import Cursor from 'immutable/contrib/cursor';
 
-import { engine } from '../src/boot';
+import { Engine } from '../src';
 
 /*
  * Tests for the ui API.
@@ -98,6 +98,13 @@ describe("UI", () => {
           <div>Mycroft</div>
         );
       });
+      ui.register('detectives', ({ element }) => {
+        return (
+          <div>
+            { ui.forElements(element.get('list')) }
+          </div>
+        )
+      })
     });
     afterEach(() => {
       ui.reset(); // clears all registered components
@@ -112,55 +119,18 @@ describe("UI", () => {
 
 
       it("returns the corresponding element when looked for", () => {
-        const view = engine(fromJS({
-          first: {
-            kind: 'comp1'
-          },
-          second: {
-            kind: 'comp2'
-          }
-        }), ({ element }) => {
-          return (
-            <div>
-              <p>Sherlock Holmes</p>
-              { ui.forElement(element.get('first')) }
-            </div>
-          );
-        });
-
-        const html = render(view()).html();
+        const html = render(
+          <Engine initState={fromJS({kind: 'comp1'})} />).html();
         expect(html).to.contain('<div>Watson</div>');
         expect(html).not.to.contain('<div>Hudson</div>');
       });
 
       it("looks up for an element by resolving the kind canonically", () => {
         // given
-        const viewWithSpecificRegistered = engine(fromJS({
-          test: {
-            kind: ['comp2', 'specific']
-          }
-        }), ({ element }) => {
-          return (
-            <div>
-              { ui.forElement(element.get('test')) }
-            </div>
-          );
-        });
-        const viewWithSpecificUnregistered = engine(fromJS({
-          test: {
-            kind: ['comp1', 'specific']
-          }
-        }), ({ element }) => {
-          return (
-            <div>
-              { ui.forElement(element.get('test')) }
-            </div>
-          );
-        });
 
         // when
-        const htmlWithSpecificRegistered = render(viewWithSpecificRegistered()).html();
-        const htmlWithSpecificUnregistered = render(viewWithSpecificUnregistered()).html();
+        const htmlWithSpecificRegistered = render(<Engine initState={fromJS({kind: ['comp2', 'specific']})} />).html();
+        const htmlWithSpecificUnregistered = render(<Engine initState={fromJS({kind: ['comp1', 'specific']})} />).html();
 
         // then
         expect(htmlWithSpecificRegistered).to.contain('<div>Mycroft</div>');
@@ -173,8 +143,9 @@ describe("UI", () => {
     describe("#forElements", () => {
 
       it('returns a list of elements, filtering empty (not found)', () => {
-        const view = engine(fromJS({
-          detectives: [
+        const html = render(<Engine initState={fromJS({
+          kind: 'detectives',
+          list: [
             {
               kind: 'comp1'
             },
@@ -185,15 +156,7 @@ describe("UI", () => {
               kind: 'not-registered'
             }
           ]
-        }), ({ element }) => {
-          return (
-            <div>
-              { ui.forElements(element.get('detectives')) }
-            </div>
-          );
-        });
-
-        const html = render(view()).html();
+        })} />).html();
         expect(html).to.contain('Watson');
         expect(html).to.contain('Hudson');
         expect(html.match(/<div>/g).length).to.equal(3);

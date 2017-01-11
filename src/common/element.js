@@ -28,7 +28,7 @@ export function isOfKind(kind: ElementRef, element: ?KeyedIterable): boolean {
 
   invariant(
     elementKindNormalized,
-    "You must provie an element that has a valid kind"
+    "You must provide an element that has a valid kind"
   );
 
 
@@ -58,7 +58,7 @@ export function isExactlyOfKind(kind: ElementRef, element: ?KeyedIterable): bool
   }
 
   const normalized = normalize(kind);
-  var elementKindNormalized = normalize(element.get('kind'));
+  const elementKindNormalized = normalize(element.get('kind'));
 
   return is(elementKindNormalized, normalized);
 }

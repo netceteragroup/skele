@@ -1,9 +1,10 @@
 'use strict';
 
-import { expect } from './support/utils';
+import React from 'react';
+import { expect, mount } from './support/utils';
 import { fromJS } from 'immutable';
 import Cursor from 'immutable/contrib/cursor';
-import update from '../src/update';
+import { ui, update, Engine } from '../src';
 
 describe('Updates', function() {
 
@@ -84,4 +85,128 @@ describe('Updates', function() {
     expect(update.reducer(cursor, readUpdate)).to.exist;
   });
 
+});
+
+
+const appState = {
+  kind: ['navigation', 'stack'],
+  title: 'Navigation-Stack',
+  children: [
+    {
+      kind: ['navigation', 'scene'],
+      title: 'Scene-Home'
+    },
+    {
+      kind: ['navigation', 'scene'],
+      title: 'Scene-About'
+    }
+  ]
+};
+
+class Scene extends React.Component {
+
+  static propTypes = {
+    title: React.PropTypes.string.isRequired,
+    dispatch: React.PropTypes.func.isRequired
+  };
+
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount() {
+    this.props.dispatch({type: 'UPDATE_TITLE'});
+    this.props.dispatch({type: '.UPDATE_TITLE'});
+  }
+
+  render() {
+    return (
+      <div>
+        <h2>{this.props.title}</h2>
+      </div>
+    );
+  }
+}
+
+function registerStackAndScene() {
+  ui.register(['navigation', 'stack'], ({ element }) => {
+    return (
+      <div>
+        <h1>{element.get('title')}</h1>
+        <div>{ui.forElements(element.get('children'))}</div>
+      </div>
+    );
+  });
+  ui.register(['navigation', 'scene'], ({ element, dispatch }) => {
+    return (
+      <Scene
+        title={element.get('title')}
+        button={element.get('button')}
+        dispatch={dispatch}
+      />
+    );
+  });
+}
+
+describe('Local Update', () => {
+
+  beforeEach(() => {
+    // register ui
+    registerStackAndScene();
+
+    // register local update
+    update.register(['navigation', 'scene'], elementRegistry => {
+      elementRegistry.register('UPDATE_TITLE', element => {
+        if (element.get('title') === 'Scene-Home') {
+          return element.set('title', 'Scene-Modified-Home');
+        }
+        return element;
+      });
+    });
+  });
+
+  afterEach(() => {
+    ui.reset();
+    update.reset();
+  });
+
+  it('should be applied only for the elements when triggered', () => {
+    const engine = mount(<Engine initState={fromJS(appState)} />);
+    const html = engine.html();
+    expect(html).not.to.contain('Scene-Non-Existant');
+    expect(html).not.to.contain('Scene-Home');
+    expect(html).not.to.contain('Navigation-Modified-Stack');
+    expect(html).to.contain('Scene-Modified-Home');
+    expect(html).to.contain('Scene-About');
+    expect(html).to.contain('Navigation-Stack');
+  });
+});
+
+describe('Global Update', () => {
+
+  beforeEach(() => {
+    // register ui
+    registerStackAndScene();
+
+    // register global update
+    update.register(['navigation', 'stack'], elementRegistry => {
+      elementRegistry.register('.UPDATE_TITLE', element => element.set('title', 'Navigation-Modified-Stack'));
+    });
+  });
+
+  afterEach(() => {
+    ui.reset();
+    update.reset();
+  });
+
+  it('should be applied only for the elements when triggered', () => {
+    const engine = mount(<Engine initState={fromJS(appState)} />);
+    const html = engine.html();
+    expect(html).not.to.contain('Scene-Non-Existant');
+    expect(html).not.to.contain('Scene-Modified-Home');
+    expect(html).not.to.contain('Navigation-Stack');
+    expect(html).to.contain('Scene-About');
+    expect(html).to.contain('Scene-Home');
+    expect(html).to.contain('Navigation-Modified-Stack');
+  });
 });
