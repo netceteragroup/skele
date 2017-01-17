@@ -65,7 +65,7 @@ export default class Engine extends Component {
     super(props, context);
     this.state = createState(props.initState);
     sagaMiddleware.run(watchReadPerform);
-    this.state.store.subscribe(this._reRender.bind(this));
+    this.unsubscribe = this.state.store.subscribe(this._reRender.bind(this));
   }
 
   shouldComponentUpdate() {
@@ -81,6 +81,10 @@ export default class Engine extends Component {
 
   _reRender() {
     this.forceUpdate();
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   render() {
