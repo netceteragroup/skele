@@ -63,7 +63,8 @@
     "react-dom": "^15.2.1",
     "redux": "^3.5.2",
     "sinon": "^1.17.4",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "lerna": "2.0.0-beta.38"
   },
   "peerDependencies": {
     "react": "^15.0.0",
