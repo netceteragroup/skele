@@ -1,0 +1,45 @@
+{
+  "name": "@girders-elements/core",
+  "version": "1.0.0-alpha.0",
+  "description": "Girders Elements is an architectural framework that assists with building data-driven apps with React or React Native.",
+  "main": "index.js",
+  "scripts": {
+    "test": "cross-env BABEL_ENV=test mocha --recursive --compilers js:babel-core/register --require test/support/utils",
+    "test-watch": "npm run test -- -w",
+    "coverage": "nyc npm test",
+    "coverage-report": "nyc report --reporter=text-lcov | coveralls",
+    "lint": "eslint .",
+    "lint-stats": "eslint . --format node_modules/eslint-stats/byErrorAndWarning.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netceteragroup/girders-elements.git"
+  },
+  "keywords": [
+    "react",
+    "react-native",
+    "redux",
+    "redux-elm",
+    "redux-saga",
+    "netcetera"
+  ],
+  "author": "netcetera",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/netceteragroup/girders-elements/issues"
+  },
+  "homepage": "https://github.com/netceteragroup/girders-elements#readme",
+  "dependencies": {
+    "immutable": "^3.8.1",
+    "invariant": "^2.2.2",
+    "omniscient": "^4.1.1",
+    "ramda": "^0.22.1",
+    "redux-saga": "^0.12.0",
+    "uuid": "^3.0.1"
+  },
+
+  "peerDependencies": {
+    "react": "^15.0.0",
+    "redux": "^3.0.0"
+  }
+}
