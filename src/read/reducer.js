@@ -25,7 +25,8 @@ export default function(cursor, action) {
   if(!element) {
     // the path for the action can't be accessed in the latest cursor
     // cursor has changed, so we can only discard the action
-    return cursor;
+    return cursor.set('LAST_KEY_PATH', action.fromPath)
+      .set('LAST_KIND', action.fromKind);
   }
   const canonicalKind = canonical(element.get('kind'));
   const pathToKind = List.of(...action.fromPath, 'kind');
@@ -33,7 +34,8 @@ export default function(cursor, action) {
     const pathToReadId = List.of(...action.fromPath, 'readId');
     if (action.readId !== cursor.getIn(pathToReadId)) {
       // we have an obsolete mutation, discard
-      return cursor;
+      return cursor.set('LAST_KEY_PATH', action.fromPath)
+        .set('LAST_KIND', action.fromKind);
     }
   }
   switch (action.type) {
@@ -41,23 +43,30 @@ export default function(cursor, action) {
       const pathToReadId = List.of(...action.fromPath, 'readId');
       return cursor
         .setIn(pathToKind, canonicalKind.set(0, '__loading'))
-        .setIn(pathToReadId, uuid());
+        .setIn(pathToReadId, uuid())
+        .set('LAST_KEY_PATH', action.fromPath)
+        .set('LAST_KIND', action.fromKind);
     }
     case 'READ_SUCCEEDED': {
       const kind = canonicalKind.size === 1 ? canonicalKind.set(0, '__container') : canonicalKind.rest();
       const pathToWhere = List.of(...action.fromPath, action.where);
       return cursor
         .setIn(pathToKind, kind)
-        .setIn(pathToWhere, fromJS(action.value));
+        .setIn(pathToWhere, fromJS(action.value))
+        .set('LAST_KEY_PATH', action.fromPath)
+        .set('LAST_KIND', action.fromKind);
     }
     case 'READ_FAILED': {
       const pathToMeta = List.of(...action.fromPath, 'meta');
       return cursor
         .setIn(pathToKind, canonicalKind.set(0, '__error'))
-        .setIn(pathToMeta, fromJS(action.meta));
+        .setIn(pathToMeta, fromJS(action.meta))
+        .set('LAST_KEY_PATH', action.fromPath)
+        .set('LAST_KIND', action.fromKind);
     }
     default: {
-      return cursor;
+      return cursor.set('LAST_KEY_PATH', action.fromPath)
+        .set('LAST_KIND', action.fromKind);
     }
   }
 }

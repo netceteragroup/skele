@@ -52,21 +52,21 @@ export default function(cursor, action) {
       if (resultFromLookup) {
         const { element, update } = resultFromLookup;
         if (element && update) {
-          return cursor.setIn(element._keyPath, update(element.deref(), action));
+          return cursor.setIn(element._keyPath, update(element.deref(), action)).set('LAST_KEY_PATH', action.fromPath).set('LAST_KIND', action.fromKind);
         }
       }
-      return cursor;
+      return cursor.set('LAST_KEY_PATH', action.fromPath).set('LAST_KIND', action.fromKind);
     }
 
     // handle local updates
     const update = forAction(action);
     if (update) {
       const element = cursor.getIn(fromPath);
-      return cursor.setIn(fromPath, update(element.deref(), action));
+      return cursor.setIn(fromPath, update(element.deref(), action)).set('LAST_KEY_PATH', action.fromPath).set('LAST_KIND', action.fromKind);
     }
 
   }
-  return cursor;
+  return cursor.set('LAST_KEY_PATH', action.fromPath).set('LAST_KIND', action.fromKind);
 }
 
 /**
