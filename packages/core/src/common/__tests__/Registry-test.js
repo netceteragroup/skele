@@ -1,19 +1,18 @@
 'use strict';
 
-import { expect } from '../support/utils';
 import { List, fromJS } from 'immutable';
 
-import Registry from '../../src/common/Registry';
+import Registry from '../Registry';
 
 describe('Registry', () => {
 
   it('can be created and used in key-value (map) fashion', () => {
     const registry = new Registry();
 
-    expect(registry.get('detective')).to.equal(undefined);
+    expect(registry.get('detective')).toEqual(undefined);
 
     registry.register('detective', 'Sherlock Holmes');
-    expect(registry.get('detective')).to.equal('Sherlock Holmes');
+    expect(registry.get('detective')).toEqual('Sherlock Holmes');
   });
 
   describe('is internally', () => {
@@ -24,35 +23,35 @@ describe('Registry', () => {
       // test fails because of toString method not present on 'undefined', invoked by chai-immutable in assert method
       // expect(registry._adaptKey()).to.not.equal(undefined);
 
-      expect(registry._adaptKey()).to.equal(List.of(undefined));
-      expect(registry._adaptKey('teaser')).to.equal(List.of('teaser'));
-      expect(registry._adaptKey(['teaser'])).to.equal(List.of('teaser'));
-      expect(registry._adaptKey(['teaser', 'top'])).to.equal(List.of('teaser', 'top'));
-      expect(registry._adaptKey(List.of('teaser', 'top'))).to.equal(List.of('teaser', 'top'));
+      expect(registry._adaptKey()).toEqual(List.of(undefined));
+      expect(registry._adaptKey('teaser')).toEqual(List.of('teaser'));
+      expect(registry._adaptKey(['teaser'])).toEqual(List.of('teaser'));
+      expect(registry._adaptKey(['teaser', 'top'])).toEqual(List.of('teaser', 'top'));
+      expect(registry._adaptKey(List.of('teaser', 'top'))).toEqual(List.of('teaser', 'top'));
     });
 
     it('searching by specificity', () => {
       const registry = new Registry();
 
-      expect(registry._getBySpecificity(List.of('teaser'), true)).to.equal(undefined);
+      expect(registry._getBySpecificity(List.of('teaser'), true)).toEqual(undefined);
 
       registry.register('teaser', 'teaserValue');
 
-      expect(registry._getBySpecificity(List.of('teaser'), true)).to.equal('teaserValue');
-      expect(registry._getBySpecificity(List.of('teaser', 'top'), true)).to.equal('teaserValue');
-      expect(registry._getBySpecificity(List.of('banner'), true)).to.equal(undefined);
+      expect(registry._getBySpecificity(List.of('teaser'), true)).toEqual('teaserValue');
+      expect(registry._getBySpecificity(List.of('teaser', 'top'), true)).toEqual('teaserValue');
+      expect(registry._getBySpecificity(List.of('banner'), true)).toEqual(undefined);
     });
 
     it('searching with recognizer', () => {
       const registry = new Registry();
 
-      expect(registry._getWithRecognizer(List.of('special-image'))).to.equal(undefined);
+      expect(registry._getWithRecognizer(List.of('special-image'))).toEqual(undefined);
 
       const recognizer = (key) => key.first().indexOf('image') !== -1;
 
       registry.register(recognizer, 'imageValue');
 
-      expect(registry._getWithRecognizer(List.of('special-image'))).to.equal('imageValue');
+      expect(registry._getWithRecognizer(List.of('special-image'))).toEqual('imageValue');
     });
 
   });
@@ -69,7 +68,7 @@ describe('Registry', () => {
        * and by recognizer function. Since we are searching with useSpecificity on,
        * we should get the value with Spec
        */
-      expect(registry.get(['teaser', 'top'], true)).to.equal('teaserBySpecValue');
+      expect(registry.get(['teaser', 'top'], true)).toEqual('teaserBySpecValue');
     });
 
     it('by recognizer if specificity not found', () => {
@@ -82,7 +81,7 @@ describe('Registry', () => {
        * Here we use (useSpecificity off), so we should get the value
        * returned by going with recognizer
        */
-      expect(registry.get(['teaser', 'top'], false)).to.equal('teaserByRecoValue');
+      expect(registry.get(['teaser', 'top'], false)).toEqual('teaserByRecoValue');
     });
   });
 
@@ -94,7 +93,7 @@ describe('Registry', () => {
 
     registry.reset();
 
-    expect(registry.get(['teaser', 'top'])).not.to.exist;
+    expect(registry.get(['teaser', 'top'])).not.toExist;
   });
 
   it("can be created with key extractor and elements driven (get) by data", () => {
@@ -107,7 +106,6 @@ describe('Registry', () => {
     registry.register('teaser', 'teaserView');
     const result = registry.get(elementModel);
 
-    expect(result).to.equal('teaserView');
+    expect(result).toEqual('teaserView');
   });
 });
-
