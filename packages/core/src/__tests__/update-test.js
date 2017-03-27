@@ -1,12 +1,13 @@
 'use strict';
 
+import { mount } from 'enzyme';
+
 import React from 'react';
-import { expect, mount } from './support/utils';
 import { fromJS } from 'immutable';
 import Cursor from 'immutable/contrib/cursor';
-import { ui, update, Engine } from '../src';
+import { ui, update, Engine } from '..';
 
-describe('Updates', function() {
+describe('updates API', function() {
 
   it('registers an update', function() {
     const action1 = {
@@ -27,9 +28,9 @@ describe('Updates', function() {
     update.register(action2.fromKind, elementRegistry => {
       elementRegistry.register(action2.type, () => {});
     });
-    expect(update.forAction(action1)).to.exist;
-    expect(update.forAction(action2)).to.exist;
-    expect(update.forAction({ fromKind: 'unknown' })).not.to.exist;
+    expect(update.forAction(action1)).toEqual(expect.anything());
+    expect(update.forAction(action2)).toEqual(expect.anything());
+    expect(update.forAction({ fromKind: 'unknown' })).not.toEqual(expect.anything());
 
     update.register(action1.fromKind, elementRegistry => {
       elementRegistry.register(action1.type, null);
@@ -37,8 +38,8 @@ describe('Updates', function() {
     update.register(action2.fromKind, elementRegistry => {
       elementRegistry.register(action2.type, null);
     });
-    expect(update.forAction(action1)).not.to.exist;
-    expect(update.forAction(action2)).not.to.exist;
+    expect(update.forAction(action1)).not.toEqual(expect.anything());
+    expect(update.forAction(action2)).not.toEqual(expect.anything());
   });
 
   it('returns a cursor upon invocation of the reducer function', function() {
@@ -79,10 +80,10 @@ describe('Updates', function() {
       elementRegistry.register(readUpdate.type, () => {});
     });
 
-    expect(update.reducer(cursor, {})).to.equal(cursor);
-    expect(update.reducer(cursor, localUpdate)).to.exist;
-    expect(update.reducer(cursor, globalUpdate)).to.exist;
-    expect(update.reducer(cursor, readUpdate)).to.exist;
+    expect(update.reducer(cursor, {})).toEqual(cursor);
+    expect(update.reducer(cursor, localUpdate)).toEqual(expect.anything());
+    expect(update.reducer(cursor, globalUpdate)).toEqual(expect.anything());
+    expect(update.reducer(cursor, readUpdate)).toEqual(expect.anything());
   });
 
 });
@@ -173,12 +174,12 @@ describe('Local Update', () => {
   it('should be applied only for the elements when triggered', () => {
     const engine = mount(<Engine initState={fromJS(appState)} />);
     const html = engine.html();
-    expect(html).not.to.contain('Scene-Non-Existant');
-    expect(html).not.to.contain('Scene-Home');
-    expect(html).not.to.contain('Navigation-Modified-Stack');
-    expect(html).to.contain('Scene-Modified-Home');
-    expect(html).to.contain('Scene-About');
-    expect(html).to.contain('Navigation-Stack');
+    expect(html).not.toContain('Scene-Non-Existant');
+    expect(html).not.toContain('Scene-Home');
+    expect(html).not.toContain('Navigation-Modified-Stack');
+    expect(html).toContain('Scene-Modified-Home');
+    expect(html).toContain('Scene-About');
+    expect(html).toContain('Navigation-Stack');
   });
 });
 
@@ -202,11 +203,11 @@ describe('Global Update', () => {
   it('should be applied only for the elements when triggered', () => {
     const engine = mount(<Engine initState={fromJS(appState)} />);
     const html = engine.html();
-    expect(html).not.to.contain('Scene-Non-Existant');
-    expect(html).not.to.contain('Scene-Modified-Home');
-    expect(html).not.to.contain('Navigation-Stack');
-    expect(html).to.contain('Scene-About');
-    expect(html).to.contain('Scene-Home');
-    expect(html).to.contain('Navigation-Modified-Stack');
+    expect(html).not.toContain('Scene-Non-Existant');
+    expect(html).not.toContain('Scene-Modified-Home');
+    expect(html).not.toContain('Navigation-Stack');
+    expect(html).toContain('Scene-About');
+    expect(html).toContain('Scene-Home');
+    expect(html).toContain('Navigation-Modified-Stack');
   });
 });
