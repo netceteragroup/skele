@@ -13,6 +13,18 @@
     "url": "https://github.com/netceteragroup/girders-elements/issues"
   },
   "homepage": "https://github.com/netceteragroup/girders-elements#readme",
+  "scripts": {
+    "postinstall": "lerna bootstrap",
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "coverage-report": "cat ./coverage/lcov.info | coveralls",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": ">= 7.4.0",
+    "npm": ">= 4.0.5",
+    "yarn": ">= 0.21.0"
+  },
   "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.24.0",

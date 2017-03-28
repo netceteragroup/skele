@@ -1,17 +1,15 @@
 language: node_js
-node_js: "7.4"
+
+cache: yarn
 
 branches:
   only:
    - master
    - develop
 
-install:
-  - npm install
-
 script:
-  - npm run coverage
-  - npm run lint
+  - yarn run coverage
+  - yarn run lint
 
 after_success:
-  - npm run coverage-report
+  - yarn run coverage-report
