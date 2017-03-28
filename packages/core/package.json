@@ -4,14 +4,6 @@
   "description": "Girders Elements is an architectural framework that assists with building data-driven apps with React or React Native.",
   "main": "src/index.js",
   "browser": "dist/es5/index.js",
-  "scripts": {
-    "test": "cross-env BABEL_ENV=test mocha --recursive --compilers js:babel-core/register --require test/support/utils",
-    "test-watch": "npm run test -- -w",
-    "coverage": "nyc npm test",
-    "coverage-report": "nyc report --reporter=text-lcov | coveralls",
-    "lint": "eslint .",
-    "lint-stats": "eslint . --format node_modules/eslint-stats/byErrorAndWarning.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/netceteragroup/girders-elements.git"
