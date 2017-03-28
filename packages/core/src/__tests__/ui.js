@@ -1,19 +1,20 @@
 'use strict';
 
+
+import { render } from 'enzyme';
+
 import React from 'react';
-import { expect, render } from './support/utils';
-
-import * as ui from '../src/ui';
-
 import { List, fromJS } from 'immutable';
 import Cursor from 'immutable/contrib/cursor';
 
-import { Engine } from '../src';
+import { ui, Engine } from '..';
+
+import { isSubclassOf } from '../common/classes';
 
 /*
  * Tests for the ui API.
  */
-describe("UI", () => {
+describe("ui", () => {
 
   /*
    * Tests for ui.register.
@@ -25,29 +26,29 @@ describe("UI", () => {
 
     describe("#register", () => {
       it("doesn't accept undefined/null components", () => {
-        expect(() => ui.register('component')).to.throw();
-        expect(() => ui.register('component', null)).to.throw();
+        expect(() => ui.register('component')).toThrow();
+        expect(() => ui.register('component', null)).toThrow();
       });
 
       it("doesn't accept invalid component definitions", () => {
-        expect(() => ui.register('component', 'foo')).to.throw();
-        expect(() => ui.register('component', 1)).to.throw();
-        expect(() => ui.register('component', {})).to.throw();
-        expect(() => ui.register()).to.throw();
+        expect(() => ui.register('component', 'foo')).toThrow();
+        expect(() => ui.register('component', 1)).toThrow();
+        expect(() => ui.register('component', {})).toThrow();
+        expect(() => ui.register()).toThrow();
       });
 
       it("expects valid element references", () => {
         class Comp extends React.Component {
         }
 
-        expect(() => ui.register(1, Comp)).to.throw();
-        expect(() => ui.register(null, Comp)).to.throw();
-        expect(() => ui.register(false, Comp)).to.throw();
-        expect(() => ui.register({component: "comp"}, Comp)).to.throw();
+        expect(() => ui.register(1, Comp)).toThrow();
+        expect(() => ui.register(null, Comp)).toThrow();
+        expect(() => ui.register(false, Comp)).toThrow();
+        expect(() => ui.register({component: "comp"}, Comp)).toThrow();
 
-        expect(() => ui.register('component', Comp)).not.to.throw();
-        expect(() => ui.register(['component', 'subkind'], Comp)).not.to.throw();
-        expect(() => ui.register(List.of('component', 'subkind'), Comp)).not.to.throw();
+        expect(() => ui.register('component', Comp)).not.toThrow();
+        expect(() => ui.register(['component', 'subkind'], Comp)).not.toThrow();
+        expect(() => ui.register(List.of('component', 'subkind'), Comp)).not.toThrow();
 
       });
 
@@ -55,7 +56,7 @@ describe("UI", () => {
         class Comp extends React.Component {
         }
 
-        expect(() => ui.register('component', Comp)).not.to.throw();
+        expect(() => ui.register('component', Comp)).not.toThrow();
       });
 
       it("accepts pure-function components", () => {
@@ -65,14 +66,15 @@ describe("UI", () => {
           );
         }
 
-        expect(() => ui.register('component', Template)).not.to.throw();
+        expect(() => ui.register('component', Template)).not.toThrow();
       });
 
       it("returns the registered element UI (not necessarily the same component)", () => {
         class Comp extends React.Component {
         }
 
-        expect(ui.register('component', Comp)).to.exist;
+        const Klass = ui.register('component', Comp);
+        expect(isSubclassOf(Klass, React.Component)).toBeTruthy();
       });
     });
 
@@ -112,17 +114,17 @@ describe("UI", () => {
 
     describe("#forElement", () => {
 
-      it("returns element only when data model is represented with cursors", () => {
-        expect(ui.forElement(fromJS({kind: 'comp1'}))).not.to.exist;
-        expect(ui.forElement(Cursor.from(fromJS({kind: 'comp1'})))).to.exist;
+      it("Requires a cursor around the element", () => {
+        expect(ui.forElement(fromJS({kind: 'comp1'}))).toThrow();
+        expect(ui.forElement(Cursor.from(fromJS({kind: 'comp1'})))).toEqual(expect.anything());
       });
 
 
       it("returns the corresponding element when looked for", () => {
         const html = render(
           <Engine initState={fromJS({kind: 'comp1'})} />).html();
-        expect(html).to.contain('<div>Watson</div>');
-        expect(html).not.to.contain('<div>Hudson</div>');
+        expect(html).toContain('<div>Watson</div>');
+        expect(html).not.toContain('<div>Hudson</div>');
       });
 
       it("looks up for an element by resolving the kind canonically", () => {
@@ -133,9 +135,9 @@ describe("UI", () => {
         const htmlWithSpecificUnregistered = render(<Engine initState={fromJS({kind: ['comp1', 'specific']})} />).html();
 
         // then
-        expect(htmlWithSpecificRegistered).to.contain('<div>Mycroft</div>');
-        expect(htmlWithSpecificRegistered).to.not.contain('<div>Hudson</div>');
-        expect(htmlWithSpecificUnregistered).to.contain('<div>Watson</div>');
+        expect(htmlWithSpecificRegistered).toContain('<div>Mycroft</div>');
+        expect(htmlWithSpecificRegistered).not.toContain('<div>Hudson</div>');
+        expect(htmlWithSpecificUnregistered).toContain('<div>Watson</div>');
       });
     });
 
@@ -157,9 +159,9 @@ describe("UI", () => {
             }
           ]
         })} />).html();
-        expect(html).to.contain('Watson');
-        expect(html).to.contain('Hudson');
-        expect(html.match(/<div>/g).length).to.equal(3);
+        expect(html).toContain('Watson');
+        expect(html).toContain('Hudson');
+        expect(html.match(/<div>/g).length).toEqual(3);
       });
     });
   });
