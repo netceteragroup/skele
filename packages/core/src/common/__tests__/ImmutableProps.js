@@ -38,7 +38,6 @@ describe('ImmutableProps', function() {
       }
     }
 
-    const shouldUpdate = (new Comp()).shouldComponentUpdate;
 
     const el = I.fromJS({
       kind: ['test', 'bla'],
