@@ -4,5 +4,14 @@
     "packages/*"
   ],
   "npmClient": "yarn",
-  "version": "1.0.0-alpha.0"
+  "version": "1.0.0-alpha.0",
+  "changelog": {
+    "repo": "netceteragroup/girders-elements",
+    "labels": {
+      "bug": "Bug fix",
+      "chore": "Housekeeping",
+      "feature": "Feature"
+    },
+    "cacheDir":   ".changelog"
+  }
 }

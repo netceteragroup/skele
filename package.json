@@ -25,7 +25,8 @@
     "es5:core": "babel -q packages/core/src --out-dir packages/core/dist/es5",
     "clean": "yarn run clean:core",
     "clean:core": "del-cli packages/core/dist",
-    "build": "yarn run clean && yarn run test && yarn run lint && yarn run es5"
+    "build": "yarn run clean && yarn run test && yarn run lint && yarn run es5",
+    "changelog": "lerna-changelog"
   },
   "engines": {
     "node": ">= 7.4.0",
@@ -50,6 +51,7 @@
     "eslint-stats": "^0.1.4",
     "jest": "^19.0.2",
     "lerna": "2.0.0-beta.38",
+    "lerna-changelog": "^0.4.0",
     "react": "^15.3.2",
     "react-addons-test-utils": "^15.2.1",
     "react-dom": "^15.2.1",
