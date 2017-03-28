@@ -12,11 +12,11 @@ It uses **[redux](http://github.com/reactjs/redux)** for managing the state of t
 ### Installation
 
 ```
-npm install --save girders-elements
+npm install --save @girders-elements/core
 ```
 or
 ```
-yarn add girders-elements
+yarn add @girders-elements/core
 ```
 
 ### Importing
@@ -62,9 +62,9 @@ The UI of an element can be any React Component that takes two props: `element` 
 - The `dispatch` is the standard redux dispatcher for dispatching actions
 
 We register the UI for an element by using:
-    
+
     ui.register(<element-kind>, <element>)
-    
+
 For example:
 
 ```javascript
@@ -150,7 +150,7 @@ Here is an example:
 ```javascript
 update.register(['article'], elementRegistry => {
   elementRegistry.register('TOGGLE_BOOKMARK', (element, action) => element.set('bookmarked', element.get('bookmarked')));
-  elementRegistry.register('.LOAD', (element, action) => element.set('data', action.payload.data)); 
+  elementRegistry.register('.LOAD', (element, action) => element.set('data', action.payload.data));
 })
 ```
 
