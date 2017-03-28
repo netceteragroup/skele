@@ -2,7 +2,8 @@
   "name": "@girders-elements/core",
   "version": "1.0.0-alpha.0",
   "description": "Girders Elements is an architectural framework that assists with building data-driven apps with React or React Native.",
-  "main": "index.js",
+  "main": "src/index.js",
+  "browser": "dist/es5/index.js",
   "scripts": {
     "test": "cross-env BABEL_ENV=test mocha --recursive --compilers js:babel-core/register --require test/support/utils",
     "test-watch": "npm run test -- -w",

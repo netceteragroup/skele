@@ -14,6 +14,10 @@ module.exports = {
     "plugin:react/recommended"
   ],
 
+  rules: {
+    "react/display-name": "warn"
+  },
+
   plugins: [
     'promise',
     'react',
