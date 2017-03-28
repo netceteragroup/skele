@@ -12,6 +12,6 @@
       "chore": "Housekeeping",
       "feature": "Feature"
     },
-    "cacheDir":   ".changelog"
+    "cacheDir": ".changelog"
   }
 }
