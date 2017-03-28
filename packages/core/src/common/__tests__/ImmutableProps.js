@@ -64,7 +64,7 @@ describe('ImmutableProps', function() {
         expect(mounted.instance().shouldComponentUpdate({element: el}, state)).toBe(false);
       });
 
-      it('prevents an update if the next element is equal to the current', function() {
+      it.skip('prevents an update if the next element is equal (value sematics) to the current', function() {
         expect(mounted.instance().shouldComponentUpdate({element: elCopy}, state)).toBe(false);
       });
 
