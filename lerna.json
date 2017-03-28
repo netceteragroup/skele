@@ -10,7 +10,8 @@
     "labels": {
       "bug": "Bug fix",
       "chore": "Housekeeping",
-      "feature": "Feature"
+      "feature": "Feature",
+      "enhancement": "Enhancement"
     },
     "cacheDir": ".changelog"
   }
