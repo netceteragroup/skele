@@ -60,11 +60,13 @@ export default function(cursor, action) {
 
     // handle local updates
     const update = forAction(action);
-    if (update) {
-      const element = cursor.getIn(fromPath);
+    const element = cursor.getIn(fromPath);
+    if (element && update) {
       return cursor.setIn(fromPath, update(element.deref(), action));
+    } else {
+      console.warn("Unable to perform local update, element has changed in meantime...");
+      return cursor;
     }
-
   }
   return cursor;
 }
