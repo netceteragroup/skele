@@ -26,7 +26,7 @@
     "clean": "yarn run clean:core",
     "clean:core": "del-cli packages/core/dist",
     "build": "yarn run clean && yarn run test && yarn run lint && yarn run es5",
-    "changelog": "lerna-changelog"
+    "changelog": "standard-changelog"
   },
   "engines": {
     "node": ">= 7.4.0",
@@ -55,7 +55,8 @@
     "react": "^15.3.2",
     "react-addons-test-utils": "^15.2.1",
     "react-dom": "^15.2.1",
-    "redux": "^3.5.2"
+    "redux": "^3.5.2",
+    "standard-changelog": "^1.0.1"
   },
   "peerDependencies": {
     "react": "^15.0.0",
