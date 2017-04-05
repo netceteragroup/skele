@@ -54,6 +54,7 @@
     "eslint-plugin-react-native": "^2.3.1",
     "eslint-stats": "^0.1.4",
     "jest": "^19.0.2",
+    "jest-enzyme": "^3.0.0",
     "lerna": "2.0.0-beta.38",
     "react": "^15.3.2",
     "react-addons-test-utils": "^15.2.1",
@@ -65,6 +66,7 @@
     "redux": "^3.0.0"
   },
   "jest": {
+    "setupTestFrameworkScriptFile": "./node_modules/jest-enzyme/lib/index.js",   
     "modulePathIgnorePatterns": [
       "/build/es5/"
     ],

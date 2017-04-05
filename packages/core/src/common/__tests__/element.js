@@ -1,9 +1,38 @@
 'use strict';
 
 import { List, Seq, fromJS } from 'immutable';
-import { isOfKind, isExactlyOfKind, kindOf, ancestorKinds, canonical } from '../element';
+import { isOfKind, isExactlyOfKind, kindOf, ancestorKinds, canonical, isElement } from '../element';
 
 describe('element', function() {
+
+  it('tests if an object is an element', () => {
+    const emptyKind = fromJS({
+      'kind': []
+    });
+    const stringKind = fromJS({
+      'kind': 'component'
+    });
+    const singleKind = fromJS({
+      'kind': ['component']
+    });
+    const doubleKind = fromJS({
+      'kind': ['component', 'test']
+    });
+
+    const noKind = fromJS({
+      title: 'bla'
+    });
+    const aList = List.of(stringKind, singleKind, doubleKind, emptyKind);
+
+
+    expect(isElement(emptyKind)).toBeTruthy();
+    expect(isElement(stringKind)).toBeTruthy();
+    expect(isElement(singleKind)).toBeTruthy();
+    expect(isElement(doubleKind)).toBeTruthy();
+
+    expect(isElement(noKind)).toEqual(false);
+    expect(isElement(aList)).toEqual(false);
+  });
 
   it('properly checks for element kinds', function() {
     const emptyKind = fromJS({

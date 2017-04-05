@@ -3,7 +3,7 @@
 
 import { all } from 'ramda';
 import invariant from 'invariant';
-import { List, Seq, is, KeyedIterable, IndexedIterable } from 'immutable';
+import { List, Seq, is, Iterable, KeyedIterable, IndexedIterable  } from 'immutable';
 
 import type { ElementRef, ElementRefCanonical } from './types';
 
@@ -43,6 +43,10 @@ export function isElementRef(obj: any): boolean {
   if (obj instanceof List && (obj.every(isString) || obj.isEmpty())) return true;
 
   return false;
+}
+
+export function isElement(obj: any): boolean {
+  return Iterable.isIterable(obj) && kindOf(obj) != null;
 }
 
 /**
@@ -143,4 +147,3 @@ function normalize(kind): ?List<string> {
 
   return null;
 }
-
