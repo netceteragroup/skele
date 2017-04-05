@@ -4,7 +4,7 @@
 
 JSONStream@^1.0.4:
   version "1.3.1"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/JSONStream/-/JSONStream-1.3.1.tgz#707f761e01dae9e16f1bcf93703b78c70966579a"
+  resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.1.tgz#707f761e01dae9e16f1bcf93703b78c70966579a"
   dependencies:
     jsonparse "^1.2.0"
     through ">=2.2.7 <3"
@@ -142,7 +142,7 @@ array-find-index@^1.0.1:
 
 array-ify@^1.0.0:
   version "1.0.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/array-ify/-/array-ify-1.0.0.tgz#9e528762b4a9066ad163a6962a364418e9626ece"
+  resolved "https://registry.yarnpkg.com/array-ify/-/array-ify-1.0.0.tgz#9e528762b4a9066ad163a6962a364418e9626ece"
 
 array-union@^1.0.1:
   version "1.0.2"
@@ -990,7 +990,7 @@ commander@^2.8.1, commander@^2.9.0:
 
 compare-func@^1.3.1:
   version "1.3.2"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/compare-func/-/compare-func-1.3.2.tgz#99dd0ba457e1f9bc722b12c08ec33eeab31fa648"
+  resolved "https://registry.yarnpkg.com/compare-func/-/compare-func-1.3.2.tgz#99dd0ba457e1f9bc722b12c08ec33eeab31fa648"
   dependencies:
     array-ify "^1.0.0"
     dot-prop "^3.0.0"
@@ -1031,7 +1031,7 @@ content-type-parser@^1.0.1:
 
 conventional-changelog-angular@^1.3.4:
   version "1.3.4"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-changelog-angular/-/conventional-changelog-angular-1.3.4.tgz#7d7cdfbd358948312904d02229a61fd6075cf455"
+  resolved "https://registry.yarnpkg.com/conventional-changelog-angular/-/conventional-changelog-angular-1.3.4.tgz#7d7cdfbd358948312904d02229a61fd6075cf455"
   dependencies:
     compare-func "^1.3.1"
     github-url-from-git "^1.4.0"
@@ -1039,19 +1039,19 @@ conventional-changelog-angular@^1.3.4:
 
 conventional-changelog-atom@^0.1.0:
   version "0.1.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-changelog-atom/-/conventional-changelog-atom-0.1.0.tgz#67a47c66a42b2f8909ef1587c9989ae1de730b92"
+  resolved "https://registry.yarnpkg.com/conventional-changelog-atom/-/conventional-changelog-atom-0.1.0.tgz#67a47c66a42b2f8909ef1587c9989ae1de730b92"
   dependencies:
     q "^1.4.1"
 
 conventional-changelog-codemirror@^0.1.0:
   version "0.1.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-changelog-codemirror/-/conventional-changelog-codemirror-0.1.0.tgz#7577a591dbf9b538e7a150a7ee62f65a2872b334"
+  resolved "https://registry.yarnpkg.com/conventional-changelog-codemirror/-/conventional-changelog-codemirror-0.1.0.tgz#7577a591dbf9b538e7a150a7ee62f65a2872b334"
   dependencies:
     q "^1.4.1"
 
 conventional-changelog-core@^1.9.0:
   version "1.9.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-changelog-core/-/conventional-changelog-core-1.9.0.tgz#de5dfbc091847656508d4a389e35c9a1bc49e7f4"
+  resolved "https://registry.yarnpkg.com/conventional-changelog-core/-/conventional-changelog-core-1.9.0.tgz#de5dfbc091847656508d4a389e35c9a1bc49e7f4"
   dependencies:
     conventional-changelog-writer "^1.1.0"
     conventional-commits-parser "^1.0.0"
@@ -1069,44 +1069,44 @@ conventional-changelog-core@^1.9.0:
 
 conventional-changelog-ember@^0.2.6:
   version "0.2.6"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-changelog-ember/-/conventional-changelog-ember-0.2.6.tgz#8b7355419f5127493c4c562473ab2fc792f1c2b6"
+  resolved "https://registry.yarnpkg.com/conventional-changelog-ember/-/conventional-changelog-ember-0.2.6.tgz#8b7355419f5127493c4c562473ab2fc792f1c2b6"
   dependencies:
     q "^1.4.1"
 
 conventional-changelog-eslint@^0.1.0:
   version "0.1.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-changelog-eslint/-/conventional-changelog-eslint-0.1.0.tgz#a52411e999e0501ce500b856b0a643d0330907e2"
+  resolved "https://registry.yarnpkg.com/conventional-changelog-eslint/-/conventional-changelog-eslint-0.1.0.tgz#a52411e999e0501ce500b856b0a643d0330907e2"
   dependencies:
     q "^1.4.1"
 
 conventional-changelog-express@^0.1.0:
   version "0.1.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-changelog-express/-/conventional-changelog-express-0.1.0.tgz#55c6c841c811962036c037bdbd964a54ae310fce"
+  resolved "https://registry.yarnpkg.com/conventional-changelog-express/-/conventional-changelog-express-0.1.0.tgz#55c6c841c811962036c037bdbd964a54ae310fce"
   dependencies:
     q "^1.4.1"
 
 conventional-changelog-jquery@^0.1.0:
   version "0.1.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-changelog-jquery/-/conventional-changelog-jquery-0.1.0.tgz#0208397162e3846986e71273b6c79c5b5f80f510"
+  resolved "https://registry.yarnpkg.com/conventional-changelog-jquery/-/conventional-changelog-jquery-0.1.0.tgz#0208397162e3846986e71273b6c79c5b5f80f510"
   dependencies:
     q "^1.4.1"
 
 conventional-changelog-jscs@^0.1.0:
   version "0.1.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-changelog-jscs/-/conventional-changelog-jscs-0.1.0.tgz#0479eb443cc7d72c58bf0bcf0ef1d444a92f0e5c"
+  resolved "https://registry.yarnpkg.com/conventional-changelog-jscs/-/conventional-changelog-jscs-0.1.0.tgz#0479eb443cc7d72c58bf0bcf0ef1d444a92f0e5c"
   dependencies:
     q "^1.4.1"
 
 conventional-changelog-jshint@^0.1.0:
   version "0.1.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-changelog-jshint/-/conventional-changelog-jshint-0.1.0.tgz#00cab8e9a3317487abd94c4d84671342918d2a07"
+  resolved "https://registry.yarnpkg.com/conventional-changelog-jshint/-/conventional-changelog-jshint-0.1.0.tgz#00cab8e9a3317487abd94c4d84671342918d2a07"
   dependencies:
     compare-func "^1.3.1"
     q "^1.4.1"
 
 conventional-changelog-writer@^1.1.0:
   version "1.4.1"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-changelog-writer/-/conventional-changelog-writer-1.4.1.tgz#3f4cb4d003ebb56989d30d345893b52a43639c8e"
+  resolved "https://registry.yarnpkg.com/conventional-changelog-writer/-/conventional-changelog-writer-1.4.1.tgz#3f4cb4d003ebb56989d30d345893b52a43639c8e"
   dependencies:
     compare-func "^1.3.1"
     conventional-commits-filter "^1.0.0"
@@ -1121,7 +1121,7 @@ conventional-changelog-writer@^1.1.0:
 
 conventional-changelog@^1.1.0:
   version "1.1.4"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-changelog/-/conventional-changelog-1.1.4.tgz#108bc750c2a317e200e2f9b413caaa1f8c7efa3b"
+  resolved "https://registry.yarnpkg.com/conventional-changelog/-/conventional-changelog-1.1.4.tgz#108bc750c2a317e200e2f9b413caaa1f8c7efa3b"
   dependencies:
     conventional-changelog-angular "^1.3.4"
     conventional-changelog-atom "^0.1.0"
@@ -1136,14 +1136,14 @@ conventional-changelog@^1.1.0:
 
 conventional-commits-filter@^1.0.0:
   version "1.0.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-commits-filter/-/conventional-commits-filter-1.0.0.tgz#6fc2a659372bc3f2339cf9ffff7e1b0344b93039"
+  resolved "https://registry.yarnpkg.com/conventional-commits-filter/-/conventional-commits-filter-1.0.0.tgz#6fc2a659372bc3f2339cf9ffff7e1b0344b93039"
   dependencies:
     is-subset "^0.1.1"
     modify-values "^1.0.0"
 
 conventional-commits-parser@^1.0.0:
   version "1.3.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-commits-parser/-/conventional-commits-parser-1.3.0.tgz#e327b53194e1a7ad5dc63479ee9099a52b024865"
+  resolved "https://registry.yarnpkg.com/conventional-commits-parser/-/conventional-commits-parser-1.3.0.tgz#e327b53194e1a7ad5dc63479ee9099a52b024865"
   dependencies:
     JSONStream "^1.0.4"
     is-text-path "^1.0.0"
@@ -1155,7 +1155,7 @@ conventional-commits-parser@^1.0.0:
 
 conventional-github-releaser@^1.1.3:
   version "1.1.3"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/conventional-github-releaser/-/conventional-github-releaser-1.1.3.tgz#e12720aafc6fd680613d096d341e332d64d44e1b"
+  resolved "https://registry.yarnpkg.com/conventional-github-releaser/-/conventional-github-releaser-1.1.3.tgz#e12720aafc6fd680613d096d341e332d64d44e1b"
   dependencies:
     conventional-changelog "^1.1.0"
     dateformat "^1.0.11"
@@ -1250,7 +1250,7 @@ d@1:
 
 dargs@^4.0.1:
   version "4.1.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/dargs/-/dargs-4.1.0.tgz#03a9dbb4b5c2f139bf14ae53f0b8a2a6a86f4e17"
+  resolved "https://registry.yarnpkg.com/dargs/-/dargs-4.1.0.tgz#03a9dbb4b5c2f139bf14ae53f0b8a2a6a86f4e17"
   dependencies:
     number-is-nan "^1.0.0"
 
@@ -1262,7 +1262,7 @@ dashdash@^1.12.0:
 
 dateformat@^1.0.11, dateformat@^1.0.12:
   version "1.0.12"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/dateformat/-/dateformat-1.0.12.tgz#9f124b67594c937ff706932e4a642cca8dbbfee9"
+  resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-1.0.12.tgz#9f124b67594c937ff706932e4a642cca8dbbfee9"
   dependencies:
     get-stdin "^4.0.1"
     meow "^3.3.0"
@@ -1891,7 +1891,7 @@ get-caller-file@^1.0.1:
 
 get-pkg-repo@^1.0.0:
   version "1.3.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/get-pkg-repo/-/get-pkg-repo-1.3.0.tgz#43c6b4c048b75dd604fc5388edecde557f6335df"
+  resolved "https://registry.yarnpkg.com/get-pkg-repo/-/get-pkg-repo-1.3.0.tgz#43c6b4c048b75dd604fc5388edecde557f6335df"
   dependencies:
     hosted-git-info "^2.1.4"
     meow "^3.3.0"
@@ -1911,7 +1911,7 @@ getpass@^0.1.1:
 
 git-raw-commits@^1.2.0:
   version "1.2.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/git-raw-commits/-/git-raw-commits-1.2.0.tgz#0f3a8bfd99ae0f2d8b9224d58892975e9a52d03c"
+  resolved "https://registry.yarnpkg.com/git-raw-commits/-/git-raw-commits-1.2.0.tgz#0f3a8bfd99ae0f2d8b9224d58892975e9a52d03c"
   dependencies:
     dargs "^4.0.1"
     lodash.template "^4.0.2"
@@ -1921,31 +1921,31 @@ git-raw-commits@^1.2.0:
 
 git-remote-origin-url@^2.0.0:
   version "2.0.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/git-remote-origin-url/-/git-remote-origin-url-2.0.0.tgz#5282659dae2107145a11126112ad3216ec5fa65f"
+  resolved "https://registry.yarnpkg.com/git-remote-origin-url/-/git-remote-origin-url-2.0.0.tgz#5282659dae2107145a11126112ad3216ec5fa65f"
   dependencies:
     gitconfiglocal "^1.0.0"
     pify "^2.3.0"
 
 git-semver-tags@^1.0.0, git-semver-tags@^1.2.0:
   version "1.2.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/git-semver-tags/-/git-semver-tags-1.2.0.tgz#b31fd02c8ab578bd6c9b5cacca5e1c64c1177ac1"
+  resolved "https://registry.yarnpkg.com/git-semver-tags/-/git-semver-tags-1.2.0.tgz#b31fd02c8ab578bd6c9b5cacca5e1c64c1177ac1"
   dependencies:
     meow "^3.3.0"
     semver "^5.0.1"
 
 gitconfiglocal@^1.0.0:
   version "1.0.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/gitconfiglocal/-/gitconfiglocal-1.0.0.tgz#41d045f3851a5ea88f03f24ca1c6178114464b9b"
+  resolved "https://registry.yarnpkg.com/gitconfiglocal/-/gitconfiglocal-1.0.0.tgz#41d045f3851a5ea88f03f24ca1c6178114464b9b"
   dependencies:
     ini "^1.3.2"
 
 github-url-from-git@^1.4.0:
   version "1.5.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/github-url-from-git/-/github-url-from-git-1.5.0.tgz#f985fedcc0a9aa579dc88d7aff068d55cc6251a0"
+  resolved "https://registry.yarnpkg.com/github-url-from-git/-/github-url-from-git-1.5.0.tgz#f985fedcc0a9aa579dc88d7aff068d55cc6251a0"
 
 github@^0.2.4:
   version "0.2.4"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/github/-/github-0.2.4.tgz#24fa7f0e13fa11b946af91134c51982a91ce538b"
+  resolved "https://registry.yarnpkg.com/github/-/github-0.2.4.tgz#24fa7f0e13fa11b946af91134c51982a91ce538b"
   dependencies:
     mime "^1.2.11"
 
@@ -2378,7 +2378,7 @@ is-symbol@^1.0.1:
 
 is-text-path@^1.0.0:
   version "1.0.1"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/is-text-path/-/is-text-path-1.0.1.tgz#4e1aa0fb51bfbcb3e92688001397202c1775b66e"
+  resolved "https://registry.yarnpkg.com/is-text-path/-/is-text-path-1.0.1.tgz#4e1aa0fb51bfbcb3e92688001397202c1775b66e"
   dependencies:
     text-extensions "^1.0.0"
 
@@ -2761,7 +2761,7 @@ jsonify@~0.0.0:
 
 jsonparse@^1.2.0:
   version "1.3.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/jsonparse/-/jsonparse-1.3.0.tgz#85fc245b1d9259acc6941960b905adf64e7de0e8"
+  resolved "https://registry.yarnpkg.com/jsonparse/-/jsonparse-1.3.0.tgz#85fc245b1d9259acc6941960b905adf64e7de0e8"
 
 jsonpointer@^4.0.0:
   version "4.0.1"
@@ -2871,7 +2871,7 @@ lodash-es@^4.2.1:
 
 lodash._reinterpolate@~3.0.0:
   version "3.0.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
+  resolved "https://registry.yarnpkg.com/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
 
 lodash.assignin@^4.0.9:
   version "4.2.0"
@@ -2923,14 +2923,14 @@ lodash.some@^4.4.0:
 
 lodash.template@^4.0.2:
   version "4.4.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/lodash.template/-/lodash.template-4.4.0.tgz#e73a0385c8355591746e020b99679c690e68fba0"
+  resolved "https://registry.yarnpkg.com/lodash.template/-/lodash.template-4.4.0.tgz#e73a0385c8355591746e020b99679c690e68fba0"
   dependencies:
     lodash._reinterpolate "~3.0.0"
     lodash.templatesettings "^4.0.0"
 
 lodash.templatesettings@^4.0.0:
   version "4.1.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/lodash.templatesettings/-/lodash.templatesettings-4.1.0.tgz#2b4d4e95ba440d915ff08bc899e4553666713316"
+  resolved "https://registry.yarnpkg.com/lodash.templatesettings/-/lodash.templatesettings-4.1.0.tgz#2b4d4e95ba440d915ff08bc899e4553666713316"
   dependencies:
     lodash._reinterpolate "~3.0.0"
 
@@ -3033,7 +3033,7 @@ mime-types@^2.1.12, mime-types@~2.1.7:
 
 mime@^1.2.11:
   version "1.3.4"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/mime/-/mime-1.3.4.tgz#115f9e3b6b3daf2959983cb38f149a2d40eb5d53"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-1.3.4.tgz#115f9e3b6b3daf2959983cb38f149a2d40eb5d53"
 
 mimic-fn@^1.0.0:
   version "1.1.0"
@@ -3067,7 +3067,7 @@ minimist@1.2.0, minimist@^1.1.1, minimist@^1.1.3, minimist@^1.2.0:
 
 modify-values@^1.0.0:
   version "1.0.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/modify-values/-/modify-values-1.0.0.tgz#e2b6cdeb9ce19f99317a53722f3dbf5df5eaaab2"
+  resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.0.tgz#e2b6cdeb9ce19f99317a53722f3dbf5df5eaaab2"
 
 ms@0.7.2:
   version "0.7.2"
@@ -3309,7 +3309,7 @@ package-json@^2.0.0:
 
 parse-github-repo-url@^1.3.0:
   version "1.4.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/parse-github-repo-url/-/parse-github-repo-url-1.4.0.tgz#286c53e2c9962e0641649ee3ac9508fca4dd959c"
+  resolved "https://registry.yarnpkg.com/parse-github-repo-url/-/parse-github-repo-url-1.4.0.tgz#286c53e2c9962e0641649ee3ac9508fca4dd959c"
 
 parse-glob@^3.0.4:
   version "3.0.4"
@@ -3436,7 +3436,7 @@ punycode@^1.4.1:
 
 q@^1.4.1:
   version "1.5.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/q/-/q-1.5.0.tgz#dd01bac9d06d30e6f219aecb8253ee9ebdc308f1"
+  resolved "https://registry.yarnpkg.com/q/-/q-1.5.0.tgz#dd01bac9d06d30e6f219aecb8253ee9ebdc308f1"
 
 qs@~6.3.0:
   version "6.3.2"
@@ -3872,13 +3872,13 @@ spdx-license-ids@^1.0.2:
 
 split2@^2.0.0:
   version "2.1.1"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/split2/-/split2-2.1.1.tgz#7a1f551e176a90ecd3345f7246a0cfe175ef4fd0"
+  resolved "https://registry.yarnpkg.com/split2/-/split2-2.1.1.tgz#7a1f551e176a90ecd3345f7246a0cfe175ef4fd0"
   dependencies:
     through2 "^2.0.2"
 
 split@^1.0.0:
   version "1.0.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/split/-/split-1.0.0.tgz#c4395ce683abcd254bc28fe1dabb6e5c27dcffae"
+  resolved "https://registry.yarnpkg.com/split/-/split-1.0.0.tgz#c4395ce683abcd254bc28fe1dabb6e5c27dcffae"
   dependencies:
     through "2"
 
@@ -4028,7 +4028,7 @@ test-exclude@^4.0.3:
 
 text-extensions@^1.0.0:
   version "1.4.0"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/text-extensions/-/text-extensions-1.4.0.tgz#c385d2e80879fe6ef97893e1709d88d9453726e9"
+  resolved "https://registry.yarnpkg.com/text-extensions/-/text-extensions-1.4.0.tgz#c385d2e80879fe6ef97893e1709d88d9453726e9"
 
 text-table@~0.2.0:
   version "0.2.0"
@@ -4040,7 +4040,7 @@ throat@^3.0.0:
 
 through2@^2.0.0, through2@^2.0.2:
   version "2.0.3"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/through2/-/through2-2.0.3.tgz#0004569b37c7c74ba39c43f3ced78d1ad94140be"
+  resolved "https://registry.yarnpkg.com/through2/-/through2-2.0.3.tgz#0004569b37c7c74ba39c43f3ced78d1ad94140be"
   dependencies:
     readable-stream "^2.1.5"
     xtend "~4.0.1"
@@ -4083,7 +4083,7 @@ trim-newlines@^1.0.0:
 
 trim-off-newlines@^1.0.0:
   version "1.0.1"
-  resolved "https://repo.netcetera.com/nexus/content/groups/public_npm/trim-off-newlines/-/trim-off-newlines-1.0.1.tgz#9f9ba9d9efa8764c387698bcbfeb2c848f11adb3"
+  resolved "https://registry.yarnpkg.com/trim-off-newlines/-/trim-off-newlines-1.0.1.tgz#9f9ba9d9efa8764c387698bcbfeb2c848f11adb3"
 
 trim-right@^1.0.1:
   version "1.0.1"
