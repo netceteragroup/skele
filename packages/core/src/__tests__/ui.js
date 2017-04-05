@@ -115,7 +115,7 @@ describe("ui", () => {
     describe("#forElement", () => {
 
       it("Requires a cursor around the element", () => {
-        expect(ui.forElement(fromJS({kind: 'comp1'}))).toThrow();
+        expect(() => ui.forElement(fromJS({kind: 'comp1'}))).toThrow();
         expect(ui.forElement(Cursor.from(fromJS({kind: 'comp1'})))).toEqual(expect.anything());
       });
 
@@ -243,6 +243,4 @@ describe("ui", () => {
       });
     });
   });
-
-
 });

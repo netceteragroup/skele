@@ -6,8 +6,9 @@ import invariant from 'invariant';
 import { Iterable } from 'immutable';
 
 import Registry from '../common/Registry';
-import { isElementRef, canonical, isElement } from '../common/element';
+import { isElementRef, canonical, isElement, kindOf } from '../common/element';
 import { isSubclassOf } from '../common/classes';
+import deprecated from '../impl/deprecated';
 
 const uiRegistry = new Registry();
 
@@ -47,7 +48,7 @@ export function register(kind, Component) {
       return dispatch({ ...action, fromKind, fromPath });
     };
 
-    uiFor = (path) => {
+    uiFor = (path, reactKey=undefined) => {
       const { element } = this.props;
 
       let sub;
@@ -57,19 +58,7 @@ export function register(kind, Component) {
         sub = element.get(path);
       }
 
-      if (sub == null) {
-        return undefined;
-      }
-
-      if (Iterable.isIndexed(sub)) {
-        return forElements(sub);
-      } else if (isElement(sub)) {
-        return forElement(sub);
-      } else if (sub == null) {
-        return null;
-      }
-
-      throw new Error("The provided data structure is not an element");
+      return _for(sub, reactKey);
     };
 
     render() {
@@ -82,19 +71,47 @@ export function register(kind, Component) {
   return ElementView;
 }
 
-export function forElement(element, reactKey) {
-  if (element.get && element._keyPath) {
-    const fromKind = canonical(element.get('kind'));
-    const Component = uiRegistry.get(fromKind);
-    if (Component) {
-      return <Component element={element} key={reactKey} />;
-    }
+function _for(element, reactKey=undefined) {
+  if (Iterable.isIndexed(element)) {
+    return _forElements(element);
+  }
+
+  return _forElement(element, reactKey);
+}
+
+function _forElement(element, reactKey=undefined) {
+  if (element == null) {
+    return null;
+  }
+
+  invariant(
+    isElement(element),
+    "You provided something other than an element for ui lookup");
+
+  invariant(
+    element._keyPath != null,
+    "The current implementation requires a Cursor to be passed in. This may be removed in the future");
+
+  const kind = kindOf(element);
+  const Component = uiRegistry.get(kind);
+  if (Component) {
+    return <Component element={element} key={reactKey} />;
   }
 }
 
-export function forElements(elementSeq) {
-  return elementSeq.map(forElement).filter(ui => !!ui);
+export const forElement =
+  deprecated(
+    "ui.forElement is deprecated. Use the 'uiFor' prop provided to your element ui",
+    _forElement);
+
+function _forElements(elementSeq) {
+  return elementSeq.map(_forElement).filter(ui => !!ui);
 }
+
+export const forElements =
+  deprecated(
+    "ui.forElements is deprecated. Use the 'uiFor' prop provided to your element ui",
+    _forElements);
 
 export function reset() {
   uiRegistry.reset();
