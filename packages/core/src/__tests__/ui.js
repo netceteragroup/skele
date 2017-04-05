@@ -1,13 +1,13 @@
 'use strict';
 
-
-import { render } from 'enzyme';
+import { render, mount } from 'enzyme';
 
 import React from 'react';
-import { List, fromJS } from 'immutable';
+import { Iterable, List, fromJS } from 'immutable';
 import Cursor from 'immutable/contrib/cursor';
 
 import { ui, Engine } from '..';
+import { kindOf, isOfKind } from '../common/element';
 
 import { isSubclassOf } from '../common/classes';
 
@@ -162,6 +162,84 @@ describe("ui", () => {
         expect(html).toContain('Watson');
         expect(html).toContain('Hudson');
         expect(html.match(/<div>/g).length).toEqual(3);
+      });
+    });
+
+    describe('element#uiFor', () => {
+      beforeEach(() => {
+        ui.register('root', () => <div>Root mounted</div>);
+        ui.register('comp1', () => <div className='c1'>Comp1 mounted</div>);
+        ui.register('comp2', () => <div className='c2'>Comp2 mounted</div>);
+      });
+      afterEach(() => {
+        ui.reset();
+      });
+
+      function implFor(el) {
+        let impl = null;
+
+        ui.register(kindOf(el), ({uiFor}) => {
+          impl = uiFor;
+          return <div></div>;
+        });
+
+        mount(ui.forElement(el)); // triggers the renders
+        return impl;
+      }
+
+      describe('using a key path (string or array)', () => {
+        const state = Cursor.from(fromJS({
+          kind: 'root',
+          child1: {
+            'kind': 'comp1',
+            items: [
+              {
+                kind: 'comp2',
+                child: {
+                  kind: 'comp2'
+                }
+              },
+              {
+                kind: 'comp2',
+              },
+              {
+                kind: 'comp3'
+              }
+            ]
+          },
+          notAnElement: {
+            title: 'foo',
+          },
+        }));
+
+        let uiFor;
+        beforeEach(() => { uiFor = implFor(state) });
+
+        it('renders the ui for the element under the specified sub-key path', () => {
+          expect(mount(uiFor('child1'))).toContainReact(<div className='c1'>Comp1 mounted</div>);
+        });
+        it('renders the ui for the elements under the specified sub-key-path, if said key path is an array', () => {
+          expect(mount(uiFor(['child1', 'items', 0, 'child']))).toContainReact(<div className='c2'>Comp2 mounted</div>);
+        });
+        it('returns undefined if there is no ui registered for the elemnent under the key path', () => {
+          expect(uiFor('nonExistingChild') == null).toBe(true);
+          expect(uiFor(['child1', 'items', 100]) == null).toBe(true);
+        });
+        it('returns a list of UI if under there is a List of elements under the specified key path', () => {
+          const ui = uiFor(['child1', 'items']);
+          expect(Iterable.isIndexed(ui)).toEqual(true);
+          expect(mount(ui.get(0))).toContainReact(<div className='c2'>Comp2 mounted</div>);
+          expect(mount(ui.get(1))).toContainReact(<div className='c2'>Comp2 mounted</div>);
+        });
+        it('returns a list of UI elements only for those elements that have a registered UI', () => {
+          const ui = uiFor(['child1', 'items']);
+          for (let u of ui) {
+            expect(isOfKind(['comp3'], u.props.element)).toEqual(false);
+          }
+        });
+        it('throws and error if the data structure under the specified path is not an element', () => {
+          expect(() => uiFor('notAnElement')).toThrow();
+        });
       });
     });
   });

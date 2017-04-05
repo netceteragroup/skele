@@ -3,8 +3,10 @@
 import React from 'react';
 import invariant from 'invariant';
 
+import { Iterable } from 'immutable';
+
 import Registry from '../common/Registry';
-import { isElementRef, canonical } from '../common/element';
+import { isElementRef, canonical, isElement } from '../common/element';
 import { isSubclassOf } from '../common/classes';
 
 const uiRegistry = new Registry();
@@ -31,6 +33,8 @@ export function register(kind, Component) {
       store: React.PropTypes.object
     };
 
+    static displayName = `ElementView[${canonical(kind).toJS()}]`;
+
     constructor(props) {
       super(props);
     }
@@ -43,8 +47,33 @@ export function register(kind, Component) {
       return dispatch({ ...action, fromKind, fromPath });
     };
 
+    uiFor = (path) => {
+      const { element } = this.props;
+
+      let sub;
+      if (Array.isArray(path)) {
+        sub = element.getIn(path);
+      } else {
+        sub = element.get(path);
+      }
+
+      if (sub == null) {
+        return undefined;
+      }
+
+      if (Iterable.isIndexed(sub)) {
+        return forElements(sub);
+      } else if (isElement(sub)) {
+        return forElement(sub);
+      } else if (sub == null) {
+        return null;
+      }
+
+      throw new Error("The provided data structure is not an element");
+    };
+
     render() {
-      return <Component element={this.props.element} dispatch={this.dispatch} />;
+      return <Component element={this.props.element} dispatch={this.dispatch} uiFor={this.uiFor} />;
     }
   }
 
