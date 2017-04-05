@@ -2,7 +2,7 @@
 
 import invariant from 'invariant';
 import Registry from '../common/Registry';
-import { isElementRef } from '../common/element';
+import { isElementRef } from '../data/element';
 
 const updateRegistry = new Registry();
 

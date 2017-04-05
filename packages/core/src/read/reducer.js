@@ -7,7 +7,7 @@ import { call, put } from 'redux-saga/effects';
 
 import uuid from 'uuid';
 
-import { canonical } from '../common/element';
+import { canonical } from '../data/element';
 
 import * as registry from './readRegistry';
 import { ReadFn } from './readRegistry';

@@ -6,10 +6,10 @@ import React from 'react';
 import { Iterable, List, fromJS } from 'immutable';
 import Cursor from 'immutable/contrib/cursor';
 
-import { ui, Engine } from '..';
-import { kindOf, isOfKind } from '../common/element';
-
+import { kindOf, isOfKind } from '../data/element';
 import { isSubclassOf } from '../common/classes';
+
+import { ui, Engine } from '..';
 
 /*
  * Tests for the ui API.
