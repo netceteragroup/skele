@@ -27,9 +27,9 @@
     "clean:core": "del-cli packages/core/dist",
     "build": "yarn run clean && yarn run test && yarn run lint && yarn run es5",
     "release:test-token": "test -n \"$CONVENTIONAL_GITHUB_RELEASER_TOKEN\" || (echo 'Setup your github autho token first: https://github.com/conventional-changelog/conventional-github-releaser#cli' && exit 1)",
-    "release:version": "lerna publish",
+    "release:publish": "lerna publish",
     "release:github": "conventional-github-releaser -p angular",
-    "release": "yarn run release:test-token && yarn run release:publish && release:github"
+    "release": "yarn run build && yarn run release:test-token && yarn run release:publish && release:github"
   },
   "engines": {
     "node": ">= 7.4.0",
