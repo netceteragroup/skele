@@ -6,7 +6,7 @@ import invariant from 'invariant';
 import { Iterable } from 'immutable';
 
 import Registry from '../common/Registry';
-import { isElementRef, canonical, isElement, kindOf } from '../common/element';
+import { isElementRef, canonical, isElement, kindOf } from '../data/element';
 import { isSubclassOf } from '../common/classes';
 import deprecated from '../impl/deprecated';
 

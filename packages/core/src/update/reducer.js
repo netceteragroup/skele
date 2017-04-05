@@ -4,7 +4,7 @@ import invariant from 'invariant';
 import { Seq, List } from 'immutable';
 import Cursor from 'immutable/contrib/cursor'
 
-import { ancestorKinds } from '../common/element';
+import { ancestorKinds } from '../data/element';
 
 import { forAction, forKindAndType } from './';
 
