@@ -1,6 +1,8 @@
 'use strict';
 
 import invariant from 'invariant';
+import warning from '../impl/warning';
+
 import { Seq, List } from 'immutable';
 import Cursor from 'immutable/contrib/cursor'
 
@@ -60,11 +62,13 @@ export default function(cursor, action) {
 
     // handle local updates
     const update = forAction(action);
-    if (update) {
-      const element = cursor.getIn(fromPath);
+    const element = cursor.getIn(fromPath);
+    if (element && update) {
       return cursor.setIn(fromPath, update(element.deref(), action));
+    } else {
+      warning("Unable to perform local update, element has changed in meantime...");
+      return cursor;
     }
-
   }
   return cursor;
 }

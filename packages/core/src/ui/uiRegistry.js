@@ -45,7 +45,7 @@ export function register(kind, Component) {
       const { element } = this.props;
       const fromKind = canonical(element.get('kind'));
       const fromPath = element._keyPath;
-      return dispatch({ ...action, fromKind, fromPath });
+      return dispatch({ fromKind, fromPath, ...action });
     };
 
     uiFor = (path, reactKey=undefined) => {
