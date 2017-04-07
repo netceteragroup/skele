@@ -13,9 +13,9 @@ import { watchReadPerform } from '../read/reducer';
 
 const sagaMiddleware = createSagaMiddleware();
 
-const buildStore = (initialAppState) => {
+const buildStore = (initialAppState, customMiddleware) => {
   const storeFactory = compose(
-    applyMiddleware(sagaMiddleware)
+    applyMiddleware(sagaMiddleware, ...customMiddleware)
   )(createStore);
 
   return storeFactory(reducer, initialAppState);
@@ -25,9 +25,9 @@ function toImmutable(initState) {
   return initState.get ? initState : fromJS(initState);
 }
 
-function createState(initState) {
+function createState(initState, customMiddleware) {
   const immutableInitState = toImmutable(initState);
-  const store = buildStore(Cursor.from(immutableInitState));
+  const store = buildStore(Cursor.from(immutableInitState), customMiddleware);
   return {
     store: store
   };
@@ -63,7 +63,7 @@ ContextWrapper.propTypes = {
 export default class Engine extends Component {
   constructor(props, context) {
     super(props, context);
-    this.state = createState(props.initState);
+    this.state = createState(props.initState, props.customMiddleware);
     sagaMiddleware.run(watchReadPerform);
     this.unsubscribe = this.state.store.subscribe(this._reRender.bind(this));
   }
@@ -75,7 +75,7 @@ export default class Engine extends Component {
   componentWillReceiveProps(nextProps) {
     const newState = toImmutable(nextProps.initState);
     if (!this.state.store.getState().equals(newState)) {
-      this.setState(createState(newState));
+      this.setState(createState(newState, nextProps.customMiddleware));
     }
   }
 
@@ -97,5 +97,6 @@ export default class Engine extends Component {
 }
 
 Engine.propTypes = {
-  initState: React.PropTypes.object.isRequired
+  initState: React.PropTypes.object.isRequired,
+  customMiddleware: React.PropTypes.arrayOf(React.PropTypes.func)
 };
