@@ -13,7 +13,7 @@ import { watchReadPerform } from '../read/reducer';
 
 const sagaMiddleware = createSagaMiddleware();
 
-const buildStore = (initialAppState, customMiddleware) => {
+const buildStore = (initialAppState, customMiddleware = []) => {
   const storeFactory = compose(
     applyMiddleware(sagaMiddleware, ...customMiddleware)
   )(createStore);
