@@ -1,7 +1,6 @@
 {
   "name": "girders-elements-container",
   "private": true,
-  "version": "1.0.0-alpha.0",
   "description": "Girders Elements is an architectural framework that assists with building data-driven apps with React or React Native.",
   "repository": {
     "type": "git",
@@ -66,7 +65,7 @@
     "redux": "^3.0.0"
   },
   "jest": {
-    "setupTestFrameworkScriptFile": "./node_modules/jest-enzyme/lib/index.js",   
+    "setupTestFrameworkScriptFile": "./node_modules/jest-enzyme/lib/index.js",
     "modulePathIgnorePatterns": [
       "/build/es5/"
     ],
