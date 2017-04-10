@@ -6,18 +6,19 @@
 Girders Elements is an architectural framework that assists building
 **data-driven** apps with **[React](https://facebook.github.io/react/)** or
  **[React Native](https://facebook.github.io/react-native/)**.
-It is extremely well-suited for creating highly **dynamic UI**s,
-that are driven from back-end systems (like Content Management Systems).
+It is extremely well-suited for creating highly **dynamic UIs**,
+that are driven by back-end systems (like Content Management Systems).
 
 It uses **[redux](http://github.com/reactjs/redux)** for managing the state of
 the application. All great tools around the redux eco-system can be leveraged,
-because **girders-elements** is built on top of it.
+because **Girders Elements** builds on top of it.
 
 **[Immutable](https://facebook.github.io/immutable-js/)** data structures are
-used to manage the application state. This allows for a substantially more
+used to represent the application state. This allows for a substantially more
 efficient `shouldComponentUpdate` implementation compared to **react-redux**.
 [Immutable's implementation][persistent-data-structures] also allows for
-more efficient (space and time-wise) changes to the application state.
+more efficient (space and time-wise) changes to the application state. This
+makes the framework well suited for mobile application use.
 
 [persistent-data-structures]: https://github.com/facebook/immutable-js/#immutable-collections-for-javascript
 ### Installation
@@ -30,8 +31,8 @@ or
 yarn add @girders-elements/core
 ```
 
-You will also need to add **react**, **redux**, **react-dom** / **react-native**
-to your project as well
+You will also need to add `react`, `redux`,`react-dom` / `react-native`
+to your project's dependencies.
 
 ### Overview
 
@@ -46,12 +47,12 @@ A Girders Elements app, in rough terms, works by
 
 ![Overview Diagram](docs/illustrations/overview.png)
 
-### Elements (application state)
+### Application State
 
-The app keeps a central **application state** (using redux) with the following
+The app keeps a central **application state** (in a redux store) with the following
 characteristics:
 
-- it is a well defined **polymorphic tree** structure
+- it is a well defined **polymorphic tree**
 - each node in the tree is an **element**, essentially an object *tagged* by
   a `kind` property
 - Each node / element contains all the essential information necessary to
@@ -72,7 +73,8 @@ Example:
       },
       {
         "kind": ["teaser", "small"],
-        "imageUrl": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg"
+        "imageUrl": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg",
+        "imageUrlSmall": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock-small.jpg"        
         "title": "Another Sherlock Holmes Teaser"        
       }
     ]
@@ -80,14 +82,16 @@ Example:
 }
 ```
 
+[application-state]: #application-state
+
 #### The Element's Kind
 
 The `kind` property of an element:
 
-- it serves as a **tag**; data objects of the same "type" are tagged with
+- serves as a **tag**; data objects of the same "type" are tagged with
   the same `kind`
-- it determines which properties are inside that element
-- it determines which (if any) sub-elements are there
+- determines which properties are inside that element
+- determines which (if any) sub-elements are there
 
 The `kind` can be a simple string. E.g.
 
@@ -116,7 +120,7 @@ represented using array notation:
 ```
 
 In the above example, the the element is of the kind `['teaser', 'small']`.
-This kind is *a specialization of* the kind `['teaser']`
+This kind is *a specialization of* the kind `['teaser']`.
 
 Note that the kinds `'teaser'` and `['teaser']` are **equivalent**. The array
 form is the *canonical representation*.
@@ -125,7 +129,7 @@ There is one rule that is followed when using *specializations*: **Elements of a
 more specialized kind must contain all the properties that are required for the
 more general kind**.
 
-In the above example, `['teaser', 'small']`, being a specialization of `['teaser']`
+Following this rule, `['teaser', 'small']`, being a specialization of `['teaser']`
 must contain all the properties that are required for `['teaser']`. It therefore
 provides the `imageUrl` property (required for `['teaser']`), but it adds an
 `imageUrlSmall` property as well.
@@ -136,13 +140,16 @@ elements. The clients (usually mobile apps with an update process over which we
 have no precise control) with an older version of the app can still correctly
 interpret the newer data feeds.
 
-This is enabled by the [element UI Resolution][] and [element update resolution][]
-process described below.
+This is enabled by the [Element UI Resolution](#ui-resolution) process described
+below.
 
 ### UI
 
-The UI of an element can be any React Component that takes three props: `element`, `dispatch` and `uiFor`.
-- The `element` is an immutable.js structure representing the data model (sub-tree) of the specific element in the application state
+The UI of an element can be any React Component that takes three
+props: `element`, `dispatch` and `uiFor`.
+
+- The `element` is an immutable.js structure representing the data model
+  (sub-tree) of the specific element in the application state
 - The `dispatch` is the standard redux dispatcher for dispatching actions
 - The `uiFor` property is a function that is used to render the UI of sub-elements.
 
@@ -150,79 +157,97 @@ We register the UI for an element by using:
 
     ui.register(<element-kind>, <element>)
 
-For example:
+Following the [example we used so far][application-state], we can define the UI
+for the element of kind `teaser` the following way:
 
 ```javascript
-ui.register(['teaser', 'default'], ({ element, dispatch }) => {
-  return (
-    <View>
-      <Image source={{uri: element.get('imageUrl')}} />
-      <Text>{element.get('title')}</Text>
-    </View>
-  )
-}
+ui.register('teaser', ({ element }) =>
+  <View>
+    <Image source={{uri: element.get('imageUrl')}} />
+    <Text>{element.get('title')}</Text>
+  </View>
+);
 ```
 
-#### Rendering of Elements (the UI)
+The code essentially states: *whenever an element of the kind `teaser` needs to
+be presented, use the following component to materialize the UI for it*.
 
-The global state of a Girders Elements app is a well defined structure: a tree
-of elements.
+#### Rendering of sub - elements
 
+An element (such as the `__app` in the example we are running with) can have
+one or more children that are also elements. When rendering such an element
+one must take care to render its children properly.
 
-An element is an object (represented as Immutable.js Map) that has a `kind`
-property
-
-Rendering an element is done via the `uiFor` property passed to the element's
-UI.
-
-Lets say that the model that drives your UI is in the store represented like the example [above](#element). In case we do:
-```javascript
-ui.forElement({
-  "kind": ["teaser", "image"],
-  "imageUrl": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg",
-  "title": "Sherlock Holmes"
-})
-```
-Then this will return us the **registered** component with kind `['teaser', 'image']`.
-
-#### Canonical Resolution
-
-We can also do the following:
-```javascript
-ui.forElement({
-  "kind": ["teaser", "image", "top"],
-  "imageUrl": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg",
-  "title": "Sherlock Holmes",
-  "topStoryColor": "red"
-})
-```
-Notice that the element kind is more specific, `['teaser', 'image', 'top']`. If we haven't registered such an element, its still not a problem, because canonical resolution is done. There is already a element registered for `['teaser', 'image']`, and this element will be rendered. In case we implement a new element, with the more specific kind `['teaser', 'image', 'top']`, and register it, then, of course that element will be returned. This canonical resolution is very useful, in case you introduce new features, but don't want to break clients that are still using older version of a registered elements.
-
-#### Rendering Children
-
-Any element can render a sub-element like so:
+This is done via the `uiFor` property passed to the element's UI:
 
 ```javascript
-ui.register(['navigation', 'stack'], ({ element, dispatch }) => {
-  return (
-    <View>
-      {ui.forElement(element.get('children').last())}
-    </View>
-  )
-})
+ui.register('__app', ({ element, uiFor }) =>
+  <div id="app">
+    {uiFor('entryPoint')}
+  </div>
+);
 ```
 
-A list of children can be rendered using:
+Here we are specifying the UI for [our top-level element][application-state]
+(root element). The `__app` has an `entryPoint` property which is an element of
+any kind. By invoking `uiFor('entryPoint')` we are asking Girders Elements to
+produce the UI for the element under the property `entryPoint` for us.  
+
+`uiFor` can be used to render a list of elements as well:
 
 ```javascript
-ui.register(['article'], ({ element, dispatch }) => {
-  return (
-    <View>
-      {ui.forElements(element.get('children'))}
-    </View>
-  )
-})
+ui.register('vertical-container', ({ element, uiFor }) =>
+  <div class="vertical-container">
+    {uiFor('children')}
+  </div>
+);
 ```
+
+Here, we are registering the UI for the element of kind `vertical-container`
+from [our example][application-state]. This element has a `children` property,
+which is a list of elements (of varying kind). By invoking `uiFor` on this
+property we are asking Girders Elements to render the ui for all the elements
+in this list, using the appropriate UI for each of those elements.
+
+`uiFor` can also be called with a a key-path:
+
+```javascript
+ui.register('__app', ({ uiFor }) =>
+  <div class="app">
+    {uiFor(['entryPoint', 'children', 0])}
+  </div>
+);
+```
+
+Here, in the UI for `__app`, we are are asking Girders Elements to render the
+UI for the first element of the `children` of `entryPoint` of the current
+element.
+
+#### UI Resolution
+
+Whenever Girders Elements encounters a request to present a UI for some element
+
+1. it will try to find the UI using the requested element first
+2. if it doesn't find an UI, it will try with **a more general kind**
+3. if it doesn't find a UI for it, it will try with **an even more general kind**
+4. and so on, until an UI is found or there are no *more general* kinds to be
+   derived from the current one.
+
+Given the kind `['teaser', 'small', 'new']`, the following statement holds true:
+
+```
+[] --  is more general kind of --> ['teaser']  --
+   --> is more general kind of --> ['teaser', 'small'] --
+   --> is more general kind of --> ['teaser', 'small', 'new']
+```
+
+So the resolution will
+
+1. first look for an UI for `['teaser', 'small', 'new']`
+2. if not found, it will look for an UI for `['teaser', 'small']`
+3. if not found, it will look for an UI for `['teaser']`
+4. if not found, it will look for an UI for `[]` (the empty kind)
+
 
 #### Dispatching Actions
 
