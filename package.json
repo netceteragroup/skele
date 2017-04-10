@@ -28,7 +28,7 @@
     "release:test-token": "test -n \"$CONVENTIONAL_GITHUB_RELEASER_TOKEN\" || (echo 'Setup your github autho token first: https://github.com/conventional-changelog/conventional-github-releaser#cli' && exit 1)",
     "release:publish": "lerna publish",
     "release:github": "conventional-github-releaser -p angular",
-    "release": "yarn run build && yarn run release:test-token && yarn run release:publish && release:github"
+    "release": "yarn run build && yarn run release:test-token && yarn run release:publish && yarn run release:github"
   },
   "engines": {
     "node": ">= 7.4.0",
