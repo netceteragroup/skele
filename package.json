@@ -67,7 +67,7 @@
   "jest": {
     "setupTestFrameworkScriptFile": "./node_modules/jest-enzyme/lib/index.js",
     "modulePathIgnorePatterns": [
-      "/build/es5/"
+      "/dist/es5/"
     ],
     "roots": [
       "<rootDir>/packages/core"
@@ -79,7 +79,8 @@
       "**/*.js",
       "!**/__tests__/**",
       "!**/node_modules/**",
-      "!**/vendor/**"
+      "!**/vendor/**",
+      "!**/dist/es5/**"
     ]
   }
 }
