@@ -3,12 +3,23 @@
 [![Build Status](https://img.shields.io/travis/netceteragroup/girders-elements/master.svg?style=flat-square)](https://travis-ci.org/netceteragroup/girders-elements)
 [![Coverage Status](https://img.shields.io/coveralls/netceteragroup/girders-elements/master.svg?style=flat-square)](https://coveralls.io/github/netceteragroup/girders-elements?branch=master)
 
-Girders Elements is an architectural framework that assists building **data-driven** apps with **[React](https://facebook.github.io/react/)** or **[React Native](https://facebook.github.io/react-native/)**.
-It is extremely well-suited for creating highly **dynamic UI**s, that are driven from back-end systems (like Content Management Systems).
+Girders Elements is an architectural framework that assists building
+**data-driven** apps with **[React](https://facebook.github.io/react/)** or
+ **[React Native](https://facebook.github.io/react-native/)**.
+It is extremely well-suited for creating highly **dynamic UI**s,
+that are driven from back-end systems (like Content Management Systems).
 
-It uses **[redux](http://github.com/reactjs/redux)** for managing the state of the application. All great tools around the redux eco-system can be leveraged, because **girders-elements** is built on top of it.
-**[Immutable](https://facebook.github.io/immutable-js/)** data structures are used for redux's single store and also when using **girders-elements** core features.
+It uses **[redux](http://github.com/reactjs/redux)** for managing the state of
+the application. All great tools around the redux eco-system can be leveraged,
+because **girders-elements** is built on top of it.
 
+**[Immutable](https://facebook.github.io/immutable-js/)** data structures are
+used to manage the application state. This allows for a substantially more
+efficient `shouldComponentUpdate` implementation compared to **react-redux**.
+[Immutable's implementation][persistent-data-structures] also allows for
+more efficient (space and time-wise) changes to the application state.
+
+[persistent-data-structures]: https://github.com/facebook/immutable-js/#immutable-collections-for-javascript
 ### Installation
 
 ```
@@ -19,47 +30,121 @@ or
 yarn add @girders-elements/core
 ```
 
-### Importing
+You will also need to add **react**, **redux**, **react-dom** / **react-native**
+to your project as well
 
-What's inside:
+### Overview
 
-```javascript
-import { ui, update, read, Engine } from 'girders-elements';
+A Girders Elements app, in rough terms, works by
 
-// ui
-ui.register
-ui.forElement
-ui.forElements
+- mapping a well defined data structure (a single tree of polymorphic elements)
+  to an user interface
+- having a well defined way how to get data from the "outside world" into that tree
+- having a well defined way how to change that data structure based on user
+  interaction
+- having a way how to affect the outside world
 
-// update
-update.register
+![Overview Diagram](docs/illustrations/overview.png)
 
-// read
-read.register
+### Elements (application state)
 
-// Engine
-Engine
-```
+The app keeps a central **application state** (using redux) with the following
+characteristics:
 
-### Element
+- it is a well defined **polymorphic tree** structure
+- each node in the tree is an **element**, essentially an object *tagged* by
+  a `kind` property
+- Each node / element contains all the essential information necessary to
+  construct a user interface.
 
-The idea behind the Girders Elements framework is to have **elements** that can be driven by the back-end. An element is represented in JSON format
+Example:
 
 ```javascript
 {
-  "kind": ["teaser", "default"],
+  "kind": "__app",
+  "entryPoint": {
+    "kind": "vertical-container",
+    "children": [
+      {
+        "kind": "teaser",
+        "imageUrl": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg"
+        "title": "Sherlock Holmes"
+      },
+      {
+        "kind": ["teaser", "small"],
+        "imageUrl": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg"
+        "title": "Another Sherlock Holmes Teaser"        
+      }
+    ]
+  }
+}
+```
+
+#### The Element's Kind
+
+The `kind` property of an element:
+
+- it serves as a **tag**; data objects of the same "type" are tagged with
+  the same `kind`
+- it determines which properties are inside that element
+- it determines which (if any) sub-elements are there
+
+The `kind` can be a simple string. E.g.
+
+```javascript
+{
+  "kind": "teaser",
   "imageUrl": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg"
   "title": "Sherlock Holmes"
 }
 ```
 
-The element is identified by its **kind**. We can **register** the UI of the element for a certain kind, which then makes this element available for representing in the app.
+I the he above example, the element is of the kind `teaser`. Elements of the
+kind `teaser` have the properties `imageUrl` and `title`.
+
+Element kind **specialization** is supported as well. Specialized kinds are
+represented using array notation:
+
+
+```javascript
+{
+  "kind": ["teaser", "small"],
+  "imageUrl": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg",
+  "imageUrlSmall": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock-small.jpg"
+  "title": "Sherlock Holmes"
+}
+```
+
+In the above example, the the element is of the kind `['teaser', 'small']`.
+This kind is *a specialization of* the kind `['teaser']`
+
+Note that the kinds `'teaser'` and `['teaser']` are **equivalent**. The array
+form is the *canonical representation*.
+
+There is one rule that is followed when using *specializations*: **Elements of a
+more specialized kind must contain all the properties that are required for the
+more general kind**.
+
+In the above example, `['teaser', 'small']`, being a specialization of `['teaser']`
+must contain all the properties that are required for `['teaser']`. It therefore
+provides the `imageUrl` property (required for `['teaser']`), but it adds an
+`imageUrlSmall` property as well.
+
+This is a requirement that enables **forward compatibility** of the data feeds
+/ APIs. As the backend can evolves, it sends *more specialized* forms of older
+elements. The clients (usually mobile apps with an update process over which we
+have no precise control) with an older version of the app can still correctly
+interpret the newer data feeds.
+
+This is enabled by the [element UI Resolution][] and [element update resolution][]
+process described below.
 
 ### UI
 
-The UI of an element can be any React Component that takes two props: `element` and `dispatch`.
+The UI of an element can be any React Component that takes three props: `element`, `dispatch` and `uiFor`.
 - The `element` is an immutable.js structure representing the data model (sub-tree) of the specific element in the application state
 - The `dispatch` is the standard redux dispatcher for dispatching actions
+- The `uiFor` property is a function that is used to render the UI of sub-elements.
 
 We register the UI for an element by using:
 
@@ -78,9 +163,19 @@ ui.register(['teaser', 'default'], ({ element, dispatch }) => {
 }
 ```
 
-#### Rendering (Lookup) of an Element
+#### Rendering of Elements (the UI)
 
-Rendering an element is done via the **ui.forElement** or **ui.forElements** methods. Lets say that the model that drives your UI is in the store represented like the example [above](#element). In case we do:
+The global state of a Girders Elements app is a well defined structure: a tree
+of elements.
+
+
+An element is an object (represented as Immutable.js Map) that has a `kind`
+property
+
+Rendering an element is done via the `uiFor` property passed to the element's
+UI.
+
+Lets say that the model that drives your UI is in the store represented like the example [above](#element). In case we do:
 ```javascript
 ui.forElement({
   "kind": ["teaser", "image"],
