@@ -52,6 +52,7 @@
     "eslint-plugin-react": "^6.10.3",
     "eslint-plugin-react-native": "^2.3.1",
     "eslint-stats": "^0.1.4",
+    "immutable": "^3.8.1",
     "jest": "^19.0.2",
     "jest-enzyme": "^3.0.0",
     "lerna": "2.0.0-rc.1",
@@ -65,7 +66,7 @@
     "redux": "^3.0.0"
   },
   "jest": {
-    "setupTestFrameworkScriptFile": "./node_modules/jest-enzyme/lib/index.js",
+    "setupTestFrameworkScriptFile": "./test-setup.js",
     "modulePathIgnorePatterns": [
       "/dist/es5/"
     ],

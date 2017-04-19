@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-immutable@^3.8.1:
+"immutable@3.8.1 - 4":
   version "3.8.1"
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.1.tgz#200807f11ab0f72710ea485542de088075f68cd2"
 
-ramda@^0.23.0:
+"ramda@>= 0.23.0":
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.23.0.tgz#ccd13fff73497a93974e3e86327bfd87bd6e8e2b"
