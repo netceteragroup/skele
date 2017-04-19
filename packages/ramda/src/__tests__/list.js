@@ -27,4 +27,13 @@ describe('function tagged with `list` work with immutable structures', () => {
       expect(R.all(equals3, [3, 3, 3, 3])).toBe(true);
     });
   });
+
+  describe('any', () => {
+    test('works with lists', () => {
+      const lessThan0 = R.flip(R.lt)(0);
+      const lessThan2 = R.flip(R.lt)(2);
+      expect(R.any(lessThan0, List.of(1, 2))).toBe(false);
+      expect(R.any(lessThan2, List.of(1, 2))).toBe(true);
+    });
+  });
 });
