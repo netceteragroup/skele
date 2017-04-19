@@ -1,0 +1,30 @@
+{
+  "name": "@girders-elements/ramda",
+  "version": "1.0.0-alpha.2",
+  "description": "A slightly modified Ramda version that works with immutable js.",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netceteragroup/girders-elements.git"
+  },
+  "keywords": [
+    "ramda",
+    "immutable",
+    "netcetera"
+  ],
+  "author": "netcetera",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/netceteragroup/girders-elements/issues"
+  },
+  "homepage": "https://github.com/netceteragroup/girders-elements#readme",
+  "dependencies": {
+    "ramda": "^0.23.0"
+  },
+  "devDependencies": {
+    "immutable": "^3.8.1"
+  },
+  "peerDependencies": {
+    "immutable": ">= 3.8.1"
+  }
+}
