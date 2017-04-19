@@ -13,7 +13,18 @@ describe('function tagged with `list` work with immutable structures', () => {
     });
     test('works with arrays', () => {
       expect(R.adjust(R.add(10), 1, [1, 2, 3])).toEqual([1, 12, 3]);
-    })
-  })
+    });
+  });
 
+  describe('all', () => {
+    test('works with lists', () => {
+      const equals3 = R.equals(3);
+      expect(R.all(equals3, List.of(3, 3, 3, 3))).toBe(true);
+      expect(R.all(equals3, List.of(3, 2, 3, 2))).toBe(false);
+    });
+    test('works with arrays', () => {
+      const equals3 = R.equals(3);
+      expect(R.all(equals3, [3, 3, 3, 3])).toBe(true);
+    });
+  });
 });

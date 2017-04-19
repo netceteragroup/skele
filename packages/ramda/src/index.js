@@ -7,6 +7,7 @@ module.exports = {};
 Object.assign(module.exports,
   require('ramda'),
   {
-    adjust: require('./adjust').default
+    adjust: require('./adjust').default,
+    all: require('./all').default
   }
 );
