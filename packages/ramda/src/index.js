@@ -16,5 +16,6 @@ Object.assign(module.exports,
     aperture: require('./aperture').default,
     append: dispatch2(isIndexed, 'append', 'push'),
     assoc: dispatch3(isAssociative, 'assoc', 'set'),
+    assocPath: dispatch3(isAssociative, 'assocPath', 'setIn')
   }
 );
