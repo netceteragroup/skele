@@ -1,7 +1,7 @@
 'use strict';
 
 import R from '..';
-import {List} from 'immutable';
+import {List, OrderedMap, Seq} from 'immutable';
 
 describe('function tagged with `list` work with immutable structures', () => {
   describe('adjust', () => {
@@ -42,4 +42,30 @@ describe('function tagged with `list` work with immutable structures', () => {
       expect(R.ap([R.multiply(2), R.add(3)], List.of(1, 2, 3))).toEqualI(List.of(2, 4, 6, 4, 5, 6));
     });
   });
+
+  describe('aperture', () => {
+    test('works with lists', () => {
+      expect(R.aperture(2, List.of(1, 2, 3, 4))).toEqualI(List.of(List.of(1, 2), List.of(3, 4)));
+      expect(R.aperture(3, List.of(1, 2))).toEqualI(List.of());
+      expect(R.aperture(2, List.of(1, 2, 3))).toEqualI(List.of(List.of(1, 2)));
+    });
+
+    test('works with maps', () => {
+      const aMap = OrderedMap([['a', 1], ['b', 2], ['c', 3]]);
+
+      expect(R.aperture(2, aMap)).toEqualI(List.of(OrderedMap({a: 1, b: 2})));
+    });
+
+    test('works with seqs', () => {
+      function* oneToFour() {
+        for (let i = 1; i <= 4; i++) {
+          yield i;
+        }
+      }
+      const four = Seq(oneToFour());
+
+      expect(R.aperture(2, four)).toEqualI(List.of(List.of(1, 2), List.of(3, 4)));
+
+    });
+  })
 });
