@@ -36,4 +36,10 @@ describe('function tagged with `list` work with immutable structures', () => {
       expect(R.any(lessThan2, List.of(1, 2))).toBe(true);
     });
   });
+
+  describe('ap', () => {
+    test('works with lists as the last arg', () => {
+      expect(R.ap([R.multiply(2), R.add(3)], List.of(1, 2, 3))).toEqualI(List.of(2, 4, 6, 4, 5, 6));
+    });
+  });
 });

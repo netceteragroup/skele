@@ -11,6 +11,7 @@ Object.assign(module.exports,
   {
     adjust: require('./adjust').default,
     all: dispatch2(isIndexed, 'all', 'every'),
-    any: dispatch2(isIndexed, 'any', 'some')
+    any: dispatch2(isIndexed, 'any', 'some'),
+    ap: require('./ap').default
   }
 );
