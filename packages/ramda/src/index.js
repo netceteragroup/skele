@@ -13,6 +13,7 @@ Object.assign(module.exports,
     all: dispatch2(isIndexed, 'all', 'every'),
     any: dispatch2(isIndexed, 'any', 'some'),
     ap: require('./ap').default,
-    aperture: require('./aperture').default
+    aperture: require('./aperture').default,
+    append: dispatch2(isIndexed, 'append', 'push')
   }
 );
