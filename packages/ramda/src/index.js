@@ -1,8 +1,8 @@
 'use strict';
 
 require('core-js/fn/object/assign');
-const {dispatch2} = require('./immutable/dispatch');
-const {isIndexed} = require('./immutable/compat');
+const {dispatch2, dispatch3} = require('./immutable/dispatch');
+const {isIndexed, isAssociative} = require('./immutable/compat');
 
 module.exports = {};
 
@@ -14,6 +14,7 @@ Object.assign(module.exports,
     any: dispatch2(isIndexed, 'any', 'some'),
     ap: require('./ap').default,
     aperture: require('./aperture').default,
-    append: dispatch2(isIndexed, 'append', 'push')
+    append: dispatch2(isIndexed, 'append', 'push'),
+    assoc: dispatch3(isAssociative, 'assoc', 'set'),
   }
 );
