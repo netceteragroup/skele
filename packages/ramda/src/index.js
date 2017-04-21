@@ -22,6 +22,7 @@ Object.assign(module.exports,
     concat: require('./concat').default,
     contains: dispatch2(isCollection, 'contains', 'contains'),
     difference: require('./difference').default,
-    differenceWith: require('./differenceWith').default
+    differenceWith: require('./differenceWith').default,
+    dissoc: dispatch2(isAssociative, 'dissoc', 'delete')
   }
 );

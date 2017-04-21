@@ -18,4 +18,9 @@ describe('function tagged with `object` work with immutable structures', () => {
     const l = List.of(1, 2, 3);
     expect(R.clone(l)).toBe(l);
   });
+
+  test('dissoc', () => {
+    expect(R.dissoc('a', Map({a: 1, b: 2}))).toEqualI(Map({b: 2}));
+    expect(R.dissoc(1, List.of(1, 2))).toEqualI(List.of(1));
+  })
 });
