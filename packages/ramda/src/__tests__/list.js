@@ -1,7 +1,7 @@
 'use strict';
 
 import R from '..';
-import {List, OrderedMap, Seq, fromJS} from 'immutable';
+import {List, OrderedMap, Seq, fromJS, Map} from 'immutable';
 
 describe('function tagged with `list` work with immutable structures', () => {
   test('adjust', () => {
@@ -135,5 +135,29 @@ describe('function tagged with `list` work with immutable structures', () => {
 
     expect(R.flatten(list)).toEqual(flattened);
     expect(R.flatten(fromJS(list))).toEqualI(List(flattened));
-  })
+  });
+
+  test('forEach', () => {
+    let sumA = 0, sumI = 0;
+    const nums = [1, 2, 3];
+
+    R.forEach(v => sumA += v, nums);
+    expect(sumA).toEqual(6);
+
+    R.forEach(v => sumI += v, List(nums));
+    expect(sumI).toEqual(6);
+  });
+
+  test('forEachObjIndexed', () => {
+    let keysA = [], keysI = [];
+    let obj =  {a: 1, b: 2};
+
+    R.forEachObjIndexed((v, k) => keysI.push(k), Map(obj));
+    expect(keysI).toEqual(['a', 'b']);
+
+    R.forEachObjIndexed((v, k) => keysA.push(k), obj);
+    expect(keysA).toEqual(['a', 'b']);
+
+
+  });
 });

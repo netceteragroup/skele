@@ -48,7 +48,8 @@ Object.assign(module.exports,
     findIndex: dispatch(2, lastArg(isIndexed), 'findIndex', 'findIndex'),
     findLast: dispatch(2, lastArg(isCollection), 'findLast', 'findLast'),
     findLastIndex: dispatch(2, lastArg(isIndexed), 'findLastIndex', 'findLastIndex'),
-    flatten: dispatch(1, lastArg(isIndexed), 'flatten', 'flatten')
+    flatten: dispatch(1, lastArg(isIndexed), 'flatten', 'flatten'),
+    forEachObjIndexed: dispatch(2, lastArg(isAssociative), 'forEach', 'forEachObjIndexed')
   }
 );
 
