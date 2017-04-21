@@ -1,35 +1,52 @@
 'use strict';
 
 require('core-js/fn/object/assign');
-const {dispatch2, dispatch3} = require('./immutable/dispatch');
+const {lastArg, anyArg, dispatch} = require('./immutable/dispatch');
 const {isIndexed, isAssociative, isCollection, is} = require('./immutable/compat');
+const {List, Set, Seq} = require('immutable');
+const O = require('ramda');
 
 module.exports = {};
 
 Object.assign(module.exports,
-  require('ramda'),
+  O,
   {
-    adjust: require('./adjust').default,
-    all: dispatch2(isCollection, 'all', 'every'),
-    any: dispatch2(isCollection, 'any', 'some'),
-    ap: require('./ap').default,
-    aperture: require('./aperture').default,
-    append: dispatch2(isIndexed, 'append', 'push'),
-    assoc: dispatch3(isAssociative, 'assoc', 'set'),
-    assocPath: dispatch3(isAssociative, 'assocPath', 'setIn'),
-    chain: dispatch2(isCollection, 'chain', 'flatMap'),
-    clone: require('./clone').default,
-    concat: require('./concat').default,
-    contains: dispatch2(isCollection, 'contains', 'contains'),
-    difference: require('./difference').default,
-    differenceWith: require('./differenceWith').default,
-    dissoc: dispatch2(isAssociative, 'dissoc', 'delete'),
-    dissocPath: dispatch2(isAssociative, 'dissocPath', 'deleteIn'),
-    dropLast: dispatch2(isIndexed, 'dropLast', 'skipLast'),
-    dropLastWhile: require('./dropLastWhile').default,
-    dropRepeatsWith: require('./dropRepeatsWith').default,
-    dropRepeats: require('./dropRepeatsWith').default(is),
-    dropWhile: dispatch2(isIndexed, 'dropWhile', 'skipWhile'),
-    empty: require('./empty').default
+    adjust: dispatch(3, lastArg(isIndexed), require('./adjust').default, O.adjust),
+    all: dispatch(2, lastArg(isCollection), 'every', 'all'),
+    any: dispatch(2, lastArg(isCollection), 'some', 'any'),
+    ap: dispatch(2,
+      (ap, fn) => isIndexed(fn) &&
+        (typeof ap.ap !== 'function') &&
+        (typeof ap !== 'function'),
+      require('./ap').default,
+      O.ap),
+    aperture: dispatch(2, lastArg(isCollection), require('./aperture').default, O.aperture),
+    append: dispatch(2, lastArg(isIndexed), 'push', 'append'),
+    assoc: dispatch(3, lastArg(isAssociative), 'set', 'assoc'),
+    assocPath: dispatch(3, lastArg(isAssociative), 'setIn', 'assocPath'),
+    chain: dispatch(2, lastArg(isCollection), 'flatMap', 'chain'),
+    clone: dispatch(1, lastArg(isCollection), O.identity, O.clone),
+    concat: dispatch(2, anyArg(isIndexed), (a, b) => List(a).concat(List(b)), O.concat),
+    contains: dispatch(2, lastArg(isCollection), 'contains', 'contains'),
+    difference: dispatch(2, anyArg(isCollection), (a, b) => Set(a).subtract(Set(b)), O.difference),
+    differenceWith: dispatch(3, anyArg(isCollection), require('./differenceWith').default, O.differenceWith),
+    dissoc: dispatch(2, lastArg(isAssociative), 'delete', 'dissoc'),
+    dissocPath: dispatch(2, lastArg(isAssociative), 'deleteIn', 'dissocPath'),
+    dropLast: dispatch(2, lastArg(isIndexed), 'skipLast', 'dropLast'),
+    dropLastWhile: dispatch(2, lastArg(isIndexed), require('./dropLastWhile').default, O.dropLastWhile),
+    dropRepeatsWith: dispatch(2, lastArg(isIndexed), require('./dropRepeatsWith').default, O.dropRepeatsWith),
+    dropWhile: dispatch(2, lastArg(isIndexed), 'skipWhile', 'dropWhile'),
+    empty: dispatch(1, [
+      [Seq.isSeq,    O.always(Seq())],
+      [isCollection, c => c.constructor()],
+      [O.T,          O.empty]
+    ]),
+    equals: dispatch(2, anyArg(isCollection), is, O.equals)
+  }
+);
+
+Object.assign(module.exports,
+  {
+    dropRepeats: module.exports.dropRepeatsWith(is)
   }
 );
