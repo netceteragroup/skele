@@ -69,4 +69,10 @@ describe('function tagged with `list` work with immutable structures', () => {
     expect(R.contains([1], fromJS([1, [1]]))).toBe(false);
     expect(R.contains([1], List.of([1, [1]]))).toBe(false);
   });
+
+  test('drop', () => {
+    expect(R.drop(1, List.of(1, 2))).toEqualI(List.of(2));
+    expect(R.drop(2, List.of(1, 2))).toEqualI(List());
+    expect(R.drop(3, List.of(1, 2))).toEqualI(List());
+  });
 });
