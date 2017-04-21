@@ -20,6 +20,7 @@ Object.assign(module.exports,
     chain: dispatch2(isCollection, 'chain', 'flatMap'),
     clone: require('./clone').default,
     concat: require('./concat').default,
-    contains: dispatch2(isCollection, 'contains', 'contains')
+    contains: dispatch2(isCollection, 'contains', 'contains'),
+    difference: require('./difference').default
   }
 );
