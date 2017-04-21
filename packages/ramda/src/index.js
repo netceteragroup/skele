@@ -29,6 +29,7 @@ Object.assign(module.exports,
     dropLastWhile: require('./dropLastWhile').default,
     dropRepeatsWith: require('./dropRepeatsWith').default,
     dropRepeats: require('./dropRepeatsWith').default(is),
-    dropWhile: dispatch2(isIndexed, 'dropWhile', 'skipWhile')
+    dropWhile: dispatch2(isIndexed, 'dropWhile', 'skipWhile'),
+    empty: require('./empty').default
   }
 );
