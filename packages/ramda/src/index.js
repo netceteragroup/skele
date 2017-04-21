@@ -43,7 +43,8 @@ Object.assign(module.exports,
     ]),
     equals: dispatch(2, anyArg(isCollection), is, O.equals),
     eqBy: dispatch(3, anyArg(isCollection, O.takeLast(2)), (f, x, y) => is(f(x), f(y)), O.eqBy),
-    eqProps: dispatch(3, anyArg(isAssociative, O.takeLast(2)), (p, x, y) => is(x.get(p), y.get(p)), O.eqProps)
+    eqProps: dispatch(3, anyArg(isAssociative, O.takeLast(2)), (p, x, y) => is(x.get(p), y.get(p)), O.eqProps),
+    evolve: dispatch(2, lastArg(isAssociative), require('./evolve').default, O.evolve)
   }
 );
 
