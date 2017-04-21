@@ -126,7 +126,14 @@ describe('function tagged with `list` work with immutable structures', () => {
   test('findLastIndex', () => {
     const even = x => x % 2 === 0;
     expect(R.findLastIndex(even, List.of(1, 2, 3, 4))).toEqual(3);
-    expect(R.findLastIndex(even, List.of(1, 1, 1, 1))).toEqual(-1);    
+    expect(R.findLastIndex(even, List.of(1, 1, 1, 1))).toEqual(-1);
   });
 
+  test('flatten', () => {
+    const list = [1, 2, [3, 4], 5, [6, [7, 8, [9, [10, 11], 12]]]];
+    const flattened = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+    expect(R.flatten(list)).toEqual(flattened);
+    expect(R.flatten(fromJS(list))).toEqualI(List(flattened));
+  })
 });
