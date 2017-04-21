@@ -2,8 +2,8 @@
 
 import R from 'ramda';
 
-export function anyArg(pred) {
-  return (...args) => R.any(pred, args);
+export function anyArg(pred, focus = R.identity) {
+  return (...args) => R.any(pred, focus(args));
 }
 
 export function lastArg(pred) {
