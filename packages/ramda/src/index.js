@@ -18,6 +18,7 @@ Object.assign(module.exports,
     assoc: dispatch3(isAssociative, 'assoc', 'set'),
     assocPath: dispatch3(isAssociative, 'assocPath', 'setIn'),
     chain: dispatch2(isCollection, 'chain', 'flatMap'),
-    clone: require('./clone').default
+    clone: require('./clone').default,
+    concat: require('./concat').default
   }
 );

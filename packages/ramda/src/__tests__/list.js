@@ -80,4 +80,10 @@ describe('function tagged with `list` work with immutable structures', () => {
   test('chain', () => {
     expect(R.chain(x => [x, x], List.of(1, 2))).toEqualI(List.of(1, 1, 2, 2));
   });
+
+  test('concat', () => {
+    expect(R.concat(List.of(1, 2), List.of('a', 'b'))).toEqualI(List.of(1, 2, 'a', 'b'));
+    expect(R.concat([1, 2], List.of('a', 'b'))).toEqualI(List.of(1, 2, 'a', 'b'));
+    expect(R.concat(List.of(1, 2), ['a', 'b'])).toEqualI(List.of(1, 2, 'a', 'b'));
+  });
 });
