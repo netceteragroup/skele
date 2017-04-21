@@ -56,5 +56,32 @@ describe('function tagged with `object` work with immutable structures', () => {
     };
 
     expect(R.evolve(transformations, tomato)).toEqualI(fromJS({firstName: 'Tomato', data: {elapsed: 101, remaining: 1399}, id:123}));
-  })
+  });
+
+  test('has', () => {
+    const obj = {
+      a: 1,
+      b: 2
+    };
+
+    expect(R.has('a', obj)).toBe(true);
+    expect(R.has('c', obj)).toBe(false);
+    expect(R.has('a', Map(obj))).toBe(true);
+    expect(R.has('c', Map(obj))).toBe(false);
+  });
+
+  test('has', () => {
+    const obj = {
+      a: 1,
+      b: {
+        c: 3
+      }
+    };
+
+    expect(R.hasIn(['b', 'c'], obj)).toBe(true);
+    expect(R.hasIn(['c'], obj)).toBe(false);
+    expect(R.hasIn(['b', 'c'], Map(obj))).toBe(true);
+    expect(R.hasIn(['c'], Map(obj))).toBe(false);
+  });
+
 });

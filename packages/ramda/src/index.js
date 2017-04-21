@@ -50,7 +50,9 @@ Object.assign(module.exports,
     findLastIndex: dispatch(2, lastArg(isIndexed), 'findLastIndex', 'findLastIndex'),
     flatten: dispatch(1, lastArg(isIndexed), 'flatten', 'flatten'),
     forEachObjIndexed: dispatch(2, lastArg(isAssociative), 'forEach', 'forEachObjIndexed'),
-    groupWith: dispatch(2, lastArg(isIndexed), require('./groupWith').default, 'groupWith')
+    groupWith: dispatch(2, lastArg(isIndexed), require('./groupWith').default, 'groupWith'),
+    has: dispatch(2, lastArg(isAssociative), 'has', 'has'),
+    hasIn: dispatch(2, lastArg(isAssociative), 'has', 'hasIn')
   }
 );
 
