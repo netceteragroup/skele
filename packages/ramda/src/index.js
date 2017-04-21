@@ -10,8 +10,8 @@ Object.assign(module.exports,
   require('ramda'),
   {
     adjust: require('./adjust').default,
-    all: dispatch2(isIndexed, 'all', 'every'),
-    any: dispatch2(isIndexed, 'any', 'some'),
+    all: dispatch2(isCollection, 'all', 'every'),
+    any: dispatch2(isCollection, 'any', 'some'),
     ap: require('./ap').default,
     aperture: require('./aperture').default,
     append: dispatch2(isIndexed, 'append', 'push'),
@@ -21,6 +21,7 @@ Object.assign(module.exports,
     clone: require('./clone').default,
     concat: require('./concat').default,
     contains: dispatch2(isCollection, 'contains', 'contains'),
-    difference: require('./difference').default
+    difference: require('./difference').default,
+    differenceWith: require('./differenceWith').default
   }
 );
