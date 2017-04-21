@@ -180,4 +180,13 @@ describe('function tagged with `list` work with immutable structures', () => {
     expect(byGrade(students)).toEqual(result);
     expect(Map(byGrade(fromJS(students)))).toEqualI(fromJS(result));
   });
+
+  test('groupWith', () => {
+    const list = [0, 1, 1, 2, 3, 5, 8, 13, 21];
+    const result = [[0], [1, 1], [2], [3], [5], [8], [13], [21]];
+
+    expect(R.groupWith(R.equals, list)).toEqual(result);
+
+    expect(List(R.groupWith(R.equals, List(list)))).toEqualI(fromJS(result));
+  });
 });
