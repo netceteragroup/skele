@@ -19,6 +19,7 @@ Object.assign(module.exports,
     assocPath: dispatch3(isAssociative, 'assocPath', 'setIn'),
     chain: dispatch2(isCollection, 'chain', 'flatMap'),
     clone: require('./clone').default,
-    concat: require('./concat').default
+    concat: require('./concat').default,
+    contains: dispatch2(isCollection, 'contains', 'contains')
   }
 );

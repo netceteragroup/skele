@@ -1,7 +1,7 @@
 'use strict';
 
 import R from '..';
-import {List, OrderedMap, Seq} from 'immutable';
+import {List, OrderedMap, Seq, fromJS} from 'immutable';
 
 describe('function tagged with `list` work with immutable structures', () => {
   describe('adjust', () => {
@@ -85,5 +85,13 @@ describe('function tagged with `list` work with immutable structures', () => {
     expect(R.concat(List.of(1, 2), List.of('a', 'b'))).toEqualI(List.of(1, 2, 'a', 'b'));
     expect(R.concat([1, 2], List.of('a', 'b'))).toEqualI(List.of(1, 2, 'a', 'b'));
     expect(R.concat(List.of(1, 2), ['a', 'b'])).toEqualI(List.of(1, 2, 'a', 'b'));
+  });
+
+  test('contains', () => {
+    expect(R.contains(1, List.of(1, 2))).toBe(true);
+    expect(R.contains(1, List.of(3, 2))).toBe(false);
+    expect(R.contains(List.of(1), fromJS([1, [1]]))).toBe(true);
+    expect(R.contains([1], fromJS([1, [1]]))).toBe(false);
+    expect(R.contains([1], List.of([1, [1]]))).toBe(false);
   });
 });
