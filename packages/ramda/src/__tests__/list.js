@@ -95,5 +95,10 @@ describe('function tagged with `list` work with immutable structures', () => {
     const l = List([1, -1, 1, 3, 4, -4, -4, -5, 5, 3, 3]);
     expect(R.dropRepeatsWith(R.eqBy(Math.abs), l)).toEqualI(List([1, 3, 4, -5, 3]));
   });
+  
+  test('dropWhile', () => {
+    const lteTwo = x => x <= 2;
+    expect(R.dropWhile(lteTwo, List([1, 2, 3, 4, 3, 2, 1]))).toEqualI(List([3, 4, 3, 2, 1]));
+  });
 
 });
