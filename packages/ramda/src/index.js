@@ -2,7 +2,7 @@
 
 require('core-js/fn/object/assign');
 const {dispatch2, dispatch3} = require('./immutable/dispatch');
-const {isIndexed, isAssociative} = require('./immutable/compat');
+const {isIndexed, isAssociative, isCollection} = require('./immutable/compat');
 
 module.exports = {};
 
@@ -16,6 +16,7 @@ Object.assign(module.exports,
     aperture: require('./aperture').default,
     append: dispatch2(isIndexed, 'append', 'push'),
     assoc: dispatch3(isAssociative, 'assoc', 'set'),
-    assocPath: dispatch3(isAssociative, 'assocPath', 'setIn')
+    assocPath: dispatch3(isAssociative, 'assocPath', 'setIn'),
+    chain: dispatch2(isCollection, 'chain', 'flatMap')
   }
 );

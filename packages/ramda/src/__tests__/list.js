@@ -74,6 +74,10 @@ describe('function tagged with `list` work with immutable structures', () => {
       expect(R.append(3, List())).toEqualI(List.of(3));
       expect(R.append(3, List.of(1, 2))).toEqualI(List.of(1, 2, 3));
       expect(R.append(3)(List.of(1))).toEqualI(List.of(1, 3));
-    })
-  })
+    });
+  });
+
+  test('chain', () => {
+    expect(R.chain(x => [x, x], List.of(1, 2))).toEqualI(List.of(1, 1, 2, 2));
+  });
 });
