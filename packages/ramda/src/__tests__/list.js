@@ -95,10 +95,38 @@ describe('function tagged with `list` work with immutable structures', () => {
     const l = List([1, -1, 1, 3, 4, -4, -4, -5, 5, 3, 3]);
     expect(R.dropRepeatsWith(R.eqBy(Math.abs), l)).toEqualI(List([1, 3, 4, -5, 3]));
   });
-  
+
   test('dropWhile', () => {
     const lteTwo = x => x <= 2;
     expect(R.dropWhile(lteTwo, List([1, 2, 3, 4, 3, 2, 1]))).toEqualI(List([3, 4, 3, 2, 1]));
+  });
+
+  test('filter', () => {
+    const even = x => x % 2 === 0;
+    expect(R.filter(even, List.of(1, 2, 3, 4))).toEqualI(List.of(2, 4));
+  });
+
+  test('find',  () => {
+    const even = x => x % 2 === 0;
+    expect(R.find(even, List.of(1, 2, 3, 4))).toEqual(2);
+  });
+
+  test('findIndex', () => {
+    const even = x => x % 2 === 0;
+    expect(R.findIndex(even, List.of(1, 2, 3, 4))).toEqual(1);
+    expect(R.findIndex(even, List.of(1, 1, 1, 1))).toEqual(-1);
+  });
+
+  test('findLast', () => {
+    const even = x => x % 2 === 0;
+    expect(R.findLast(even, List.of(1, 2, 3, 4))).toEqual(4);
+    expect(R.findLast(even, List.of(1, 1, 1, 1))).toBeUndefined();
+  });
+
+  test('findLastIndex', () => {
+    const even = x => x % 2 === 0;
+    expect(R.findLastIndex(even, List.of(1, 2, 3, 4))).toEqual(3);
+    expect(R.findLastIndex(even, List.of(1, 1, 1, 1))).toEqual(-1);    
   });
 
 });
