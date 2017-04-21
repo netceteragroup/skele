@@ -157,7 +157,27 @@ describe('function tagged with `list` work with immutable structures', () => {
 
     R.forEachObjIndexed((v, k) => keysA.push(k), obj);
     expect(keysA).toEqual(['a', 'b']);
+  });
 
+  test('groupBy', () => {
+    let byGrade = R.groupBy(function(student) {
+      var score = student.score ? student.score : student.get('score');
+      return score < 65 ? 'F' :
+             score < 70 ? 'D' :
+             score < 80 ? 'C' :
+             score < 90 ? 'B' : 'A';
+    });
+    let students = [{name: 'Abby', score: 84},
+                    {name: 'Eddy', score: 58},
+                    {name: 'Jack', score: 69}];
 
+    const result = {
+     'B': [{name: 'Abby', score: 84}],
+     'D': [{name: 'Jack', score: 69}],
+     'F': [{name: 'Eddy', score: 58}]
+   };
+
+    expect(byGrade(students)).toEqual(result);
+    expect(Map(byGrade(fromJS(students)))).toEqualI(fromJS(result));
   });
 });
