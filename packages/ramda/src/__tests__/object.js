@@ -17,4 +17,9 @@ describe('function tagged with `object` work with immutable structures', () => {
       expect(R.assocPath([0, 'a'], 2, fromJS([{a: 100, b: 200}]))).toEqualI(fromJS([{a: 2, b: 200}]));
     });
   });
+
+  test('clone', () => {
+    const l = List.of(1, 2, 3);
+    expect(R.clone(l)).toBe(l);
+  });
 });
