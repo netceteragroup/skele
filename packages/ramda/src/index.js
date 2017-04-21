@@ -23,6 +23,7 @@ Object.assign(module.exports,
     contains: dispatch2(isCollection, 'contains', 'contains'),
     difference: require('./difference').default,
     differenceWith: require('./differenceWith').default,
-    dissoc: dispatch2(isAssociative, 'dissoc', 'delete')
+    dissoc: dispatch2(isAssociative, 'dissoc', 'delete'),
+    dissocPath: dispatch2(isAssociative, 'dissocPath', 'deleteIn')
   }
 );

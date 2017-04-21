@@ -22,5 +22,18 @@ describe('function tagged with `object` work with immutable structures', () => {
   test('dissoc', () => {
     expect(R.dissoc('a', Map({a: 1, b: 2}))).toEqualI(Map({b: 2}));
     expect(R.dissoc(1, List.of(1, 2))).toEqualI(List.of(1));
+  });
+
+  test('dissocPath', () => {
+    const struct = fromJS({
+      a: {
+        b: 1,
+        c: [100, 200]
+      }
+    });
+    const list = fromJS([1, {a: 2}]);
+
+    expect(R.dissocPath(['a', 'c', 0], struct)).toEqualI(fromJS({a: {b: 1, c: [200]}}));
+    expect(R.dissocPath([1, 'a'], list)).toEqualI(fromJS([1, {}]));
   })
 });
