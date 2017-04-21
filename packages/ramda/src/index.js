@@ -52,7 +52,8 @@ Object.assign(module.exports,
     forEachObjIndexed: dispatch(2, lastArg(isAssociative), 'forEach', 'forEachObjIndexed'),
     groupWith: dispatch(2, lastArg(isIndexed), require('./groupWith').default, 'groupWith'),
     has: dispatch(2, lastArg(isAssociative), 'has', 'has'),
-    hasIn: dispatch(2, lastArg(isAssociative), 'has', 'hasIn')
+    hasIn: dispatch(2, lastArg(isAssociative), 'has', 'hasIn'),
+    head: dispatch(1, lastArg(isCollection), 'first', 'head')
   }
 );
 

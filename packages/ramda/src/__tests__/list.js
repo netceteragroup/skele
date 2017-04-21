@@ -186,7 +186,11 @@ describe('function tagged with `list` work with immutable structures', () => {
     const result = [[0], [1, 1], [2], [3], [5], [8], [13], [21]];
 
     expect(R.groupWith(R.equals, list)).toEqual(result);
-
     expect(List(R.groupWith(R.equals, List(list)))).toEqualI(fromJS(result));
   });
+
+  test('head', () => {
+    expect(R.head(List.of(1, 2))).toEqual(1);
+    expect(R.head(List())).toBeUndefined();
+  })
 });
