@@ -2,7 +2,7 @@
 
 require('core-js/fn/object/assign');
 const {dispatch2, dispatch3} = require('./immutable/dispatch');
-const {isIndexed, isAssociative, isCollection} = require('./immutable/compat');
+const {isIndexed, isAssociative, isCollection, is} = require('./immutable/compat');
 
 module.exports = {};
 
@@ -26,6 +26,8 @@ Object.assign(module.exports,
     dissoc: dispatch2(isAssociative, 'dissoc', 'delete'),
     dissocPath: dispatch2(isAssociative, 'dissocPath', 'deleteIn'),
     dropLast: dispatch2(isIndexed, 'dropLast', 'skipLast'),
-    dropLastWhile: require('./dropLastWhile').default
+    dropLastWhile: require('./dropLastWhile').default,
+    dropRepeatsWith: require('./dropRepeatsWith').default,
+    dropRepeats: require('./dropRepeatsWith').default(is)
   }
 );
