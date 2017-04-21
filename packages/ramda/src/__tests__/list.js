@@ -83,4 +83,8 @@ describe('function tagged with `list` work with immutable structures', () => {
     expect(R.dropLast(4, List.of(1, 2, 3))).toEqualI(List());
   });
 
+  test('dropLastWhile', () => {
+    expect(R.dropLastWhile(x => x <= 3, List.of(1, 2, 3, 4, 3, 2, 1))).toEqualI(List.of(1, 2, 3, 4));
+  })
+
 });

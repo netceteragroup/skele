@@ -25,6 +25,7 @@ Object.assign(module.exports,
     differenceWith: require('./differenceWith').default,
     dissoc: dispatch2(isAssociative, 'dissoc', 'delete'),
     dissocPath: dispatch2(isAssociative, 'dissocPath', 'deleteIn'),
-    dropLast: dispatch2(isIndexed, 'dropLast', 'skipLast')
+    dropLast: dispatch2(isIndexed, 'dropLast', 'skipLast'),
+    dropLastWhile: require('./dropLastWhile').default
   }
 );
