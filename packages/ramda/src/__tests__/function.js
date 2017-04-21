@@ -4,14 +4,12 @@ import R from '..';
 import {List} from 'immutable';
 
 describe('function tagged with `function` work with immutable structures', () => {
-  describe('addIndex', () => {
-    test('works with lists', () => {
-      const mapIndexed = R.addIndex(R.map);
-      expect(
-        mapIndexed(
-          (v, i) => `${v}-${i}`,
-          List.of('a', 'b', 'c')))
-        .toEqualI(List.of('a-0', 'b-1', 'c-2'));
-    });
+  test('addIndex', () => {
+    const mapIndexed = R.addIndex(R.map);
+    expect(
+      mapIndexed(
+        (v, i) => `${v}-${i}`,
+        List.of('a', 'b', 'c')))
+      .toEqualI(List.of('a-0', 'b-1', 'c-2'));
   });
 });
