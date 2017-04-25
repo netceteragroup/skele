@@ -53,12 +53,16 @@ Object.assign(module.exports,
     groupWith: dispatch(2, lastArg(isIndexed), require('./groupWith').default, 'groupWith'),
     has: dispatch(2, lastArg(isAssociative), 'has', 'has'),
     hasIn: dispatch(2, lastArg(isAssociative), 'has', 'hasIn'),
-    head: dispatch(1, lastArg(isCollection), 'first', 'head')
+    head: dispatch(1, lastArg(isCollection), 'first', 'head'),
+
+    prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
+    reduceBy: dispatch(2, lastArg(isCollection), 'reduceBy', require('./reduceBy').default)
   }
 );
 
 Object.assign(module.exports,
   {
-    dropRepeats: module.exports.dropRepeatsWith(is)
+    dropRepeats: module.exports.dropRepeatsWith(is),
+    indexBy: module.exports.reduceBy((acc, e) => e, null)
   }
 );

@@ -70,4 +70,19 @@ describe('function tagged with `object` work with immutable structures', () => {
     expect(R.has('c', Map(obj))).toBe(false);
   });
 
+  test('prop', () => {
+    const obj = {
+      a: 1,
+      b: 2
+    };
+    const arr = ['x', 'y'];
+
+    expect(R.prop('a', obj)).toEqual(1);
+
+    expect(R.prop('a', Map(obj))).toEqual(1);
+    expect(R.prop('x')(Map(obj))).toBeUndefined();
+
+    expect(R.prop(1, List(arr))).toEqual('y');
+  });
+
 });

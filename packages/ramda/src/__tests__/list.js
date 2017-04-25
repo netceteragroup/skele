@@ -192,5 +192,13 @@ describe('function tagged with `list` work with immutable structures', () => {
   test('head', () => {
     expect(R.head(List.of(1, 2))).toEqual(1);
     expect(R.head(List())).toBeUndefined();
+  });
+
+  test('indexBy', () => {
+    const list = [{id: 'xyz', title: 'A'}, {id: 'abc', title: 'B'}];
+    const result = {abc: {id: 'abc', title: 'B'}, xyz: {id: 'xyz', title: 'A'}};
+
+    expect(R.indexBy(R.prop('id'), list)).toEqual(fromJS(result));
+    expect(R.indexBy(R.prop('id'), fromJS(list))).toEqualI(fromJS(result));
   })
 });
