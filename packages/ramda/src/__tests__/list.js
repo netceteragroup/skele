@@ -198,7 +198,24 @@ describe('function tagged with `list` work with immutable structures', () => {
     const list = [{id: 'xyz', title: 'A'}, {id: 'abc', title: 'B'}];
     const result = {abc: {id: 'abc', title: 'B'}, xyz: {id: 'xyz', title: 'A'}};
 
-    expect(R.indexBy(R.prop('id'), list)).toEqual(fromJS(result));
+    expect(R.indexBy(R.prop('id'), list)).toEqual(result);
     expect(R.indexBy(R.prop('id'), fromJS(list))).toEqualI(fromJS(result));
+  });
+
+  test('indexOf', () => {
+    const list = ['a', 'b', 'c'];
+
+    expect(R.indexOf('b', list)).toEqual(1);
+
+    expect(R.indexOf('b', List(list))).toEqual(1);
+    expect(R.indexOf('bla', List(list))).toEqual(-1);
+  });
+
+  test('init', () => {
+    expect(R.init([1, 2, 3])).toEqual([1, 2]);
+
+    expect(R.init(List.of(1, 2, 3))).toEqualI(List.of(1, 2));
+    expect(R.init(List.of(1))).toEqualI(List());
+    expect(R.init(List())).toEqualI(List());
   })
 });

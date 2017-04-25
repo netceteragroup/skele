@@ -54,9 +54,11 @@ Object.assign(module.exports,
     has: dispatch(2, lastArg(isAssociative), 'has', 'has'),
     hasIn: dispatch(2, lastArg(isAssociative), 'has', 'hasIn'),
     head: dispatch(1, lastArg(isCollection), 'first', 'head'),
+    indexOf: dispatch(2, lastArg(isIndexed), 'indexOf', 'indexOf'),
+    init: dispatch(1, lastArg(isCollection), 'butLast', 'init'),
 
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
-    reduceBy: dispatch(2, lastArg(isCollection), 'reduceBy', require('./reduceBy').default)
+    reduceBy: dispatch(2, lastArg(isCollection), require('./reduceBy').default, 'reduceBy')
   }
 );
 
