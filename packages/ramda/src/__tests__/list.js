@@ -217,5 +217,17 @@ describe('function tagged with `list` work with immutable structures', () => {
     expect(R.init(List.of(1, 2, 3))).toEqualI(List.of(1, 2));
     expect(R.init(List.of(1))).toEqualI(List());
     expect(R.init(List())).toEqualI(List());
-  })
+  });
+
+  test('insert', () => {
+    expect(R.insert(2, 'x', [1, 2, 3, 4])).toEqual([1, 2, 'x', 3, 4]);
+    expect(R.insert(2, 'x', List.of(1, 2, 3, 4))).toEqualI(List.of(1, 2, 'x', 3, 4));
+  });
+
+  test('insertAll', () => {
+    expect(R.insertAll(2, ['x','y','z'], [1,2,3,4])).toEqual([1,2,'x','y','z',3,4]);
+    expect(R.insertAll(2, ['x','y','z'], List([1,2,3,4]))).toEqualI(List([1,2,'x','y','z',3,4]));
+    expect(R.insertAll(2, List(['x','y','z']), [1,2,3,4])).toEqualI(List([1,2,'x','y','z',3,4]));
+    expect(R.insertAll(2, List(['x','y','z']), List([1,2,3,4]))).toEqualI(List([1,2,'x','y','z',3,4]));
+  });
 });

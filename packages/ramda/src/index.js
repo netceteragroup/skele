@@ -56,6 +56,12 @@ Object.assign(module.exports,
     head: dispatch(1, lastArg(isCollection), 'first', 'head'),
     indexOf: dispatch(2, lastArg(isIndexed), 'indexOf', 'indexOf'),
     init: dispatch(1, lastArg(isCollection), 'butLast', 'init'),
+    insert: dispatch(3, lastArg(isIndexed), 'insert', 'insert'),
+    insertAll: dispatch(
+      3,
+      anyArg(isIndexed, O.takeLast(2)),
+      (pos, a, b) => List(b).splice(pos, 0, ...(isIndexed(a) ? a.toArray() : a)),
+      O.insertAll),
 
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
     reduceBy: dispatch(2, lastArg(isCollection), require('./reduceBy').default, 'reduceBy')
