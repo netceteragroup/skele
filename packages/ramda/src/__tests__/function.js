@@ -19,4 +19,13 @@ describe('function tagged with `function` work with immutable structures', () =>
     expect(R.empty(Set.of(1, 2, 3))).toEqualI(Set());
     expect(R.empty(Seq([1, 2, 3]))).toEqualI(Seq());
   });
+
+  test('juxt', () => {
+    const getRange = R.juxt([Math.min, Math.max]);
+    expect(getRange(3, 4, 9, -3)).toEqual([-3, 9]);
+
+    const getR = R.juxt(List.of(Math.min, Math.max));
+    expect(getR(3, 4, 9, -3)).toEqualI(List([-3, 9]));
+
+  })
 });

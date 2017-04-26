@@ -88,6 +88,7 @@ Object.assign(module.exports,
       (m) => m.reduce((r, v, k) => r.update(v, ks => ks == null ? List.of(k) : ks.push(k)), Map()),
       'invert'),
     invertObj: dispatch(1, lastArg(isAssociative), m => m.reduce((r, v, k) => r.set(v, k), Map()), 'invertObj'),
+    juxt: dispatch(1, firstArg(isIndexed), (fns) => (...args) => fns.map(f => f(...args)), 'juxt'),
 
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
     reduce: dispatch(
@@ -108,6 +109,11 @@ Object.assign(module.exports,
   {
     dropRepeats: module.exports.dropRepeatsWith(is),
     indexBy: module.exports.reduceBy((acc, e) => e, null),
+    isEmpty: dispatch(
+      1,
+      lastArg(isCollection),
+      x => x != null && module.exports.equals(x, module.exports.empty(x)),
+     'isEmpty')
   }
 );
 

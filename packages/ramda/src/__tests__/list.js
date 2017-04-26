@@ -269,4 +269,11 @@ describe('function tagged with `list` work with immutable structures', () => {
     expect(R.into([], transducer, numbers)).toEqual([2, 3]);
     expect(R.into(List(), transducer, List(numbers))).toEqual(List([2, 3]));
   });
+
+  test('join', () => {
+    const list = [1, 2, 3];
+
+    expect(R.join(', ', list)).toEqual("1, 2, 3");
+    expect(R.join(', ', List(list))).toEqual("1, 2, 3");
+  })
 });
