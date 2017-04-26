@@ -62,9 +62,20 @@ Object.assign(module.exports,
       anyArg(isIndexed, O.takeLast(2)),
       (pos, a, b) => List(b).splice(pos, 0, ...(isIndexed(a) ? a.toArray() : a)),
       O.insertAll),
+    intersection: dispatch(2, anyArg(isCollection), (a, b) => Set(a).intersect(Set(b)), O.intersection),
+    intersectionWith: dispatch(
+      3,
+      anyArg(isCollection, O.takeLast(2)),
+      (pred, a, b) => {
+        const first = Set(a);
+        const second = Set(b);
+        return first.filter(x => second.some(O.partial(pred, [x])));
+      },
+      O.intersectionWith),
 
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
-    reduceBy: dispatch(2, lastArg(isCollection), require('./reduceBy').default, 'reduceBy')
+    reduceBy: dispatch(2, lastArg(isCollection), require('./reduceBy').default, 'reduceBy'),
+
   }
 );
 

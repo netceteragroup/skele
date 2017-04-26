@@ -1,7 +1,7 @@
 'use strict';
 
 import R from '..';
-import {List, OrderedMap, Seq, fromJS, Map} from 'immutable';
+import {List, OrderedMap, Set, Seq, fromJS, Map} from 'immutable';
 
 describe('function tagged with `list` work with immutable structures', () => {
   test('adjust', () => {
@@ -229,5 +229,31 @@ describe('function tagged with `list` work with immutable structures', () => {
     expect(R.insertAll(2, ['x','y','z'], List([1,2,3,4]))).toEqualI(List([1,2,'x','y','z',3,4]));
     expect(R.insertAll(2, List(['x','y','z']), [1,2,3,4])).toEqualI(List([1,2,'x','y','z',3,4]));
     expect(R.insertAll(2, List(['x','y','z']), List([1,2,3,4]))).toEqualI(List([1,2,'x','y','z',3,4]));
+  });
+
+  test('intersection', () => {
+    expect(R.intersection([1,2,3,4], [7,6,5,4,3])).toEqual([3, 4]);
+    expect(R.intersection(Set([1,2,3,4]), List([7,6,5,4,3]))).toEqualI(Set([4, 3]));
+  });
+
+  test('intersectionWith', () => {
+    const buffaloSpringfield = [
+      {id: 824, name: 'Richie Furay'},
+      {id: 956, name: 'Dewey Martin'},
+      {id: 313, name: 'Bruce Palmer'},
+      {id: 456, name: 'Stephen Stills'},
+      {id: 177, name: 'Neil Young'}
+    ];
+    const csny = [
+      {id: 204, name: 'David Crosby'},
+      {id: 456, name: 'Stephen Stills'},
+      {id: 539, name: 'Graham Nash'},
+      {id: 177, name: 'Neil Young'}
+    ];
+
+    const result = [{id: 456, name: 'Stephen Stills'}, {id: 177, name: 'Neil Young'}];
+
+    expect(R.intersectionWith(R.eqBy(R.prop('id')), buffaloSpringfield, csny)).toEqual(result);
+    expect(R.intersectionWith(R.eqBy(R.prop('id')), fromJS(buffaloSpringfield), fromJS(csny))).toEqualI(Set(fromJS(result)));
   });
 });
