@@ -3,7 +3,7 @@
 require('core-js/fn/object/assign');
 const {firstArg, lastArg, anyArg, dispatch} = require('./immutable/dispatch');
 const {isIndexed, isAssociative, isCollection, is} = require('./immutable/compat');
-const {List, Set, Seq} = require('immutable');
+const {List, Map, Set, Seq} = require('immutable');
 
 const O = require('ramda');
 
@@ -82,6 +82,12 @@ Object.assign(module.exports,
         return isReduced(r) ? value(r) : r
       },
       O.into),
+    invert: dispatch(
+      1,
+      lastArg(isAssociative),
+      (m) => m.reduce((r, v, k) => r.update(v, ks => ks == null ? List.of(k) : ks.push(k)), Map()),
+      'invert'),
+    invertObj: dispatch(1, lastArg(isAssociative), m => m.reduce((r, v, k) => r.set(v, k), Map()), 'invertObj'),
 
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
     reduce: dispatch(
