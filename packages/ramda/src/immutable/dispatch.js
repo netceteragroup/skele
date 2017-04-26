@@ -10,6 +10,10 @@ export function lastArg(pred) {
   return (...args) =>  args.length > 0 ? pred(args[args.length - 1]) : false;
 }
 
+export function firstArg(pred) {
+  return (...args) => args.length > 0 ? pred(args[0]) : false;
+}
+
 function invoker(arity, method) {
   if (typeof method === 'function') return method;
   return R.invoker(arity, method);

@@ -1,9 +1,10 @@
 'use strict';
 
 require('core-js/fn/object/assign');
-const {lastArg, anyArg, dispatch} = require('./immutable/dispatch');
+const {firstArg, lastArg, anyArg, dispatch} = require('./immutable/dispatch');
 const {isIndexed, isAssociative, isCollection, is} = require('./immutable/compat');
 const {List, Set, Seq} = require('immutable');
+
 const O = require('ramda');
 
 module.exports = {};
@@ -72,8 +73,26 @@ Object.assign(module.exports,
         return first.filter(x => second.some(O.partial(pred, [x])));
       },
       O.intersectionWith),
+    intersperse: dispatch(2, lastArg(isCollection), 'interpose', 'intersperse'),
+    into: dispatch(
+      3,
+      O.and(firstArg(isCollection), lastArg(isCollection)),
+      (acc, xf, list) => {
+        const r = O.transduce(xf, (l, v) => isReduced(l) ? l : l.push(v), acc, list);
+        return isReduced(r) ? value(r) : r
+      },
+      O.into),
 
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
+    reduce: dispatch(
+      2,
+      lastArg(isCollection),
+      (rf, init, l) => {
+        const f = (a, v) => isReduced(a) ? a : rf(a, v);
+        const r = O.reduce(f, init, l);
+        return isReduced(r) ? value(r) : r;
+      },
+    'reduce'),
     reduceBy: dispatch(2, lastArg(isCollection), require('./reduceBy').default, 'reduceBy'),
 
   }
@@ -82,6 +101,14 @@ Object.assign(module.exports,
 Object.assign(module.exports,
   {
     dropRepeats: module.exports.dropRepeatsWith(is),
-    indexBy: module.exports.reduceBy((acc, e) => e, null)
+    indexBy: module.exports.reduceBy((acc, e) => e, null),
   }
 );
+
+function isReduced(v) {
+  return v && v['@@transducer/reduced'] != null;
+}
+
+function value(v) {
+  return v && v['@@transducer/value'];
+}

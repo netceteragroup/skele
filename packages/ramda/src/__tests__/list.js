@@ -256,4 +256,17 @@ describe('function tagged with `list` work with immutable structures', () => {
     expect(R.intersectionWith(R.eqBy(R.prop('id')), buffaloSpringfield, csny)).toEqual(result);
     expect(R.intersectionWith(R.eqBy(R.prop('id')), fromJS(buffaloSpringfield), fromJS(csny))).toEqualI(Set(fromJS(result)));
   });
+
+  test('intersperse', () => {
+    expect(R.intersperse('n', ['ba', 'a', 'a'])).toEqual(['ba', 'n', 'a', 'n', 'a']);
+    expect(R.intersperse('n', List(['ba', 'a', 'a']))).toEqualI(List(['ba', 'n', 'a', 'n', 'a']));
+  });
+
+  test('into', () => {
+    const numbers = [1, 2, 3, 4];
+    const transducer = R.compose(R.map(R.add(1)), R.take(2));
+
+    expect(R.into([], transducer, numbers)).toEqual([2, 3]);
+    expect(R.into(List(), transducer, List(numbers))).toEqual(List([2, 3]));
+  });
 });
