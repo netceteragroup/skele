@@ -275,5 +275,18 @@ describe('function tagged with `list` work with immutable structures', () => {
 
     expect(R.join(', ', list)).toEqual("1, 2, 3");
     expect(R.join(', ', List(list))).toEqual("1, 2, 3");
-  })
+  });
+
+  test('last', () => {
+    expect(R.last(List.of(1, 2))).toEqual(2);
+  });
+
+  test('lastIndexOf', () => {
+    expect(R.lastIndexOf(40, List.of(40, 1, 40, 2))).toEqual(2);
+  });
+
+  test('length', () => {
+    expect(R.length(List.of(2))).toEqual(1);
+  });
+
 });

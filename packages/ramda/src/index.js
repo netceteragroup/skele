@@ -89,6 +89,9 @@ Object.assign(module.exports,
       'invert'),
     invertObj: dispatch(1, lastArg(isAssociative), m => m.reduce((r, v, k) => r.set(v, String(k)), Map()), 'invertObj'),
     juxt: dispatch(1, firstArg(isIndexed), (fns) => (...args) => fns.map(f => f(...args)), 'juxt'),
+    last: dispatch(1, firstArg(isCollection), 'last', 'last'),
+    lastIndexOf: dispatch(2, lastArg(isCollection), 'lastIndexOf', 'lastIndexOf'),
+    length: dispatch(1, lastArg(isCollection), 'count', 'length'),
 
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
     reduce: dispatch(
