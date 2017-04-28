@@ -105,16 +105,24 @@ describe('function tagged with `object` work with immutable structures', () => {
     const result1 = { 'alice': 'first', 'jake':'second' };
 
 
-    // intentional deviation from ramda: makes no sense to have array indices converted to strings
-
     const raceResults2 = ['alice', 'jake'];
-    const result2 = { 'alice': 0, 'jake': 1 };
+    const result2 = { 'alice': '0', 'jake': '1' };
 
 
     expect(R.invertObj(raceResults1)).toEqual(result1);
     expect(R.invertObj(Map(raceResults1))).toEqualI(Map(result1));
 
-    expect(R.invertObj(raceResults2)).toEqual({'alice': '0', 'jake': '1'});
+    expect(R.invertObj(raceResults2)).toEqual(result2);
     expect(R.invertObj(List(raceResults2))).toEqualI(Map(result2));
+  });
+
+  test('keys', () => {
+    const obj = {a: 1, b: 2, c: 3};
+    const arr = ['x', 'y', 'z'];
+
+    expect(R.keys(obj)).toEqual(['a', 'b', 'c']);
+    expect(List(R.keys(Map(obj)))).toEqual(List.of('a', 'b', 'c'));
+    expect(List(R.keys(List(arr)))).toEqualI(List.of('0', '1', '2'));
+
   });
 });

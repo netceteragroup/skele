@@ -85,9 +85,9 @@ Object.assign(module.exports,
     invert: dispatch(
       1,
       lastArg(isAssociative),
-      (m) => m.reduce((r, v, k) => r.update(v, ks => ks == null ? List.of(k) : ks.push(k)), Map()),
+      (m) => m.reduce((r, v, k) => r.update(v, ks => ks == null ? List.of(String(k)) : ks.push(String(k))), Map()),
       'invert'),
-    invertObj: dispatch(1, lastArg(isAssociative), m => m.reduce((r, v, k) => r.set(v, k), Map()), 'invertObj'),
+    invertObj: dispatch(1, lastArg(isAssociative), m => m.reduce((r, v, k) => r.set(v, String(k)), Map()), 'invertObj'),
     juxt: dispatch(1, firstArg(isIndexed), (fns) => (...args) => fns.map(f => f(...args)), 'juxt'),
 
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
@@ -113,9 +113,16 @@ Object.assign(module.exports,
       1,
       lastArg(isCollection),
       x => x != null && module.exports.equals(x, module.exports.empty(x)),
-     'isEmpty')
+     'isEmpty'),
+    keys: dispatch(1, lastArg(isAssociative), O.pipe(O.invoker(0, 'keySeq'), module.exports.map(String)), 'keys'),
+
   }
 );
+
+Object.assign(module.exports,
+{
+  keysIn: module.exports.keys
+});
 
 function isReduced(v) {
   return v && v['@@transducer/reduced'] != null;
