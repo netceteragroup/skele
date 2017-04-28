@@ -6,10 +6,8 @@ const {isIndexed, isAssociative, isCollection, is} = require('./immutable/compat
 const {List, Map, Set, Seq} = require('immutable');
 
 const O = require('ramda');
-
-module.exports = {};
-
-Object.assign(module.exports,
+const R = {};
+Object.assign(R,
   O,
   {
     adjust: dispatch(3, lastArg(isIndexed), require('./adjust').default, O.adjust),
@@ -93,6 +91,9 @@ Object.assign(module.exports,
     lastIndexOf: dispatch(2, lastArg(isCollection), 'lastIndexOf', 'lastIndexOf'),
     length: dispatch(1, lastArg(isCollection), 'count', 'length'),
 
+    nth: dispatch(2, lastArg(isIndexed), 'get', 'nth'),
+
+    path: dispatch(2, lastArg(isAssociative), 'getIn', 'path'),
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
     reduce: dispatch(
       2,
@@ -104,27 +105,33 @@ Object.assign(module.exports,
       },
     'reduce'),
     reduceBy: dispatch(2, lastArg(isCollection), require('./reduceBy').default, 'reduceBy'),
+    update: dispatch(3, lastArg(isAssociative), 'set', 'update')
 
   }
 );
 
-Object.assign(module.exports,
+Object.assign(R,
   {
-    dropRepeats: module.exports.dropRepeatsWith(is),
-    indexBy: module.exports.reduceBy((acc, e) => e, null),
+    dropRepeats: R.dropRepeatsWith(is),
+    indexBy: R.reduceBy((acc, e) => e, null),
     isEmpty: dispatch(
       1,
       lastArg(isCollection),
-      x => x != null && module.exports.equals(x, module.exports.empty(x)),
+      x => x != null && R.equals(x, R.empty(x)),
      'isEmpty'),
-    keys: dispatch(1, lastArg(isAssociative), O.pipe(O.invoker(0, 'keySeq'), module.exports.map(String)), 'keys'),
+    keys: dispatch(1, lastArg(isAssociative), O.pipe(O.invoker(0, 'keySeq'), R.map(String)), 'keys'),
+    lensIndex: (n) => R.lens(R.nth(n), R.update(n)),
+    lensPath: (p) => R.lens(R.path(p), R.assocPath(p)),
+    lensProp: (k) => R.lens(R.prop(k), R.assoc(k))
 
   }
 );
 
-Object.assign(module.exports,
+
+
+Object.assign(R,
 {
-  keysIn: module.exports.keys
+  keysIn: R.keys
 });
 
 function isReduced(v) {
@@ -134,3 +141,5 @@ function isReduced(v) {
 function value(v) {
   return v && v['@@transducer/value'];
 }
+
+module.exports = R;

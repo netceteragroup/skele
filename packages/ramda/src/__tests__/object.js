@@ -123,6 +123,42 @@ describe('function tagged with `object` work with immutable structures', () => {
     expect(R.keys(obj)).toEqual(['a', 'b', 'c']);
     expect(List(R.keys(Map(obj)))).toEqual(List.of('a', 'b', 'c'));
     expect(List(R.keys(List(arr)))).toEqualI(List.of('0', '1', '2'));
-
   });
+
+  test('lens', () => {
+    const obj = {a: 1, b: 3};
+    const aLens = R.lens(R.prop('a'), R.assoc('a'));
+
+    expect(R.view(aLens, obj)).toEqual(1);
+    expect(R.view(aLens, Map(obj))).toEqual(1);
+    expect(R.over(aLens, R.negate, Map(obj))).toEqualI(Map({a: -1, b: 3}));
+  });
+
+  test('lensIndex', () => {
+    const arr = ['a', 'b', 'c'];
+    const second = R.lensIndex(1);
+
+    expect(R.view(second, arr)).toEqual('b');
+    expect(R.view(second, List(arr))).toEqual('b');
+    expect(R.over(second, R.toUpper, List(arr))).toEqualI(List.of('a', 'B', 'c'));
+  });
+
+  test('lensPath', () => {
+    const obj = {a: 1, b: {c: 2}};
+    const cLens = R.lensPath(['b', 'c']);
+
+    expect(R.view(cLens, obj)).toEqual(2);
+    expect(R.view(cLens, fromJS(obj))).toEqual(2);
+    expect(R.over(cLens, R.negate, fromJS(obj))).toEqualI(fromJS({a: 1, b: {c: -2}}));
+  });
+
+  test('lensProp', () => {
+    const obj = {a: 1, b: 3};
+    const aLens = R.lensProp('a');
+
+    expect(R.view(aLens, obj)).toEqual(1);
+    expect(R.view(aLens, Map(obj))).toEqual(1);
+    expect(R.over(aLens, R.negate, Map(obj))).toEqualI(Map({a: -1, b: 3}));
+  });
+
 });
