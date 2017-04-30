@@ -90,7 +90,7 @@ export default class Engine extends Component {
   render() {
     return (
       <ContextWrapper store={this.state.store}>
-        { ui.forElement(this.state.store.getState()) }
+        { ui._for(this.state.store.getState()) }
       </ContextWrapper>
     );
   }

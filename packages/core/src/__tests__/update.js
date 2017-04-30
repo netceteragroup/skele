@@ -10,6 +10,7 @@ import { ui, update, Engine } from '..';
 describe('updates API', function() {
 
   it('registers an update', function() {
+
     const action1 = {
       fromKind: ['article', 'specific'],
       type: 'TOGGLE_BOOKMARK'
@@ -130,11 +131,11 @@ class Scene extends React.Component {
 }
 
 function registerStackAndScene() {
-  ui.register(['navigation', 'stack'], ({ element }) => {
+  ui.register(['navigation', 'stack'], ({ element, uiFor }) => {
     return (
       <div>
         <h1>{element.get('title')}</h1>
-        <div>{ui.forElements(element.get('children'))}</div>
+        <div>{uiFor('children')}</div>
       </div>
     );
   });
