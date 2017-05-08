@@ -19,9 +19,9 @@ describe('Reads', () => {
   };
 
   beforeEach(() => {
-    ui.register('app', ({ element }) => {
+    ui.register('app', ({ uiFor }) => {
       return (
-        <div>{ui.forElement(element.get('content'))}</div>
+        <div>{uiFor('content')}</div>
       );
     });
     ui.register('scene', () => {

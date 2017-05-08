@@ -71,7 +71,7 @@ export function register(kind, Component) {
   return ElementView;
 }
 
-function _for(element, reactKey=undefined) {
+export function _for(element, reactKey=undefined) {
   if (Iterable.isIndexed(element)) {
     return _forElements(element);
   }
