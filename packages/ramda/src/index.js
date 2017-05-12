@@ -1,7 +1,7 @@
 'use strict';
 
 require('core-js/fn/object/assign');
-const {firstArg, lastArg, anyArg, dispatch} = require('./immutable/dispatch');
+const {firstArg, lastArg, anyArg, dispatch, pass} = require('./immutable/dispatch');
 const {isIndexed, isAssociative, isCollection, is} = require('./immutable/compat');
 const {List, Map, Set, Seq} = require('immutable');
 
@@ -90,6 +90,8 @@ Object.assign(R,
     last: dispatch(1, firstArg(isCollection), 'last', 'last'),
     lastIndexOf: dispatch(2, lastArg(isCollection), 'lastIndexOf', 'lastIndexOf'),
     length: dispatch(1, lastArg(isCollection), 'count', 'length'),
+    lift: pass('lift'),
+    liftN: pass('liftN'),
 
     nth: dispatch(2, lastArg(isIndexed), 'get', 'nth'),
 
@@ -123,7 +125,6 @@ Object.assign(R,
     lensIndex: (n) => R.lens(R.nth(n), R.update(n)),
     lensPath: (p) => R.lens(R.path(p), R.assocPath(p)),
     lensProp: (k) => R.lens(R.prop(k), R.assoc(k))
-
   }
 );
 

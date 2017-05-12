@@ -34,3 +34,7 @@ export const dispatch = function dispatch(arity, pred, method, orig) {
         original(arity, orig)));
   }
 }
+
+export function pass(method) {
+  return () => { throw new Error(`The function ''${method}' is not yet implemented for immutable'`) };
+}
