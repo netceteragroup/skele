@@ -121,7 +121,7 @@ Object.assign(R,
       lastArg(isCollection),
       x => x != null && R.equals(x, R.empty(x)),
      'isEmpty'),
-    keys: dispatch(1, lastArg(isAssociative), O.pipe(O.invoker(0, 'keySeq'), R.map(String)), 'keys'),
+    keys: dispatch(1, lastArg(isAssociative), R.pipe(O.invoker(0, 'keySeq'), R.map(String)), 'keys'),
     lensIndex: (n) => R.lens(R.nth(n), R.update(n)),
     lensPath: (p) => R.lens(R.path(p), R.assocPath(p)),
     lensProp: (k) => R.lens(R.prop(k), R.assoc(k))
