@@ -1,0 +1,14 @@
+{
+  "name": "@girders-elements/config",
+  "version": "1.0.0-alpha.2",
+  "description": "Girders elements packages that provides the posibility to define a custom configuration",
+  "main": "index.js",
+  "keywords": [
+    "netcetera"
+  ],
+  "author": "netcetera",
+  "license": "MIT",
+  "dependencies": {
+    "ramda": "0.23.0"
+  }
+}

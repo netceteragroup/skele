@@ -70,7 +70,8 @@
       "/dist/es5/"
     ],
     "roots": [
-      "<rootDir>/packages/core"
+      "<rootDir>/packages/core",
+      "<rootDir>/packages/config"
     ],
     "testMatch": [
       "**/__tests__/**/*.js"
