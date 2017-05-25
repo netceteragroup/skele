@@ -1,15 +1,15 @@
 import { pickBy } from 'ramda'
 import deepMerge from './utils/merge'
 
-export let activeConfiguration = {};
-
 let layers = []
 
-export function define(configuration) {
+let activeConfiguration = {};
+
+function define(configuration) {
   layers.push(configuration)
 }
 
-export function init(profiles) {
+function init(profiles) {
 
   // reverse the order of the profiles, least important handled first
   // and overridden with values from the more important profiles
@@ -32,4 +32,16 @@ export function init(profiles) {
        }
      )
    })
+}
+
+export {
+  activeConfiguration,
+  define,
+  init
+}
+
+export default {
+  activeConfiguration,
+  define,
+  init
 }
