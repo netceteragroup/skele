@@ -116,6 +116,8 @@ Object.assign(R,
       ),
       'mapAccumRight'
     ),
+    mapObjIndexed: dispatch(2, lastArg(isAssociative), 'map', 'mapObjIndexed'),
+    
     nth: dispatch(2, lastArg(isIndexed), 'get', 'nth'),
 
     path: dispatch(2, lastArg(isAssociative), 'getIn', 'path'),
@@ -131,7 +133,6 @@ Object.assign(R,
     'reduce'),
     reduceBy: dispatch(2, lastArg(isCollection), require('./reduceBy').default, 'reduceBy'),
     update: dispatch(3, lastArg(isAssociative), 'set', 'update')
-
   }
 );
 

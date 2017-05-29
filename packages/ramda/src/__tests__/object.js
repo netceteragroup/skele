@@ -161,4 +161,13 @@ describe('function tagged with `object` work with immutable structures', () => {
     expect(R.over(aLens, R.negate, Map(obj))).toEqualI(Map({a: -1, b: 3}));
   });
 
+  test('mapObjectIndexed', () => {
+     const values = { x: 1, y: 2, z: 3 };
+     const prependKeyAndDouble = (num, key, obj) => key + (num * 2);
+
+     expect(R.mapObjIndexed(prependKeyAndDouble, values)).toEqual({ x: 'x2', y: 'y4', z: 'z6' });
+     expect(R.mapObjIndexed(prependKeyAndDouble, Map(values))).toEqualI(Map({ x: 'x2', y: 'y4', z: 'z6' }));
+
+  })
+
 });
