@@ -117,7 +117,8 @@ Object.assign(R,
       'mapAccumRight'
     ),
     mapObjIndexed: dispatch(2, lastArg(isAssociative), 'map', 'mapObjIndexed'),
-    
+    median: dispatch(1, lastArg(isCollection), (l) => R.median(l.toArray()), 'median'),
+
     nth: dispatch(2, lastArg(isIndexed), 'get', 'nth'),
 
     path: dispatch(2, lastArg(isAssociative), 'getIn', 'path'),
@@ -132,6 +133,7 @@ Object.assign(R,
       },
     'reduce'),
     reduceBy: dispatch(2, lastArg(isCollection), require('./reduceBy').default, 'reduceBy'),
+
     update: dispatch(3, lastArg(isAssociative), 'set', 'update')
   }
 );
@@ -148,7 +150,8 @@ Object.assign(R,
     keys: dispatch(1, lastArg(isAssociative), R.pipe(O.invoker(0, 'keySeq'), R.map(String)), 'keys'),
     lensIndex: (n) => R.lens(R.nth(n), R.update(n)),
     lensPath: (p) => R.lens(R.path(p), R.assocPath(p)),
-    lensProp: (k) => R.lens(R.prop(k), R.assoc(k))
+    lensProp: (k) => R.lens(R.prop(k), R.assoc(k)),
+    mean: (l) => R.sum(l) / count(l)
   }
 );
 
@@ -166,5 +169,7 @@ function isReduced(v) {
 function value(v) {
   return v && v['@@transducer/value'];
 }
+
+const count = dispatch(1, lastArg(isCollection), 'count', a => a.length);
 
 module.exports = R;

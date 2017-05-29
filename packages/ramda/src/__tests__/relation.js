@@ -29,7 +29,14 @@ describe('function tagged with `relation` work with immutable structures', () =>
     expect(R.equals([1, 2, {a: 3}], fromJS([1, 2, {a: 3}]))).toBe(false);
     expect(R.equals(fromJS([1, 2, {a: 3}]), [1, 2, {a: 3}])).toBe(false);
     expect(R.equals(fromJS([1, 2, {a: 3}]), fromJS([1, 2, {a: 3}]))).toBe(true);
-
-
   });
+
+  test('mean', () => {
+    expect(R.mean([2, 7, 9])).toEqual(6);
+    expect(R.mean([])).toEqual(0.0/0.0);
+
+    expect(R.mean(List.of(2, 7, 9))).toEqual(6);
+    expect(R.mean(List())).toEqual(0.0/0.0);
+
+  })
 });
