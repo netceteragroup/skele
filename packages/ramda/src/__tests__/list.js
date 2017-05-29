@@ -289,4 +289,26 @@ describe('function tagged with `list` work with immutable structures', () => {
     expect(R.length(List.of(2))).toEqual(1);
   });
 
+  test('mapAccum', () => {
+    const digits = ['1', '2', '3', '4'];
+    const appender = (a, b) => [a + b, a + b];
+    const appender2 = (a, b) => List.of(a + b, a + b);
+    const result = ['01234', ['01', '012', '0123', '01234']];
+
+    expect(R.mapAccum(appender, 0, digits)).toEqual(result);
+    expect(R.mapAccum(appender, 0, List(digits))).toEqualI(fromJS(result));
+    expect(R.mapAccum(appender2, 0, List(digits))).toEqualI(fromJS(result));
+  });
+
+  test('mapAccumRight', () => {
+    const digits = ['1', '2', '3', '4'];
+    const appender = (a, b) => [a + b, a + b];
+    const appender2 = (a, b) => List.of(a + b, a + b);
+    const result = [['12345', '2345', '345', '45'], '12345'];
+
+    expect(R.mapAccumRight(appender, 5, digits)).toEqual(result);
+    expect(R.mapAccumRight(appender, 5, List(digits))).toEqualI(fromJS(result));
+    expect(R.mapAccumRight(appender2, 5, List(digits))).toEqualI(fromJS(result));
+  });
+
 });

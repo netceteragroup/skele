@@ -92,7 +92,30 @@ Object.assign(R,
     length: dispatch(1, lastArg(isCollection), 'count', 'length'),
     lift: pass('lift'),
     liftN: pass('liftN'),
-
+    mapAccum: dispatch(
+      3,
+      lastArg(isCollection),
+      (f, zero, list) => list.reduce(
+        (acc, el) => {
+          let t = List(f(acc.get(0), el));
+          return acc.set(0, t.get(0)).update(1, l => l.push(t.get(1)));
+        },
+        List.of(zero, List())
+      ),
+      'mapAccum'
+    ),
+    mapAccumRight: dispatch(
+      3,
+      lastArg(isCollection),
+      (f, zero, list) => list.reduceRight(
+        (acc, el) => {
+          let t = List(f(el, acc.get(1)));
+          return acc.set(1, t.get(1)).update(0, l => l.unshift(t.get(0)));
+        },
+        List.of(List(), zero)
+      ),
+      'mapAccumRight'
+    ),
     nth: dispatch(2, lastArg(isIndexed), 'get', 'nth'),
 
     path: dispatch(2, lastArg(isAssociative), 'getIn', 'path'),
