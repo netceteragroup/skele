@@ -163,11 +163,53 @@ describe('function tagged with `object` work with immutable structures', () => {
 
   test('mapObjectIndexed', () => {
      const values = { x: 1, y: 2, z: 3 };
-     const prependKeyAndDouble = (num, key, obj) => key + (num * 2);
+     const prependKeyAndDouble = (num, key) => key + (num * 2);
 
      expect(R.mapObjIndexed(prependKeyAndDouble, values)).toEqual({ x: 'x2', y: 'y4', z: 'z6' });
      expect(R.mapObjIndexed(prependKeyAndDouble, Map(values))).toEqualI(Map({ x: 'x2', y: 'y4', z: 'z6' }));
 
-  })
+  });
+
+  test('merge', () => {
+    const obj1 = { 'name': 'fred', 'age': 10 };
+    const obj2 = { 'age': 40 };
+    const expected = { 'name': 'fred', 'age': 40 };
+
+    expect(R.merge(obj1, obj2)).toEqual(expected);
+    expect(R.merge(Map(obj1), obj2)).toEqualI(Map(expected));
+    expect(R.merge(obj1, Map(obj2))).toEqualI(Map(expected));
+    expect(R.merge(Map(obj1), Map(obj2))).toEqualI(Map(expected));
+  });
+
+  test('mergeAll', () => {
+     const lists = [{foo: 1}, {foo: 2, bar: 2}, {baz: 3}];
+     const expected = {foo: 2, bar:2, baz: 3};
+
+     expect(R.mergeAll(lists)).toEqual(expected);
+     expect(R.mergeAll(fromJS(lists))).toEqualI(Map(expected));
+  });
+
+  test('mergeWith', () => {
+    const obj1 = { a: true, values: [10, 20] };
+    const obj2 = { b: true, values: [15, 35] };
+    const expected = { a: true, b: true, values: [10, 20, 15, 35] };
+
+    expect(R.mergeWith(R.concat, obj1, obj2)).toEqual(expected);
+    expect(R.mergeWith(R.concat, fromJS(obj1), obj2)).toEqualI(fromJS(expected));
+    expect(R.mergeWith(R.concat, obj1, fromJS(obj2))).toEqualI(fromJS(expected));
+    expect(R.mergeWith(R.concat, fromJS(obj1), fromJS(obj2))).toEqualI(fromJS(expected));
+  });
+
+  test('mergeWithKey',  () => {
+  const concatValues = (k, l, r) => k == 'values' ? R.concat(l, r) : r;
+  const obj1 = { a: true, thing: 'foo', values: [10, 20] };
+  const obj2 = { b: true, thing: 'bar', values: [15, 35] };
+  const expected = { a: true, b: true, thing: 'bar', values: [10, 20, 15, 35] };
+
+  expect(R.mergeWithKey(concatValues, obj1, obj2)).toEqual(expected);
+  expect(R.mergeWithKey(concatValues, fromJS(obj1), obj2)).toEqualI(fromJS(expected));
+  expect(R.mergeWithKey(concatValues, obj1, fromJS(obj2))).toEqualI(fromJS(expected));
+  expect(R.mergeWithKey(concatValues, fromJS(obj1), fromJS(obj2))).toEqualI(fromJS(expected));
+});
 
 });

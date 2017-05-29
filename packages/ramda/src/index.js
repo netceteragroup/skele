@@ -118,6 +118,10 @@ Object.assign(R,
     ),
     mapObjIndexed: dispatch(2, lastArg(isAssociative), 'map', 'mapObjIndexed'),
     median: dispatch(1, lastArg(isCollection), (l) => R.median(l.toArray()), 'median'),
+    merge: dispatch(2, anyArg(isAssociative), (o1, o2) => Map(o1).merge(Map(o2)), 'merge'),
+    mergeAll: dispatch(1, firstArg(isIndexed), l => l.reduce((acc, o) => acc.merge(o), Map()), 'mergeAll'),
+    mergeWith: dispatch(3, anyArg(isAssociative, O.takeLast(2)), (f, o1, o2) => Map(o1).mergeWith(f, Map(o2)), 'mergeWith'),
+    mergeWithKey: dispatch(3, anyArg(isAssociative, O.takeLast(2)), (f, o1, o2) => Map(o1).mergeWith((v1, v2, k) => f(k, v1, v2), Map(o2)), 'mergeWithKey'),
 
     nth: dispatch(2, lastArg(isIndexed), 'get', 'nth'),
 
