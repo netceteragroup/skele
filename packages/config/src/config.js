@@ -1,12 +1,25 @@
 import { pickBy, reverse } from 'ramda'
 import deepMerge from './utils/merge'
 
-let layers = []
+import RootLayer from './root'
+import Layer from './layer'
+
+let rootLayer
 
 let activeConfiguration = {};
 
+function reset() {
+  rootLayer = null
+  activeConfiguration = {}
+}
+
 function define(configuration) {
-  layers.push(configuration)
+  if (!rootLayer) {
+    rootLayer = new RootLayer(configuration)
+  } else {
+    rootLayer.define(configuration)
+  }
+  return rootLayer
 }
 
 function init(profiles) {
@@ -18,8 +31,13 @@ function init(profiles) {
     activeProfiles = reverse(profiles)
   }
 
-  layers.forEach(layer => {
-    Object.entries(layer).forEach(
+  let layer = rootLayer.root
+
+  while(layer) {
+    if (layer.frozen) {
+      throw 'Cannot initialize configuration, layer is frozen'
+    }
+    Object.entries(layer.configuration).forEach(
       ([key, configOfLayer]) => {
         // values from (default) profile
         const defaultProfileForLayer = pickBy((val, key) => key !== 'profiles', configOfLayer)
@@ -34,17 +52,21 @@ function init(profiles) {
         }
       }
     )
-  })
+    layer.frozen = true
+    layer = layer.next
+  }
 }
 
 export {
   activeConfiguration,
   define,
-  init
+  init,
+  reset
 }
 
 export default {
   activeConfiguration,
   define,
-  init
+  init,
+  reset
 }
