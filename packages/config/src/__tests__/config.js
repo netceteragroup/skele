@@ -1,6 +1,6 @@
 'use strict';
 
-import { define, init, activeConfiguration, reset } from '../config';
+import { define } from '../config';
 
 describe('config', () => {
   test('single layer, default profile', () => {
@@ -9,13 +9,14 @@ describe('config', () => {
         a: 1
       }
     }
-    define(testConfiguration)
-    init()
-    expect(activeConfiguration).toEqual(testConfiguration);
+    const layer = define(testConfiguration)
+    layer.init()
+    expect(layer.config1).toEqual({
+      a: 1
+    });
   });
 
-  test('multiple layers, single profile', () => {
-    reset()
+  test('three layers, one feature, one profile', () => {
     const layerOneConfig = {
       config1: {
         a: 1,
@@ -43,20 +44,25 @@ describe('config', () => {
       }
     }
     const expectedConfig = {
-      config1: {
-        a: 5,
-        b: 10
-      }
+      a: 5,
+      b: 10
     }
-    const layer1 = define(layerOneConfig)
-    const layer2 = layer1.define(layerTwoConfig)
-    const layer3 = layer2.define(layerThreeConfig)
-    init(['dev'])
-    expect(activeConfiguration).toEqual(expectedConfig);
+
+    // define the layers
+    const rootLayer = define(layerOneConfig)
+    const layer1 = rootLayer.define(layerTwoConfig)
+    const layer2 = layer1.define(layerThreeConfig)
+
+    // initialize the final layer
+    layer2.init(['dev'])
+
+    // config should be the same for all layers
+    expect(rootLayer.config1).toEqual(expectedConfig);
+    expect(layer1.config1).toEqual(expectedConfig);
+    expect(layer2.config1).toEqual(expectedConfig);
   });
 
-  test('one layer, multiple profiles', () => {
-    reset()
+  test('one layer, one feature, multiple profiles', () => {
     const config = {
       config1: {
         a: 1,
@@ -81,19 +87,16 @@ describe('config', () => {
       }
     }
     const expectedConfig = {
-      config1: {
-        a: 6,
-        b: 10,
-        c: 15
-      }
+      a: 6,
+      b: 10,
+      c: 15
     }
-    define(config)
-    init(['prod', 'android'])
-    expect(activeConfiguration).toEqual(expectedConfig);
+    const rootLayer = define(config)
+    rootLayer.init(['prod', 'android'])
+    expect(rootLayer.config1).toEqual(expectedConfig);
   });
 
-  xtest('multiple layers, multiple profiles', () => {
-    reset()
+  test('two layers, single feature, two profiles', () => {
     const layerOneConfig = {
       config1: {
         a: 1,
@@ -135,20 +138,19 @@ describe('config', () => {
     }
 
     const expectedConfig = {
-      config1: {
-        a: 16,
-        b: 14,
-        c: 3
-      }
+      a: 16,
+      b: 14,
+      c: 3
     }
-    const layer1 = define(layerOneConfig)
-    const layer2 = layer1.define(layerTwoConfig)
-    init(['dev', 'ios'])
-    expect(activeConfiguration).toEqual(expectedConfig);
+    const rootLayer = define(layerOneConfig)
+    const layer1 = rootLayer.define(layerTwoConfig)
+    layer1.init(['dev', 'ios'])
+
+    expect(rootLayer.config1).toEqual(expectedConfig);
+    expect(layer1.config1).toEqual(expectedConfig);
   });
 
-  test('multiple configurations', () => {
-    reset()
+  test('two features', () => {
     const layerOneConfig = {
       config1: {
         a: 1,
@@ -206,25 +208,28 @@ describe('config', () => {
       }
     }
 
-    const expectedConfig = {
-      config1: {
-        a: 16,
-        b: 14,
-        c: 3
-      },
-      config2: {
-        c: 10
-      }
+    const expectedConfig1 = {
+      a: 16,
+      b: 14,
+      c: 3
+    }
+
+    const expectedConfig2 = {
+      c: 10
     }
 
     const layer1 = define(layerOneConfig)
     const layer2 = layer1.define(layerTwoConfig)
-    init(['dev', 'ios'])
-    expect(activeConfiguration).toEqual(expectedConfig);
+    layer2.init(['dev', 'ios'])
+
+    expect(layer1.config1).toEqual(expectedConfig1);
+    expect(layer2.config1).toEqual(expectedConfig1);
+
+     expect(layer1.config2).toEqual(expectedConfig2);
+     expect(layer2.config2).toEqual(expectedConfig2);
   });
 
   test('throw on multiple init', () => {
-    reset()
     const layerOneConfig = {
       config1: {
         a: 1,
@@ -282,23 +287,85 @@ describe('config', () => {
       }
     }
 
-    const expectedConfig = {
+    const layer1 = define(layerOneConfig)
+    const layer2 = layer1.define(layerTwoConfig)
+    layer2.init(['dev', 'ios'])
+
+    // throw on second init of layer 2
+    expect(() => {
+      layer2.init()
+    }).toThrow();
+
+    // throw on second init of layer 1
+    expect(() => {
+      layer1.init()
+    }).toThrow();
+  });
+
+  test('check if config is immutable', () => {
+    const layerOneConfig = {
       config1: {
-        a: 16,
-        b: 14,
-        c: 3
+        a: 1,
+        b: 2,
+        c: 3,
+        profiles: {
+          prod: {
+            b: 6
+          },
+          ios: {
+            b: 7
+          },
+          android: {
+            a: 8
+          }
+        }
+      }
+    }
+
+    const layerTwoConfig = {
+      config1: {
+        a: 10,
+        b: 11,
+        profiles: {
+          dev: {
+            b: 14
+          },
+          prod: {
+            a: 15
+          },
+          ios: {
+            a: 16
+          },
+          android: {
+            b: 17
+          }
+        }
       },
       config2: {
-        c: 10
+        c: 5,
+        profiles: {
+          dev: {
+            c: 10
+          },
+          prod: {
+            c: 1
+          },
+          ios: {
+            c: 2
+          },
+          android: {
+            c: 3
+          }
+        }
       }
     }
 
     const layer1 = define(layerOneConfig)
     const layer2 = layer1.define(layerTwoConfig)
-    init(['dev', 'ios'])
+    layer2.init(['dev', 'ios'])
+
     expect(() => {
-      init()
+      layer1.config1 = 'override value'
     }).toThrow();
   });
-
 });
