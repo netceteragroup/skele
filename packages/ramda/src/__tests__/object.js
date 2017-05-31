@@ -212,4 +212,10 @@ describe('function tagged with `object` work with immutable structures', () => {
   expect(R.mergeWithKey(concatValues, fromJS(obj1), fromJS(obj2))).toEqualI(fromJS(expected));
 });
 
+test('omit', () => {
+  expect(R.omit(['a', 'd'], {a: 1, b: 2, c: 3, d: 4})).toEqual({b: 2, c: 3});
+  expect(R.omit(['a', 'd'], Map({a: 1, b: 2, c: 3, d: 4}))).toEqualI(Map({b: 2, c: 3}));
+  expect(R.omit(List(['a', 'd']), Map({a: 1, b: 2, c: 3, d: 4}))).toEqualI(Map({b: 2, c: 3}));
+});
+
 });

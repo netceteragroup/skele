@@ -124,6 +124,16 @@ Object.assign(R,
     mergeWithKey: dispatch(3, anyArg(isAssociative, O.takeLast(2)), (f, o1, o2) => Map(o1).mergeWith((v1, v2, k) => f(k, v1, v2), Map(o2)), 'mergeWithKey'),
 
     nth: dispatch(2, lastArg(isIndexed), 'get', 'nth'),
+    omit: dispatch(
+      2,
+      lastArg(isAssociative),
+      (keys, l) => {
+        if (l.deleteAll != null) return l.deleteAll(keys);
+
+        const keySet = Set(keys);
+        return l.filter((v, k) => !keySet.contains(k));
+      },
+      'omit'),
 
     path: dispatch(2, lastArg(isAssociative), 'getIn', 'path'),
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
