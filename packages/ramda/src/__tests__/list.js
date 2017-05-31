@@ -311,4 +311,15 @@ describe('function tagged with `list` work with immutable structures', () => {
     expect(R.mapAccumRight(appender2, 5, List(digits))).toEqualI(fromJS(result));
   });
 
+  test('none', () => {
+    const isEven = n => n % 2 === 0;
+
+    expect(R.none(isEven, [1, 3, 5, 7, 9, 11])).toBe(true);
+    expect(R.none(isEven, [1, 3, 5, 7, 8, 11])).toBe(false);
+
+    expect(R.none(isEven, List([1, 3, 5, 7, 9, 11]))).toBe(true);
+    expect(R.none(isEven, List([1, 3, 5, 7, 8, 11]))).toBe(false); 
+
+  });
+
 });
