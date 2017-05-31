@@ -201,21 +201,30 @@ describe('function tagged with `object` work with immutable structures', () => {
   });
 
   test('mergeWithKey',  () => {
-  const concatValues = (k, l, r) => k == 'values' ? R.concat(l, r) : r;
-  const obj1 = { a: true, thing: 'foo', values: [10, 20] };
-  const obj2 = { b: true, thing: 'bar', values: [15, 35] };
-  const expected = { a: true, b: true, thing: 'bar', values: [10, 20, 15, 35] };
+    const concatValues = (k, l, r) => k == 'values' ? R.concat(l, r) : r;
+    const obj1 = { a: true, thing: 'foo', values: [10, 20] };
+    const obj2 = { b: true, thing: 'bar', values: [15, 35] };
+    const expected = { a: true, b: true, thing: 'bar', values: [10, 20, 15, 35] };
 
-  expect(R.mergeWithKey(concatValues, obj1, obj2)).toEqual(expected);
-  expect(R.mergeWithKey(concatValues, fromJS(obj1), obj2)).toEqualI(fromJS(expected));
-  expect(R.mergeWithKey(concatValues, obj1, fromJS(obj2))).toEqualI(fromJS(expected));
-  expect(R.mergeWithKey(concatValues, fromJS(obj1), fromJS(obj2))).toEqualI(fromJS(expected));
-});
+    expect(R.mergeWithKey(concatValues, obj1, obj2)).toEqual(expected);
+    expect(R.mergeWithKey(concatValues, fromJS(obj1), obj2)).toEqualI(fromJS(expected));
+    expect(R.mergeWithKey(concatValues, obj1, fromJS(obj2))).toEqualI(fromJS(expected));
+    expect(R.mergeWithKey(concatValues, fromJS(obj1), fromJS(obj2))).toEqualI(fromJS(expected));
+  });
 
-test('omit', () => {
-  expect(R.omit(['a', 'd'], {a: 1, b: 2, c: 3, d: 4})).toEqual({b: 2, c: 3});
-  expect(R.omit(['a', 'd'], Map({a: 1, b: 2, c: 3, d: 4}))).toEqualI(Map({b: 2, c: 3}));
-  expect(R.omit(List(['a', 'd']), Map({a: 1, b: 2, c: 3, d: 4}))).toEqualI(Map({b: 2, c: 3}));
-});
+  test('omit', () => {
+    expect(R.omit(['a', 'd'], {a: 1, b: 2, c: 3, d: 4})).toEqual({b: 2, c: 3});
+    expect(R.omit(['a', 'd'], Map({a: 1, b: 2, c: 3, d: 4}))).toEqualI(Map({b: 2, c: 3}));
+    expect(R.omit(List(['a', 'd']), Map({a: 1, b: 2, c: 3, d: 4}))).toEqualI(Map({b: 2, c: 3}));
+  });
+
+  test('pathOr', () => {
+    expect(R.pathOr('N/A', ['a', 'b'], {a: {b: 2}})).toEqual(2);
+    expect(R.pathOr('N/A', ['a', 'b'], {c: {b: 2}})).toEqual('N/A');
+
+    expect(R.pathOr('N/A', ['a', 'b'], fromJS({a: {b: 2}}))).toEqual(2);
+    expect(R.pathOr('N/A', ['a', 'b'], fromJS({c: {b: 2}}))).toEqual('N/A'); 
+
+  })
 
 });

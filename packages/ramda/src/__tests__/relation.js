@@ -38,5 +38,17 @@ describe('function tagged with `relation` work with immutable structures', () =>
     expect(R.mean(List.of(2, 7, 9))).toEqual(6);
     expect(R.mean(List())).toEqual(0.0/0.0);
 
-  })
+  });
+
+  test('pathEq', () => {
+    var user1 = { address: { zipCode: 90210 } };
+    var user2 = { address: { zipCode: 55555 } };
+    var user3 = { name: 'Bob' };
+    var users = [ user1, user2, user3 ];
+    var isFamous = R.pathEq(['address', 'zipCode'], 90210);
+
+    expect(R.filter(isFamous, users)).toEqual([ user1 ]);
+    expect(R.filter(isFamous, fromJS(users))).toEqualI(fromJS([ user1 ]));
+
+  });
 });

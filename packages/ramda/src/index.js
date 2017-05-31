@@ -168,7 +168,10 @@ Object.assign(R,
     lensProp: (k) => R.lens(R.prop(k), R.assoc(k)),
     mean: (l) => R.sum(l) / count(l),
     none: R.complement(R.any),
-    partition: dispatch(2, lastArg(isCollection), R.juxt(List.of(R.filter, R.reject)), 'partition')
+    partition: dispatch(2, lastArg(isCollection), R.juxt(List.of(R.filter, R.reject)), 'partition'),
+    pathEq: dispatch(3, lastArg(isAssociative), (p, v, o) => R.equals(R.path(p, o), v), 'pathEq'),
+    pathOr: dispatch(3, lastArg(isAssociative), (d, p, o) => R.defaultTo(d, R.path(p, o)), 'pathOr'),
+    pathSatisfies: dispatch(3, lastArg(isAssociative), (pred, path, o) => pred(R.path(path, o)), 'pathSatisfies')
   }
 );
 
