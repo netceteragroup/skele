@@ -223,7 +223,12 @@ describe('function tagged with `object` work with immutable structures', () => {
     expect(R.pathOr('N/A', ['a', 'b'], {c: {b: 2}})).toEqual('N/A');
 
     expect(R.pathOr('N/A', ['a', 'b'], fromJS({a: {b: 2}}))).toEqual(2);
-    expect(R.pathOr('N/A', ['a', 'b'], fromJS({c: {b: 2}}))).toEqual('N/A'); 
+    expect(R.pathOr('N/A', ['a', 'b'], fromJS({c: {b: 2}}))).toEqual('N/A');
+  });
+
+  test('pick', () => {
+    expect(R.pick(['a', 'd'], {a: 1, b: 2, c: 3, d: 4})).toEqual({a: 1, d: 4});
+    expect(R.pick(['a', 'd'], Map({a: 1, b: 2, c: 3, d: 4}))).toEqualI(Map({a: 1, d: 4}));
 
   })
 

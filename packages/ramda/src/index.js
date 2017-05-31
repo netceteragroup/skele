@@ -136,6 +136,15 @@ Object.assign(R,
       'omit'),
 
     path: dispatch(2, lastArg(isAssociative), 'getIn', 'path'),
+    pick: dispatch(
+      2,
+      lastArg(isAssociative),
+      (keys, l) => {
+        const keySet = Set(keys);
+        return l.filter((v, k) => keySet.contains(k))
+      },
+      'pick'
+    ),
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
     reduce: dispatch(
       2,
