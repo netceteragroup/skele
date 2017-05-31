@@ -147,6 +147,7 @@ Object.assign(R,
       },
     'reduce'),
     reduceBy: dispatch(2, lastArg(isCollection), require('./reduceBy').default, 'reduceBy'),
+    reject: dispatch(2, lastArg(isCollection), 'filterNot', 'reject'),
 
     update: dispatch(3, lastArg(isAssociative), 'set', 'update')
   }
@@ -166,7 +167,8 @@ Object.assign(R,
     lensPath: (p) => R.lens(R.path(p), R.assocPath(p)),
     lensProp: (k) => R.lens(R.prop(k), R.assoc(k)),
     mean: (l) => R.sum(l) / count(l),
-    none: R.complement(R.any)
+    none: R.complement(R.any),
+    partition: dispatch(2, lastArg(isCollection), R.juxt(List.of(R.filter, R.reject)), 'partition')
   }
 );
 

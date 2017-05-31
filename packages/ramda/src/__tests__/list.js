@@ -199,7 +199,7 @@ describe('function tagged with `list` work with immutable structures', () => {
     const result = {abc: {id: 'abc', title: 'B'}, xyz: {id: 'xyz', title: 'A'}};
 
     expect(R.indexBy(R.prop('id'), list)).toEqual(result);
-    expect(R.indexBy(R.prop('id'), fromJS(list))).toEqualI(fromJS(result));
+    expect(Map(R.indexBy(R.prop('id'), fromJS(list)))).toEqualI(fromJS(result));
   });
 
   test('indexOf', () => {
@@ -318,7 +318,16 @@ describe('function tagged with `list` work with immutable structures', () => {
     expect(R.none(isEven, [1, 3, 5, 7, 8, 11])).toBe(false);
 
     expect(R.none(isEven, List([1, 3, 5, 7, 9, 11]))).toBe(true);
-    expect(R.none(isEven, List([1, 3, 5, 7, 8, 11]))).toBe(false); 
+    expect(R.none(isEven, List([1, 3, 5, 7, 8, 11]))).toBe(false);
+  });
+
+  test('partition', () => {
+    expect(R.partition(R.contains('s'), ['sss', 'ttt', 'foo', 'bars'])).toEqual([ [ 'sss', 'bars' ],  [ 'ttt', 'foo' ] ]);
+    expect(R.partition(R.contains('s'), { a: 'sss', b: 'ttt', foo: 'bars' })).toEqual([ { a: 'sss', foo: 'bars' }, { b: 'ttt' }  ]);
+
+
+    expect(R.partition(R.contains('s'), List(['sss', 'ttt', 'foo', 'bars']))).toEqualI(fromJS([ [ 'sss', 'bars' ],  [ 'ttt', 'foo' ] ]));
+    expect(R.partition(R.contains('s'), Map({ a: 'sss', b: 'ttt', foo: 'bars' }))).toEqualI(fromJS([ { a: 'sss', foo: 'bars' }, { b: 'ttt' }  ]));
 
   });
 
