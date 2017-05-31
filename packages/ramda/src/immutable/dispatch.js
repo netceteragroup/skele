@@ -29,7 +29,7 @@ export const dispatch = function dispatch(arity, pred, method, orig) {
     return R.curryN(arity, R.cond(pred));
   } else {
     return R.curryN(arity,
-      R.ifElse(pred,
+      R.ifElse((...args) => pred(...(R.take(arity, args))), // make sure the predicate actually works on the "declared" arg set
         invoker(arity - 1, method),
         original(arity, orig)));
   }
