@@ -229,7 +229,11 @@ describe('function tagged with `object` work with immutable structures', () => {
   test('pick', () => {
     expect(R.pick(['a', 'd'], {a: 1, b: 2, c: 3, d: 4})).toEqual({a: 1, d: 4});
     expect(R.pick(['a', 'd'], Map({a: 1, b: 2, c: 3, d: 4}))).toEqualI(Map({a: 1, d: 4}));
+  });
 
-  })
+  test('pickAll', () => {
+    expect(R.pickAll(['a', 'd'], {a: 1, b: 2, c: 3})).toEqual({a: 1, d: undefined});
+    expect(R.pickAll(['a', 'd'], Map({a: 1, b: 2, c: 3}))).toEqualI(Map({a: 1, d: undefined}));
+  });
 
 });

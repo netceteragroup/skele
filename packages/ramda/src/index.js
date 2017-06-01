@@ -180,7 +180,8 @@ Object.assign(R,
     partition: dispatch(2, lastArg(isCollection), R.juxt(List.of(R.filter, R.reject)), 'partition'),
     pathEq: dispatch(3, lastArg(isAssociative), (p, v, o) => R.equals(R.path(p, o), v), 'pathEq'),
     pathOr: dispatch(3, lastArg(isAssociative), (d, p, o) => R.defaultTo(d, R.path(p, o)), 'pathOr'),
-    pathSatisfies: dispatch(3, lastArg(isAssociative), (pred, path, o) => pred(R.path(path, o)), 'pathSatisfies')
+    pathSatisfies: dispatch(3, lastArg(isAssociative), (pred, path, o) => pred(R.path(path, o)), 'pathSatisfies'),
+    pickAll: R.curryN(2, (keys, l) => R.merge(withUndefinedValues(keys), R.pick(keys, l))),
   }
 );
 
@@ -199,6 +200,9 @@ function value(v) {
   return v && v['@@transducer/value'];
 }
 
+function withUndefinedValues(keys) {
+  return R.reduce(R.flip(R.assoc(R.__, undefined, R.__)), {}, keys);
+}
 const count = dispatch(1, lastArg(isCollection), 'count', a => a.length);
 
 module.exports = R;
