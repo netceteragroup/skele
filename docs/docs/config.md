@@ -1,16 +1,34 @@
-# Configuration
+# Config 
+
+Girders Element's `config` package is a small library that can be used to create **layered configuration** setup useful when building platforms. 
+
+A *configuration* consists of one or more **feature configuration objects** (ex. translations, theme etc). 
+
+## Layers 
+
+Configurations are distributed into **layers**. Each layer has its own set of **featurre configuration objects**.
+Layers are organized in a hirearchy, with every layer overriding the configuration object of its parents. Layers are useful is situations when a base package (e.g. the platforms) needs to provide *reasonable defaults* for the configuration that still can be overriden but the package's user (e.g. an app).
+
+## Profiles
+
+However, we often need to change certain configuration values based on the
+context where it is used. Examples of this could be:
+
+- one server URL is used in development, another in production
+- one font is used for android, another for iOS and a third for web
+
+To achieve this, we also introduce *profiles*. A profile is a named set of configuration
+entries that, when activated, will override the  configuration entires specified elsewhere (as a default in the current layer or the layer below).
+
+More than one profile may be active at any given time. The list of active profiles'
+order is significant because it determines the lookup procedure. This list is provided on application starup.
+
+There always exists a profile called **default** which contains all the entries
+that were not specified in any other profile. This profile is *always active*
+and is at the bottom of the lookup list.
 
 
-Configuration consists of one or more **features** (ex. translations, theme etc).
-Configurations are distributed by **layers.** Each layer has its own **configuration object**.
-Layers are organized in a hirearchy, with every layer overriding the configuration object of its parents.
-
-The values in each configuration object are defined in **profiles.** Everything defined at root level belongs to a default (implicit) profile.
-When a configuration is initialized, a list of profiles is provided.
-The order of the profile definition is important, as they have priority (highest priority is listed first).
-The default profile is always resolved last (i.e. has lowest priority)
-
-##### Example configuration object:
+## Example Feature Configuration Object 
 
 ```javascript
 
@@ -29,11 +47,27 @@ const theme = {
 ```
 
 
-### Configuration API
+## Usage
 
-#### Defining layers:
-Calling the define method on configuration creates a root layer from a given configuraton object and returns the created layer.
-Calling define on a given layer also creates and returns a new layer, and links the newly created layer as child of the original one.
+### Installation
+
+Simply add the package to your `package.json`:
+
+```
+$ yarn add @girders-elements/config
+```
+
+or 
+
+```
+$ npm install --save @girders-elements/config
+```
+
+### Defining layers
+
+Calling the `define` method on configuration creates a root layer from a given configuraton object and returns the created layer.
+Calling `define` on an *existing layer* also creates a new layer *over the existing one*. The configuration in the new layer overrides the one in the existing.
+
 
 ```javascript
 import config from '@girders-elements/config'
@@ -53,13 +87,13 @@ const rootLayer = config.define ({
     translations: translationsRoot
 })
 
-// layer1 is defined, with rootLayer is its parent
+// layer1 is defined, with rootLayer as the layer below
 const layer1 = rootLayer.define ({
     video: video1,
     translations: translations1
 })
 
-// layer2 is defined, with layer1 is its parent
+// layer2 is defined, with layer1 as the layer below
 const layer2 = layer1.define ({
     video: video2,
     translations: translations2
@@ -67,10 +101,12 @@ const layer2 = layer1.define ({
 ```
 
 #### Initializing layers
-Calling the init method on a layer computes the configuration for the given layer sequence.
- The sequence consists of all parent layers to the one being initialized, up to and including the root layer.
- After initialization, the computed configuration values are available for all the members of the layer chain, as immutable values.
- Once a configuration is computed the layers are 'frozen', and they can neither be re-initialized nor modified.
+
+Calling the init method on a layer computes the configuration for the given layer sequence and for the activated profiles.
+
+The sequence consists of all parent layers to the one being initialized, down to and including the root layer.
+After initialization, the computed configuration values are available for all the members of the layer chain, as immutable values.
+Once a configuration is computed the layers are 'frozen', and they can neither be re-initialized nor modified.
 
 ```javascript
 // intializing layer2 computes the configuration and makes it available to its layer sequence (rootLayer -> layer1 -> layer2)
