@@ -145,6 +145,13 @@ Object.assign(R,
       },
       'pick'
     ),
+    pickBy: dispatch(
+      2,
+      lastArg(isAssociative),
+      'filter',
+      'pickBy'
+    ),
+    prepend: dispatch(2, lastArg(isIndexed), 'unshift', 'prepend'),
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
     reduce: dispatch(
       2,
@@ -182,6 +189,8 @@ Object.assign(R,
     pathOr: dispatch(3, lastArg(isAssociative), (d, p, o) => R.defaultTo(d, R.path(p, o)), 'pathOr'),
     pathSatisfies: dispatch(3, lastArg(isAssociative), (pred, path, o) => pred(R.path(path, o)), 'pathSatisfies'),
     pickAll: R.curryN(2, (keys, l) => R.merge(withUndefinedValues(keys), R.pick(keys, l))),
+    pluck: R.curryN(2, (p, list) => R.map(R.prop(p), list)),
+    product: R.reduce(R.multiply, 1)
   }
 );
 

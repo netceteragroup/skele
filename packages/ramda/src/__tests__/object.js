@@ -236,4 +236,18 @@ describe('function tagged with `object` work with immutable structures', () => {
     expect(R.pickAll(['a', 'd'], Map({a: 1, b: 2, c: 3}))).toEqualI(Map({a: 1, d: undefined}));
   });
 
+  test('pickBy', () => {
+    const  isUpperCase = (val, key) => key.toUpperCase() === key;
+
+    expect(R.pickBy(isUpperCase, {a: 1, b: 2, A: 3, B: 4})).toEqual({A: 3, B: 4});
+    expect(R.pickBy(isUpperCase, Map({a: 1, b: 2, A: 3, B: 4}))).toEqualI(Map({A: 3, B: 4}));
+  });
+
+  test('pluck', () => {
+    expect(R.pluck('a', [{a: 1}, {a: 2}])).toEqual([1, 2]);
+    expect(R.pluck(0)([[1, 2], [3, 4]])).toEqual([1, 3]);
+
+    expect(R.pluck('a', fromJS([{a: 1}, {a: 2}]))).toEqualI(List([1, 2]));
+    expect(R.pluck(0, List([[1, 2], [3, 4]]))).toEqualI(List([1, 3]));
+  });
 });

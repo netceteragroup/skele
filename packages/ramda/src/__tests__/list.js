@@ -328,7 +328,15 @@ describe('function tagged with `list` work with immutable structures', () => {
 
     expect(R.partition(R.contains('s'), List(['sss', 'ttt', 'foo', 'bars']))).toEqualI(fromJS([ [ 'sss', 'bars' ],  [ 'ttt', 'foo' ] ]));
     expect(R.partition(R.contains('s'), Map({ a: 'sss', b: 'ttt', foo: 'bars' }))).toEqualI(fromJS([ { a: 'sss', foo: 'bars' }, { b: 'ttt' }  ]));
-
   });
 
+  test('prepend', () => {
+    expect(R.prepend('fee', ['fi', 'fo', 'fum'])).toEqual(['fee', 'fi', 'fo', 'fum']);
+    expect(R.prepend('fee', List(['fi', 'fo', 'fum']))).toEqualI(List(['fee', 'fi', 'fo', 'fum']));
+  });
+
+  test('product', () => {
+    expect(R.product([2,4,6,8,100,1])).toBe(38400);
+    expect(R.product(List([2,4,6,8,100,1]))).toBe(38400);
+  });
 });
