@@ -250,4 +250,13 @@ describe('function tagged with `object` work with immutable structures', () => {
     expect(R.pluck('a', fromJS([{a: 1}, {a: 2}]))).toEqualI(List([1, 2]));
     expect(R.pluck(0, List([[1, 2], [3, 4]]))).toEqualI(List([1, 3]));
   });
+
+  test('project', () => {
+    const abby = {name: 'Abby', age: 7, hair: 'blond', grade: 2};
+    const fred = {name: 'Fred', age: 12, hair: 'brown', grade: 7};
+    const kids = [abby, fred];
+
+    expect(R.project(['name', 'grade'], kids)).toEqual([{name: 'Abby', grade: 2}, {name: 'Fred', grade: 7}]);
+    expect(R.project(['name', 'grade'], fromJS(kids))).toEqualI(fromJS([{name: 'Abby', grade: 2}, {name: 'Fred', grade: 7}]));
+  });
 });

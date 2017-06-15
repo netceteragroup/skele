@@ -198,7 +198,8 @@ Object.assign(R,
 
 Object.assign(R,
 {
-  keysIn: R.keys
+  keysIn: R.keys,
+  project: R.useWith(R.map, [R.pickAll, R.identity])
 });
 
 function isReduced(v) {
