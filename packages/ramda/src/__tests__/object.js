@@ -259,4 +259,23 @@ describe('function tagged with `object` work with immutable structures', () => {
     expect(R.project(['name', 'grade'], kids)).toEqual([{name: 'Abby', grade: 2}, {name: 'Fred', grade: 7}]);
     expect(R.project(['name', 'grade'], fromJS(kids))).toEqualI(fromJS([{name: 'Abby', grade: 2}, {name: 'Fred', grade: 7}]));
   });
+
+  test('propOr', () => {
+    const alice = {
+      name: 'ALICE',
+      age: 101
+    };
+    const favoriteWithDefault = R.propOr('Ramda', 'favoriteLibrary');
+
+    expect(favoriteWithDefault(alice)).toEqual('Ramda');
+    expect(favoriteWithDefault(fromJS(alice))).toEqual('Ramda');
+    expect(favoriteWithDefault(Map({favoriteLibrary: 'Jest'}))).toEqual('Jest');
+  });
+
+  test('props', () => {
+    expect(R.props(['x', 'y'], {x: 1, y: 2})).toEqual([1, 2]);
+    expect(R.props(['c', 'a', 'b'], {b: 2, a: 1})).toEqual([undefined, 1, 2]);
+    expect(R.props(['c', 'a', 'b'], Map({b: 2, a: 1}))).toEqualI(List([undefined, 1, 2]));
+
+  })
 });

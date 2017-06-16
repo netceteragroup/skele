@@ -153,6 +153,16 @@ Object.assign(R,
     ),
     prepend: dispatch(2, lastArg(isIndexed), 'unshift', 'prepend'),
     prop: dispatch(2, lastArg(isAssociative), 'get', 'prop'),
+    props: dispatch(
+      2,
+      anyArg(isCollection),
+      (keys, coll) => List().withMutations(result => {
+        for (const k of keys) {
+          result.push(isCollection(coll) ? coll.get(k) : coll[k]);
+        }
+      }),
+      'props'),
+    propOr: dispatch(3, lastArg(isAssociative), (dflt, p, obj) => obj.get(p, dflt), 'propOr'),
     reduce: dispatch(
       2,
       lastArg(isCollection),
@@ -190,7 +200,9 @@ Object.assign(R,
     pathSatisfies: dispatch(3, lastArg(isAssociative), (pred, path, o) => pred(R.path(path, o)), 'pathSatisfies'),
     pickAll: R.curryN(2, (keys, l) => R.merge(withUndefinedValues(keys), R.pick(keys, l))),
     pluck: R.curryN(2, (p, list) => R.map(R.prop(p), list)),
-    product: R.reduce(R.multiply, 1)
+    product: R.reduce(R.multiply, 1),
+    propEq: R.curryN(3, (name, val, obj) => R.equals(val, R.prop(name, obj))),
+    propIs: R.curryN(3, (type, name, obj) => R.is(type, R.prop(name, obj))),
   }
 );
 
