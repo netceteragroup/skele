@@ -17,4 +17,9 @@ describe('function tagged with `logic` work with immutable structures', () => {
     expect(R.pathSatisfies(y => y > 0, ['x', 'y'], {x: {y: 2}})).toBe(true);
     expect(R.pathSatisfies(y => y > 0, ['x', 'y'], fromJS({x: {y: 2}}))).toBe(true);
   });
+
+  test('propSatisfies', () => {
+    expect(R.propSatisfies(x => x > 0, 'x', {x: 1, y: 2})).toBe(true);
+    expect(R.propSatisfies(x => x > 0, 'x', Map({x: 1, y: 2}))).toBe(true);
+  });
 });

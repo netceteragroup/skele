@@ -203,6 +203,7 @@ Object.assign(R,
     product: R.reduce(R.multiply, 1),
     propEq: R.curryN(3, (name, val, obj) => R.equals(val, R.prop(name, obj))),
     propIs: R.curryN(3, (type, name, obj) => R.is(type, R.prop(name, obj))),
+    propSatisfies: R.curryN(3, (pred, name, obj) => pred(R.prop(name, obj)))
   }
 );
 
