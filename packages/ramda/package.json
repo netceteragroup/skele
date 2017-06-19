@@ -19,8 +19,8 @@
   },
   "homepage": "https://github.com/netceteragroup/girders-elements#readme",
   "dependencies": {
-    "ramda": ">= 0.23.0",
-    "immutable": "3.8.1 - 4"
+    "immutable": "3.8.1 - 4",
+    "ramda": "^0.24.1"
   },
   "devDependencies": {}
 }

@@ -163,15 +163,6 @@ Object.assign(R,
       }),
       'props'),
     propOr: dispatch(3, lastArg(isAssociative), (dflt, p, obj) => obj.get(p, dflt), 'propOr'),
-    reduce: dispatch(
-      2,
-      lastArg(isCollection),
-      (rf, init, l) => {
-        const f = (a, v) => isReduced(a) ? a : rf(a, v);
-        const r = O.reduce(f, init, l);
-        return isReduced(r) ? value(r) : r;
-      },
-    'reduce'),
     reduceBy: dispatch(2, lastArg(isCollection), require('./reduceBy').default, 'reduceBy'),
     reject: dispatch(2, lastArg(isCollection), 'filterNot', 'reject'),
 

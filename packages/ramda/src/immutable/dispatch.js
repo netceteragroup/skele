@@ -25,7 +25,7 @@ function original(arity, fn) {
 }
 
 export const dispatch = function dispatch(arity, pred, method, orig) {
-  if (R.isArrayLike(pred)) {
+  if (Array.isArray(pred)) {
     return R.curryN(arity, R.cond(pred));
   } else {
     return R.curryN(arity,
