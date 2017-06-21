@@ -5,6 +5,8 @@ import { List, fromJS } from 'immutable';
 import { takeEvery } from 'redux-saga';
 import { call, put } from 'redux-saga/effects';
 
+import { apply } from '../transform'
+
 import uuid from 'uuid';
 
 import { canonical } from '../data/element';
@@ -48,7 +50,7 @@ export default function(cursor, action) {
       const pathToWhere = List.of(...action.fromPath, action.where);
       return cursor
         .setIn(pathToKind, kind)
-        .setIn(pathToWhere, fromJS(action.value));
+        .setIn(pathToWhere, apply(fromJS(action.value)));
     }
     case 'READ_FAILED': {
       const pathToMeta = List.of(...action.fromPath, 'meta');
