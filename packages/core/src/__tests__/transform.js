@@ -10,7 +10,7 @@ describe('Transformers', () => {
 
   const appState = {
     kind: 'app',
-    canonicalUrl: 'https://someurl.com',
+    url: 'https://someurl.com',
     content:
       {
         kind: ['scene'],
@@ -23,7 +23,7 @@ describe('Transformers', () => {
 
   const appStateMultiScene = {
     kind: 'app',
-    canonicalUrl: 'https://someurl.com',
+    url: 'https://someurl.com',
     content: [
       {
         kind: ['scene'],
@@ -44,7 +44,7 @@ describe('Transformers', () => {
 
   const appStateMultiSceneWithSubElements = {
     kind: 'app',
-    canonicalUrl: 'https://someurl.com',
+    url: 'https://someurl.com',
     content: [
       {
         kind: ['scene'],
@@ -90,21 +90,21 @@ describe('Transformers', () => {
 
   it('should register and apply transformers with single scene', () => {
     transform.register(['scene'], element => element.setIn(['metadata', 'title'], 'Home page'))
-    transform.register(['app'], element => element.set('canonicalUrl', 'http://newurl.com'))
+    transform.register(['app'], element => element.set('url', 'http://newurl.com'))
 
     const transformedAppState = transform.apply(fromJS(appState)).value()
 
-    expect(transformedAppState.get('canonicalUrl')).toEqual('http://newurl.com')
+    expect(transformedAppState.get('url')).toEqual('http://newurl.com')
     expect(transformedAppState.getIn(['content', 'metadata', 'title'])).toEqual('Home page')
   })
 
   it('should register and apply transformers with multiple scenes', () => {
     transform.register(['scene'], element => element.setIn(['metadata', 'title'], 'Home page'))
-    transform.register(['app'], element => element.set('canonicalUrl', 'http://newurl.com'))
+    transform.register(['app'], element => element.set('url', 'http://newurl.com'))
 
     const transformedAppState = transform.apply(fromJS(appStateMultiScene)).value()
 
-    expect(transformedAppState.get('canonicalUrl')).toEqual('http://newurl.com')
+    expect(transformedAppState.get('url')).toEqual('http://newurl.com')
     expect(transformedAppState.getIn(['content', 0, 'metadata', 'title'])).toEqual('Home page')
     expect(transformedAppState.getIn(['content', 1, 'metadata', 'title'])).toEqual('Home page')
   })
@@ -122,7 +122,7 @@ describe('Transformers', () => {
 
   it('should register and apply transformers for multiple scenes with widgets', () => {
     transform.register(['scene'], element => element.setIn(['metadata', 'title'], 'Home page'))
-    transform.register(['app'], element => element.set('canonicalUrl', 'http://newurl.com'))
+    transform.register(['app'], element => element.set('url', 'http://newurl.com'))
     transform.register(['widget'], element => element.set('title', 'New ' +  element.get('title')))
 
 
