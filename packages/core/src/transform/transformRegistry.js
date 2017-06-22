@@ -2,15 +2,13 @@
 
 import invariant from 'invariant';
 
-import { Iterible } from 'immutable';
-
 import Registry from '../common/MultivalueRegistry';
 import { isElementRef } from '../data/element';
 
 import R from 'ramda';
 
 import { postWalk } from 'zippa'
-import TreeZipper from '../zip/TreeZipper'
+import ImmutableZipper from '../zip/ImmutableZipper'
 
 const transformerRegistry = new Registry();
 
@@ -46,7 +44,7 @@ function transform(element) {
 }
 
 export function apply(element) {
-  const zipper = TreeZipper.from(element)
+  const zipper = new ImmutableZipper(element, 'content').zipper
   return postWalk(transform, zipper)
 }
 

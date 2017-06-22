@@ -1,10 +1,7 @@
 'use strict';
 
 import { fromJS } from 'immutable';
-import { transform, read } from '..';
-import TreeZipper from '../zip/TreeZipper'
-
-import R from 'ramda';
+import { transform } from '..';
 
 describe('Transformers', () => {
 
