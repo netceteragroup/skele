@@ -52,7 +52,7 @@ export default function(config, cursor, action) {
       const pathToWhere = List.of(...action.fromPath, action.where);
       return cursor
         .setIn(pathToKind, kind)
-        .setIn(pathToWhere, apply(fromJS(action.value), childrenElements));
+        .setIn(pathToWhere, apply(fromJS(action.value), childrenElements).value());
     }
     case 'READ_FAILED': {
       const pathToMeta = List.of(...action.fromPath, 'meta');

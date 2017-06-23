@@ -5,6 +5,8 @@ import invariant from 'invariant';
 import Registry from '../common/MultivalueRegistry';
 import { isElementRef } from '../data/element';
 
+import { Iterable } from 'immutable';
+
 import R from 'ramda';
 
 import { postWalk } from 'zippa'
@@ -44,7 +46,12 @@ function transform(element) {
 }
 
 export function apply(element, childrenElements = 'content') {
-  const zipper = new ImmutableZipper(element, childrenElements).zipper
+  let elementToProcess = element
+  // TODO: implement proper handling for the case when the root is an array with multiple elements
+  if (Iterable.isIndexed(element)) {
+    elementToProcess = element.get(0)
+  }
+  const zipper = new ImmutableZipper(elementToProcess, childrenElements).zipper
   return postWalk(transform, zipper)
 }
 
