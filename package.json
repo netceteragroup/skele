@@ -20,12 +20,14 @@
     "coverage": "jest --coverage",
     "coverage-report": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint .",
-    "es5": "yarn run es5:core && yarn run es5:config",
+    "es5": "yarn run es5:core && yarn run es5:config && yarn run es5:components",
     "es5:core": "babel -q packages/core/src --out-dir packages/core/dist/es5",
     "es5:config": "babel -q packages/config/src --out-dir packages/config/dist/es5",
-    "clean": "yarn run clean:core && yarn run clean:config",
+    "es5:components": "babel -q packages/components/src --out-dir packages/components/dist/es5",
+    "clean": "yarn run clean:core && yarn run clean:config && yarn run clean:components",
     "clean:core": "del-cli packages/core/dist",
     "clean:config": "del-cli packages/config/dist",
+    "clean:components": "del-cli packages/components/dist",
     "build": "yarn run clean && yarn run test && yarn run lint && yarn run es5",
     "release:test-token": "test -n \"$CONVENTIONAL_GITHUB_RELEASER_TOKEN\" || (echo 'Setup your github autho token first: https://github.com/conventional-changelog/conventional-github-releaser#cli' && exit 1)",
     "release:publish": "lerna publish",
@@ -73,7 +75,8 @@
     ],
     "roots": [
       "<rootDir>/packages/core",
-      "<rootDir>/packages/config"
+      "<rootDir>/packages/config",
+      "<rootDir>/packages/components"
     ],
     "testMatch": [
       "**/__tests__/**/*.js"
