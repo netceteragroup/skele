@@ -100,5 +100,6 @@ export default class Engine extends Component {
 
 Engine.propTypes = {
   initState: React.PropTypes.object.isRequired,
-  customMiddleware: React.PropTypes.arrayOf(React.PropTypes.func)
+  customMiddleware: React.PropTypes.arrayOf(React.PropTypes.func),
+  config: React.PropTypes.object
 };
