@@ -43,8 +43,8 @@ function transform(element) {
   return transformFn(element)
 }
 
-export function apply(element) {
-  const zipper = new ImmutableZipper(element, 'content').zipper
+export function apply(element, childrenElements = 'content') {
+  const zipper = new ImmutableZipper(element, childrenElements).zipper
   return postWalk(transform, zipper)
 }
 

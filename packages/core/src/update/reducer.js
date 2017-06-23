@@ -15,12 +15,13 @@ import readReducer from '../read/reducer';
 /**
  * Main application reducer.
  *
+ * @param config A configuration object passed from the Engine component
  * @param cursor The cursor representing the state.
  * @param action The action.
  * @returns {*} The new state represented by updated cursor.
  */
-export default function(cursor, action) {
-  // console.log('Reducer: action:', action);
+export default function(config, cursor, action) {
+
   invariant(
     cursor != null && cursor._keyPath != null,
     "The reducer is meant to work only with cursors");
@@ -32,7 +33,7 @@ export default function(cursor, action) {
 
     // handle reads
     if (type.startsWith('READ')) {
-      return readReducer(cursor, action);
+      return readReducer(config, cursor, action);
     }
 
     // handle global updates

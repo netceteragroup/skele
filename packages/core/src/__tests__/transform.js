@@ -74,6 +74,27 @@ describe('Transformers', () => {
     ]
   };
 
+  const appStateCustomChildrenElements = {
+    kind: 'app',
+    url: 'https://someurl.com',
+    children: [
+      {
+        kind: ['scene'],
+        metadata: {
+          title: 'Title',
+          description: 'Description'
+        }
+      },
+      {
+        kind: ['scene'],
+        metadata: {
+          title: 'Title2',
+          description: 'Description2'
+        }
+      }
+    ]
+  };
+
   afterEach(() => {
     transform.reset();
   });
@@ -129,5 +150,12 @@ describe('Transformers', () => {
     expect(transformedAppState.getIn(['content', 0, 'content', 'title'])).toEqual('New Widget Title')
     expect(transformedAppState.getIn(['content', 1, 'content', 0, 'title'])).toEqual('New Widget Title 1')
     expect(transformedAppState.getIn(['content', 1, 'content', 1, 'title'])).toEqual('New Widget Title 2')
+  })
+
+  it('should register and apply transformers for non-default ', () => {
+    const childrenElements = 'children'
+    transform.register(['scene'], element => element.setIn(['metadata', 'title'], 'Home page'))
+    const transformedAppState = transform.apply(fromJS(appStateCustomChildrenElements), childrenElements).value()
+    expect(transformedAppState.getIn(['children', 0, 'metadata', 'title'])).toEqual('Home page')
   })
 });
