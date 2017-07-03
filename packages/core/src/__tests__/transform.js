@@ -95,6 +95,27 @@ describe('Transformers', () => {
     ]
   };
 
+  const appStateWithSubKinds = {
+    kind: 'app',
+    url: 'https://someurl.com',
+    children: [
+      {
+        kind: ['scene', 'web'],
+        metadata: {
+          title: 'Title',
+          description: 'Description'
+        }
+      },
+      {
+        kind: ['scene', 'web'],
+        metadata: {
+          title: 'Title2',
+          description: 'Description2'
+        }
+      }
+    ]
+  };
+
   afterEach(() => {
     transform.reset();
   });
@@ -152,10 +173,17 @@ describe('Transformers', () => {
     expect(transformedAppState.getIn(['content', 1, 'content', 1, 'title'])).toEqual('New Widget Title 2')
   })
 
-  it('should register and apply transformers for non-default ', () => {
+  it('should register and apply transformers for non-default children element', () => {
     const childrenElements = 'children'
     transform.register(['scene'], element => element.setIn(['metadata', 'title'], 'Home page'))
     const transformedAppState = transform.apply(fromJS(appStateCustomChildrenElements), childrenElements).value()
+    expect(transformedAppState.getIn(['children', 0, 'metadata', 'title'])).toEqual('Home page')
+  })
+
+  it('should apply transformer on sub-kind', () => {
+    const childrenElements = 'children'
+    transform.register(['scene'], element => element.setIn(['metadata', 'title'], 'Home page'))
+    const transformedAppState = transform.apply(fromJS(appStateWithSubKinds), childrenElements).value()
     expect(transformedAppState.getIn(['children', 0, 'metadata', 'title'])).toEqual('Home page')
   })
 });
