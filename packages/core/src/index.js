@@ -5,6 +5,8 @@ import read from './read';
 import * as _transform from './transform';
 import * as data from './data';
 
+import createZipper from ''
+
 import update from './update';
 import Engine from './engine/engine';
 
@@ -22,13 +24,18 @@ const transform = {
   apply: _transform.apply
 }
 
+const zip = {
+  createZipper
+}
+
 export {
   ui,
   read,
   update,
   transform,
   data,
-  Engine
+  Engine,
+  zip
 }
 
 export default {
@@ -37,5 +44,6 @@ export default {
   update,
   transform,
   data,
-  Engine
+  Engine,
+  zip
 }

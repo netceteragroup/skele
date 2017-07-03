@@ -10,7 +10,7 @@ import { Iterable } from 'immutable';
 import R from 'ramda';
 
 import { postWalk } from 'zippa'
-import ImmutableZipper from '../zip/ImmutableZipper'
+import elementZipper from '../zip/elementZipper'
 
 const transformerRegistry = new Registry();
 
@@ -51,7 +51,7 @@ export function apply(element, childrenElements = 'content') {
   if (Iterable.isIndexed(element)) {
     elementToProcess = element.get(0)
   }
-  const zipper = new ImmutableZipper(elementToProcess, childrenElements).zipper
+  const zipper = elementZipper(elementToProcess, childrenElements)
   return postWalk(transform, zipper)
 }
 
