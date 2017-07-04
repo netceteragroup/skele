@@ -116,6 +116,66 @@ describe('Transformers', () => {
     ]
   };
 
+  const appStateDualPanel = {
+    kind: 'app',
+    url: 'https://someurl.com',
+    left: {
+      kind: 'panel',
+      metadata: {
+        title: 'Title left',
+        description: 'Description'
+      }
+    },
+    right: [{
+      kind: 'panel',
+      metadata: {
+        title: 'Title right 1',
+        description: 'Description'
+      }
+    },
+      {
+        kind: 'panel',
+        metadata: {
+          title: 'Title right 2',
+          description: 'Description'
+        }
+      }
+    ]
+  }
+
+  const appStateDualPanelSparse = {
+    kind: 'app',
+    url: 'https://someurl.com',
+    children: [{
+      kind: 'scene',
+      left: {
+        kind: 'panel',
+        metadata: {
+          title: 'Title left',
+          description: 'Description'
+        }
+      }
+    },
+      {
+        kind: 'scene',
+        right: [{
+          kind: 'panel',
+          metadata: {
+            title: 'Title right 1',
+            description: 'Description'
+          }
+        },
+          {
+            kind: 'panel',
+            metadata: {
+              title: 'Title right 2',
+              description: 'Description'
+            }
+          }
+        ]
+      }]
+  }
+
   afterEach(() => {
     transform.reset();
   });
@@ -147,7 +207,6 @@ describe('Transformers', () => {
     expect(transformedAppState.getIn(['content', 0, 'metadata', 'title'])).toEqual('Home page')
     expect(transformedAppState.getIn(['content', 1, 'metadata', 'title'])).toEqual('Home page')
   })
-
 
   it('should register and apply multiple transfromers per kind', () => {
     transform.register(['scene'], element => element.setIn(['metadata', 'title'], 'Home page'))
@@ -185,5 +244,25 @@ describe('Transformers', () => {
     transform.register(['scene'], element => element.setIn(['metadata', 'title'], 'Home page'))
     const transformedAppState = transform.apply(fromJS(appStateWithSubKinds), childrenElements).value()
     expect(transformedAppState.getIn(['children', 0, 'metadata', 'title'])).toEqual('Home page')
+  })
+
+  it('should apply transformer when there are multiple children elements', () => {
+    const childrenElements = ['left', 'right']
+    transform.register('panel', element => element.setIn(['metadata', 'title'], element.getIn(['metadata', 'title']) + ' new'))
+    const transformedAppState = transform.apply(fromJS(appStateDualPanel), childrenElements).value()
+
+    expect(transformedAppState.getIn(['left', 'metadata', 'title'])).toEqual('Title left new')
+    expect(transformedAppState.getIn(['right', 0, 'metadata', 'title'])).toEqual('Title right 1 new')
+    expect(transformedAppState.getIn(['right', 1, 'metadata', 'title'])).toEqual('Title right 2 new')
+  })
+
+  it('should apply transformer when there are multiple children elements, but elements do not have all the specified children', () => {
+    const childrenElements = ['children', 'left', 'right']
+    transform.register('panel', element => element.setIn(['metadata', 'title'], element.getIn(['metadata', 'title']) + ' new'))
+    const transformedAppState = transform.apply(fromJS(appStateDualPanelSparse), childrenElements).value()
+
+    expect(transformedAppState.getIn(['children', 0, 'left', 'metadata', 'title'])).toEqual('Title left new')
+    expect(transformedAppState.getIn(['children', 1, 'right', 0, 'metadata', 'title'])).toEqual('Title right 1 new')
+    expect(transformedAppState.getIn(['children', 1, 'right', 1, 'metadata', 'title'])).toEqual('Title right 2 new')
   })
 });

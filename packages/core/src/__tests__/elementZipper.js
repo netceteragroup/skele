@@ -83,4 +83,31 @@ describe('Zipper', () => {
     expect(zipper.down().down().right().right().left().up().up().value().get('id')).toEqual(1)
   });
 
+  const multipleChildrenElements = {
+    id: 1,
+    left: [
+      {
+        id: 2
+      }
+    ],
+    right: [
+      {
+        id: 3
+      },
+      {
+        id: 4
+      }
+    ]
+  }
+
+  it('zipper multiple children elements', () => {
+    const zipper = zip.elementZipper(fromJS(multipleChildrenElements), ['left', 'right'])
+
+    expect(zipper.value().get('id')).toEqual(1)
+    expect(zipper.down().value().size).toEqual(1) // children collection node for left
+    expect(zipper.down().right().value().size).toEqual(2) // children collection node for right
+    expect(zipper.down().down().value().get('id')).toEqual(2)
+    expect(zipper.down().right().down().value().get('id')).toEqual(3)
+    expect(zipper.down().right().down().right().value().get('id')).toEqual(4)
+  });
 });
