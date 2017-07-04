@@ -5,7 +5,7 @@ import read from './read';
 import * as _transform from './transform';
 import * as data from './data';
 
-import createZipper from ''
+import elementZipper from './zip/elementZipper'
 
 import update from './update';
 import Engine from './engine/engine';
@@ -25,7 +25,7 @@ const transform = {
 }
 
 const zip = {
-  createZipper
+  elementZipper
 }
 
 export {
