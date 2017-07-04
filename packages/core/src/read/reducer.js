@@ -24,7 +24,7 @@ import { ReadFn } from './readRegistry';
  */
 export default function(config, cursor, action) {
 
-  const childrenElements = config.childrenElements
+  const childrenElements = config.transform.childrenElements
   const element = cursor.getIn(action.fromPath);
   if(!element) {
     // the path for the action can't be accessed in the latest cursor
