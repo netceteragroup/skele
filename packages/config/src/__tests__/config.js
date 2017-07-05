@@ -367,5 +367,9 @@ describe('config', () => {
     expect(() => {
       layer1.config1 = 'override value'
     }).toThrow();
+
+    expect(() => {
+      layer1.config1.c = 'override value'
+    }).toThrow();
   });
 });
