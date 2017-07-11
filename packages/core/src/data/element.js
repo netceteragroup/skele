@@ -147,3 +147,9 @@ function normalize(kind): ?List<string> {
 
   return null;
 }
+
+export function pathsToChildElements(element) {
+  return normalize(element.get('@@girders-elements/children'))
+         .flatMap(childrenPath => element.get(childrenPath).map((_, i) => List.of(childrenPath, i)))
+         .toList();
+}
