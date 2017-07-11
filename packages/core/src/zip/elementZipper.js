@@ -3,6 +3,12 @@ import { Iterable, List } from 'immutable'
 import { curry } from 'ramda'
 
 function isBranch(childrenElements, element) {
+
+  // this is a safety check for the case when some of the children elements also matches a field with a scalar value
+  if (!Iterable.isIndexed(element) && !Iterable.isAssociative(element)) {
+    return false
+  }
+
   let isBranch = Iterable.isIndexed(element)
   if (childrenElements instanceof Array) {
     childrenElements.forEach(childElement => isBranch = isBranch || !!element.get(childElement))
@@ -20,7 +26,7 @@ function getChildren(childrenElements, element) {
     // at node level
     if (childrenElements instanceof Array) {
       // multiple children elements
-      return childrenElements.map(childElement => element.get(childElement)).filter(e => !!e) // check if only one element
+      return childrenElements.map(childElement => element.get(childElement)).filter(e => !!e)
     } else {
       // single child element
       return Array.of(element.get(childrenElements))

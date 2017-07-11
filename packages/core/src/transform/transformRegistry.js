@@ -33,6 +33,12 @@ export function get(kind) {
 
 
 function transform(element) {
+
+  // this is a safety check for the case when some of the children elements also matches a field with a scalar value
+  if (!Iterable.isIndexed(element) && !Iterable.isAssociative(element)) {
+    return false
+  }
+
   // get all transformers registered for this kind
   const transformers = get(element.get('kind'))
 
