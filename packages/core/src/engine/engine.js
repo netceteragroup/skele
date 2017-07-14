@@ -5,6 +5,7 @@ import { compose, createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { fromJS } from 'immutable';
 import Cursor from 'immutable/contrib/cursor';
+import R from 'ramda';
 
 import * as ui from '../ui';
 import { reducer } from '../update';
@@ -13,21 +14,22 @@ import { watchReadPerform } from '../read/reducer';
 
 const sagaMiddleware = createSagaMiddleware();
 
-const buildStore = (initialAppState, customMiddleware = []) => {
+const buildStore = (initialAppState, customMiddleware = [], config) => {
   const storeFactory = compose(
     applyMiddleware(sagaMiddleware, ...customMiddleware)
   )(createStore);
-
-  return storeFactory(reducer, initialAppState);
+  const reducerCurry = R.curry(reducer);
+  const reducerWithConfig = reducerCurry(config)
+  return storeFactory(reducerWithConfig, initialAppState);
 };
 
 function toImmutable(initState) {
   return initState.get ? initState : fromJS(initState);
 }
 
-function createState(initState, customMiddleware) {
+function createState(initState, customMiddleware, config = {}) {
   const immutableInitState = toImmutable(initState);
-  const store = buildStore(Cursor.from(immutableInitState), customMiddleware);
+  const store = buildStore(Cursor.from(immutableInitState), customMiddleware, config);
   return {
     store: store
   };
@@ -63,7 +65,7 @@ ContextWrapper.propTypes = {
 export default class Engine extends Component {
   constructor(props, context) {
     super(props, context);
-    this.state = createState(props.initState, props.customMiddleware);
+    this.state = createState(props.initState, props.customMiddleware, props.config);
     sagaMiddleware.run(watchReadPerform);
     this.unsubscribe = this.state.store.subscribe(this._reRender.bind(this));
   }
@@ -75,7 +77,7 @@ export default class Engine extends Component {
   componentWillReceiveProps(nextProps) {
     const newState = toImmutable(nextProps.initState);
     if (!this.state.store.getState().equals(newState)) {
-      this.setState(createState(newState, nextProps.customMiddleware));
+      this.setState(createState(newState, nextProps.customMiddleware, nextProps.config));
     }
   }
 
@@ -98,5 +100,6 @@ export default class Engine extends Component {
 
 Engine.propTypes = {
   initState: React.PropTypes.object.isRequired,
-  customMiddleware: React.PropTypes.arrayOf(React.PropTypes.func)
+  customMiddleware: React.PropTypes.arrayOf(React.PropTypes.func),
+  config: React.PropTypes.object
 };

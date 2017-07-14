@@ -5,6 +5,8 @@ import { List, fromJS } from 'immutable';
 import { takeEvery } from 'redux-saga';
 import { call, put } from 'redux-saga/effects';
 
+import { apply } from '../transform'
+
 import uuid from 'uuid';
 
 import { canonical } from '../data/element';
@@ -15,12 +17,14 @@ import { ReadFn } from './readRegistry';
 /**
  * Reducer function for Reads.
  *
+ * @param config A configuration object passed from the Engine component
  * @param cursor The cursor representing the state.
  * @param action The action.
  * @returns {*} The new state represented by updated cursor.
  */
-export default function(cursor, action) {
-  // console.log('read action', action);
+export default function(config, cursor, action) {
+
+  const childrenElements = config.transform && config.transform.childrenElements
   const element = cursor.getIn(action.fromPath);
   if(!element) {
     // the path for the action can't be accessed in the latest cursor
@@ -48,7 +52,7 @@ export default function(cursor, action) {
       const pathToWhere = List.of(...action.fromPath, action.where);
       return cursor
         .setIn(pathToKind, kind)
-        .setIn(pathToWhere, fromJS(action.value));
+        .setIn(pathToWhere, apply(fromJS(action.value), childrenElements).value());
     }
     case 'READ_FAILED': {
       const pathToMeta = List.of(...action.fromPath, 'meta');

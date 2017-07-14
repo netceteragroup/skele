@@ -81,10 +81,10 @@ describe('updates API', function() {
       elementRegistry.register(readUpdate.type, () => {});
     });
 
-    expect(update.reducer(cursor, {})).toEqual(cursor);
-    expect(update.reducer(cursor, localUpdate)).toEqual(expect.anything());
-    expect(update.reducer(cursor, globalUpdate)).toEqual(expect.anything());
-    expect(update.reducer(cursor, readUpdate)).toEqual(expect.anything());
+    expect(update.reducer({}, cursor, {})).toEqual(cursor);
+    expect(update.reducer({}, cursor, localUpdate)).toEqual(expect.anything());
+    expect(update.reducer({}, cursor, globalUpdate)).toEqual(expect.anything());
+    expect(update.reducer({}, cursor, readUpdate)).toEqual(expect.anything());
   });
 
 });
