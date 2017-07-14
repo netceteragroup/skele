@@ -77,7 +77,7 @@ export default class Engine extends Component {
   componentWillReceiveProps(nextProps) {
     const newState = toImmutable(nextProps.initState);
     if (!this.state.store.getState().equals(newState)) {
-      this.setState(createState(newState, nextProps.customMiddleware));
+      this.setState(createState(newState, nextProps.customMiddleware, nextProps.config));
     }
   }
 
