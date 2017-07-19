@@ -13,7 +13,10 @@ class Read extends React.Component {
       React.PropTypes.arrayOf(React.PropTypes.string)
     ]).isRequired,
     uri: React.PropTypes.string.isRequired,
-    where: React.PropTypes.string.isRequired
+    where: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.object
+    ]).isRequired
   };
 
   constructor(props) {
