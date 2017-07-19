@@ -1,6 +1,6 @@
 'use strict';
 
-import { List, fromJS } from 'immutable';
+import { List, fromJS, Iterable } from 'immutable';
 
 import { takeEvery } from 'redux-saga';
 import { call, put } from 'redux-saga/effects';
@@ -49,10 +49,17 @@ export default function(config, cursor, action) {
     }
     case 'READ_SUCCEEDED': {
       const kind = canonicalKind.size === 1 ? canonicalKind.set(0, '__container') : canonicalKind.rest();
-      const pathToWhere = List.of(...action.fromPath, action.where);
-      return cursor
-        .setIn(pathToKind, kind)
-        .setIn(pathToWhere, apply(fromJS(action.value), childrenElements).value());
+      let newCursor = cursor.setIn(pathToKind, kind)
+      if (Iterable.isIndexed(action.where)) {
+        action.where.toArray().map(contentKey => {
+          const pathToWhere = List.of(...action.fromPath, contentKey);
+          newCursor = newCursor.setIn(pathToWhere, apply(fromJS(action.value.get ? action.value.get(contentKey) : action.value[contentKey]), childrenElements).value())
+        })
+        return newCursor
+      } else {
+        const pathToWhere = List.of(...action.fromPath, action.where);
+        return newCursor.setIn(pathToWhere, apply(fromJS(action.value), childrenElements).value());
+      }
     }
     case 'READ_FAILED': {
       const pathToMeta = List.of(...action.fromPath, 'meta');
