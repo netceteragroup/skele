@@ -36,7 +36,7 @@ function transform(element) {
 
   // this is a safety check for the case when some of the children elements also matches a field with a scalar value
   if (!Iterable.isIndexed(element) && !Iterable.isAssociative(element)) {
-    return false
+    return element
   }
 
   // get all transformers registered for this kind
