@@ -49,10 +49,9 @@ export default function(config, cursor, action) {
     }
     case 'READ_SUCCEEDED': {
       const kind = canonicalKind.size === 1 ? canonicalKind.set(0, '__container') : canonicalKind.rest();
-      const pathToWhere = List.of(...action.fromPath, action.where);
       return cursor
         .setIn(pathToKind, kind)
-        .setIn(pathToWhere, apply(fromJS(action.value), childrenElements).value());
+        .setIn(action.fromPath, apply(fromJS(action.value), childrenElements).value());
     }
     case 'READ_FAILED': {
       const pathToMeta = List.of(...action.fromPath, 'meta');
