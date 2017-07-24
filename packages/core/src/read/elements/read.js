@@ -12,8 +12,7 @@ class Read extends React.Component {
       React.PropTypes.string,
       React.PropTypes.arrayOf(React.PropTypes.string)
     ]).isRequired,
-    uri: React.PropTypes.string.isRequired,
-    where: React.PropTypes.string.isRequired
+    uri: React.PropTypes.string.isRequired
   };
 
   constructor(props) {
@@ -21,8 +20,8 @@ class Read extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch, kind, uri, where } = this.props;
-    dispatch({type: 'READ', uri, where, kind});
+    const { dispatch, kind, uri } = this.props;
+    dispatch({type: 'READ', uri, kind});
   }
 
   render() {
@@ -35,7 +34,6 @@ ui.register(['__read'], ({ element, dispatch }) => {
     <Read
       kind={element.get('kind').toJS()}
       uri={element.get('uri')}
-      where={element.get('where', 'content')}
       dispatch={dispatch} />
   );
 });
