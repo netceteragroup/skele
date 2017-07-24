@@ -48,10 +48,7 @@ export default function(config, cursor, action) {
         .setIn(pathToReadId, uuid());
     }
     case 'READ_SUCCEEDED': {
-      const kind = canonicalKind.size === 1 ? canonicalKind.set(0, '__container') : canonicalKind.rest();
-      return cursor
-        .setIn(pathToKind, kind)
-        .setIn(action.fromPath, apply(fromJS(action.value), childrenElements).value());
+      return cursor.setIn(action.fromPath, apply(fromJS(action.value), childrenElements).value());
     }
     case 'READ_FAILED': {
       const pathToMeta = List.of(...action.fromPath, 'meta');
