@@ -28,7 +28,7 @@ describe('Reads', () => {
         <div>Scene</div>
       );
     });
-    read.register(/test\.json$/, u => Promise.resolve({value: {kind: 'scene'}, meta: read.responseMeta({url: u})}));
+    read.register(/test\.json$/, u => Promise.resolve({value: {kind: 'scene', title: 'Scene Title'}, meta: read.responseMeta({url: u})}));
 
   });
 
@@ -48,6 +48,9 @@ describe('Reads', () => {
     setTimeout(() => {
       const scenes = engine.findWhere(c => isOfKind('scene', c.prop('element')));
       expect(scenes.length).toBeGreaterThan(0);
+
+      const scene = scenes.first();
+      expect(scene.prop('element').get('title')).toEqual('Scene Title');
       done();
     }, 500);
   });
