@@ -13,8 +13,7 @@ describe('Reads', () => {
     kind: 'app',
     content: {
       kind: ['__read', 'scene'],
-      uri: 'https://netcetera.com/test.json',
-      where: 'children'
+      uri: 'https://netcetera.com/test.json'
     }
   };
 
