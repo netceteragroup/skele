@@ -14,7 +14,7 @@ Object.assign(R,
     all: dispatch(2, lastArg(isCollection), 'every', 'all'),
     any: dispatch(2, lastArg(isCollection), 'some', 'any'),
     ap: dispatch(2,
-      (ap, fn) => isIndexed(fn) &&
+      (arity, [ap, fn]) => isIndexed(fn) &&
         (typeof ap.ap !== 'function') &&
         (typeof ap !== 'function'),
       require('./ap').default,
@@ -41,8 +41,8 @@ Object.assign(R,
       [O.T,          O.empty]
     ]),
     equals: dispatch(2, anyArg(isCollection), is, O.equals),
-    eqBy: dispatch(3, anyArg(isCollection, O.takeLast(2)), (f, x, y) => is(f(x), f(y)), O.eqBy),
-    eqProps: dispatch(3, anyArg(isAssociative, O.takeLast(2)), (p, x, y) => is(x.get(p), y.get(p)), O.eqProps),
+    eqBy: dispatch(3, anyArg(isCollection, -2), (f, x, y) => is(f(x), f(y)), O.eqBy),
+    eqProps: dispatch(3, anyArg(isAssociative, -2), (p, x, y) => is(x.get(p), y.get(p)), O.eqProps),
     evolve: dispatch(2, lastArg(isAssociative), require('./evolve').default, O.evolve),
     findIndex: dispatch(2, lastArg(isIndexed), 'findIndex', 'findIndex'),
     findLast: dispatch(2, lastArg(isCollection), 'findLast', 'findLast'),
@@ -58,13 +58,13 @@ Object.assign(R,
     insert: dispatch(3, lastArg(isIndexed), 'insert', 'insert'),
     insertAll: dispatch(
       3,
-      anyArg(isIndexed, O.takeLast(2)),
+      anyArg(isIndexed, -2),
       (pos, a, b) => List(b).splice(pos, 0, ...(isIndexed(a) ? a.toArray() : a)),
       O.insertAll),
     intersection: dispatch(2, anyArg(isCollection), (a, b) => Set(a).intersect(Set(b)), O.intersection),
     intersectionWith: dispatch(
       3,
-      anyArg(isCollection, O.takeLast(2)),
+      anyArg(isCollection, -2),
       (pred, a, b) => {
         const first = Set(a);
         const second = Set(b);
@@ -120,8 +120,8 @@ Object.assign(R,
     median: dispatch(1, lastArg(isCollection), (l) => R.median(l.toArray()), 'median'),
     merge: dispatch(2, anyArg(isAssociative), (o1, o2) => Map(o1).merge(Map(o2)), 'merge'),
     mergeAll: dispatch(1, firstArg(isIndexed), l => l.reduce((acc, o) => acc.merge(o), Map()), 'mergeAll'),
-    mergeWith: dispatch(3, anyArg(isAssociative, O.takeLast(2)), (f, o1, o2) => Map(o1).mergeWith(f, Map(o2)), 'mergeWith'),
-    mergeWithKey: dispatch(3, anyArg(isAssociative, O.takeLast(2)), (f, o1, o2) => Map(o1).mergeWith((v1, v2, k) => f(k, v1, v2), Map(o2)), 'mergeWithKey'),
+    mergeWith: dispatch(3, anyArg(isAssociative, -2), (f, o1, o2) => Map(o1).mergeWith(f, Map(o2)), 'mergeWith'),
+    mergeWithKey: dispatch(3, anyArg(isAssociative, -2), (f, o1, o2) => Map(o1).mergeWith((v1, v2, k) => f(k, v1, v2), Map(o2)), 'mergeWithKey'),
 
     nth: dispatch(2, lastArg(isIndexed), 'get', 'nth'),
     omit: dispatch(

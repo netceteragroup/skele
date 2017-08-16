@@ -1,14 +1,21 @@
 {
-  "presets": [
-    "react-native"
-  ],
+  "presets": ["react-native"],
   "env": {
     "test": {
       "plugins": [
-        ["transform-runtime", {
-          "polyfill": false,
-          "regenerator": true
-        }]
+        [
+          "transform-runtime",
+          {
+            "polyfill": false,
+            "regenerator": false
+          }
+        ]
+      ]
+    },
+    "bench": {
+      "presets": [],
+      "plugins": [
+        "babel-plugin-transform-es2015-modules-commonjs"
       ]
     }
   }
