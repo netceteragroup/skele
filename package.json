@@ -73,23 +73,11 @@
     "react": "^15.0.0",
     "redux": "^3.0.0"
   },
-  "taskr": {
-    "requires": [
-      "./scripts/taskr-benchmark"
-    ]
-  },
   "jest": {
     "setupTestFrameworkScriptFile": "./scripts/test-setup.js",
-    "modulePathIgnorePatterns": [
-      "/dist/es5/"
-    ],
-    "roots": [
-      "<rootDir>/packages/core",
-      "<rootDir>/packages/ramda"
-    ],
-    "testMatch": [
-      "**/__tests__/**/*.js"
-    ],
+    "modulePathIgnorePatterns": ["/dist/es5/"],
+    "roots": ["<rootDir>/packages/core", "<rootDir>/packages/ramda"],
+    "testMatch": ["**/__tests__/**/*.js"],
     "collectCoverageFrom": [
       "**/*.js",
       "!**/__tests__/**",
