@@ -1,7 +1,8 @@
 'use strict';
 
-import * as element from './element';
+import * as element from './element'
+export * from './element'
 
 export {
   element
-};
+}
