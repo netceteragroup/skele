@@ -147,10 +147,6 @@ omniscient@^4.1.1:
     lodash.isequal "^3.0.0"
     lodash.pick "^3.0.0"
 
-ramda@^0.21.0:
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.21.0.tgz#a001abedb3ff61077d4ff1d577d44de77e8d0a35"
-
 ramda@^0.22.1:
   version "0.22.1"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.22.1.tgz#031da0c3df417c5b33c96234757eb37033f36a0e"
@@ -162,9 +158,3 @@ redux-saga@^0.12.0:
 uuid@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
-
-zippa@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/zippa/-/zippa-0.3.1.tgz#27d18e8f93ba0a87ae04678c30fa6be38f119a1b"
-  dependencies:
-    ramda "^0.21.0"

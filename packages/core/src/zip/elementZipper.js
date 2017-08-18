@@ -1,12 +1,15 @@
 'use strict'
 
-import  { makeZipper }  from 'zippa'
+import { makeZipper } from '../vendor/zippa'
 import { Iterable, List, Map } from 'immutable'
-import R, { curry } from 'ramda'
+import { curry } from 'ramda'
 import { isOfKind } from '../data'
 
 // eslint-disable-next-line no-nested-ternary
-const asList = v => (Iterable.isIndexed(v) ? v : Array.isArray(v) ? List(v) : v ? List.of(v) : List())
+const asList = v =>
+  Iterable.isIndexed(v)
+    ? v
+    : Array.isArray(v) ? List(v) : v ? List.of(v) : List()
 const childPositions = (defaultPositions, el) =>
   asList(el.get('@@girders-elements/children') || defaultPositions)
 
@@ -70,8 +73,7 @@ const makeNode = (defaultChildPositions, element, children) => {
 const singleChild = childColl =>
   childColl.get('isSingle') && childColl.get('children').count() === 1
 
-
-export default function elementZipper(data, defaultChildPositions)  {
+export default function elementZipper(data, defaultChildPositions) {
   const dcp = asList(defaultChildPositions)
 
   const ElementZipperType = makeZipper(
