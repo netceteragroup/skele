@@ -4,11 +4,11 @@ import * as _ui from './ui';
 import read from './read';
 import * as _transform from './transform';
 import * as data from './data';
-
-import elementZipper from './zip/elementZipper'
+import * as zip from './zip';
 
 import update from './update';
 import Engine from './engine/engine';
+
 
 const ui = {
   register: _ui.register,
@@ -22,10 +22,6 @@ const transform = {
   reset: _transform.reset,
   get: _transform.get,
   apply: _transform.apply
-}
-
-const zip = {
-  elementZipper
 }
 
 export {

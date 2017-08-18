@@ -2,8 +2,8 @@
 
 import { fromJS } from 'immutable'
 import { zip, data } from '..'
-import { canGoDown } from 'zippa'
 
+const { canGoDown } = zip
 const childCollectionKind = '@@girders-elements/child-collection'
 
 describe('Zipper', () => {
