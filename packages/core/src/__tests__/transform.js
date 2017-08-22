@@ -191,7 +191,7 @@ describe('Transformers', () => {
     transform.register(['scene'], element => element.setIn(['metadata', 'title'], 'Home page'))
     transform.register(['app'], element => element.set('url', 'http://newurl.com'))
 
-    const transformedAppState = transform.apply(fromJS(appState)).value()
+    const transformedAppState = transform.apply(fromJS(appState), 'content').value()
 
     expect(transformedAppState.get('url')).toEqual('http://newurl.com')
     expect(transformedAppState.getIn(['content', 'metadata', 'title'])).toEqual('Home page')
@@ -201,7 +201,7 @@ describe('Transformers', () => {
     transform.register(['scene'], element => element.setIn(['metadata', 'title'], 'Home page'))
     transform.register(['app'], element => element.set('url', 'http://newurl.com'))
 
-    const transformedAppState = transform.apply(fromJS(appStateMultiScene)).value()
+    const transformedAppState = transform.apply(fromJS(appStateMultiScene), 'content').value()
 
     expect(transformedAppState.get('url')).toEqual('http://newurl.com')
     expect(transformedAppState.getIn(['content', 0, 'metadata', 'title'])).toEqual('Home page')
@@ -212,7 +212,7 @@ describe('Transformers', () => {
     transform.register(['scene'], element => element.setIn(['metadata', 'title'], 'Home page'))
     transform.register(['scene'], element => element.setIn(['metadata', 'description'], 'Home page description'))
 
-    const transformedAppState = transform.apply(fromJS(appState)).value()
+    const transformedAppState = transform.apply(fromJS(appState), 'content').value()
 
     expect(transformedAppState.getIn(['content', 'metadata', 'title'])).toEqual('Home page')
     expect(transformedAppState.getIn(['content', 'metadata', 'description'])).toEqual('Home page description')
@@ -224,7 +224,7 @@ describe('Transformers', () => {
     transform.register(['widget'], element => element.set('title', 'New ' +  element.get('title')))
 
 
-    const transformedAppState = transform.apply(fromJS(appStateMultiSceneWithSubElements)).value()
+    const transformedAppState = transform.apply(fromJS(appStateMultiSceneWithSubElements), 'content').value()
 
     expect(transformedAppState.getIn(['content', 0, 'metadata', 'title'])).toEqual('Home page')
     expect(transformedAppState.getIn(['content', 0, 'content', 'title'])).toEqual('New Widget Title')

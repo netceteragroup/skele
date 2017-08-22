@@ -49,7 +49,7 @@ function transform(element) {
   return transformFn(element)
 }
 
-export function apply(element, childrenElements = 'content') {
+export function apply(element, childrenElements) {
   let elementToProcess = element
   // TODO: implement proper handling for the case when the root is an array with multiple elements
   if (Iterable.isIndexed(element)) {
