@@ -1,17 +1,19 @@
 'use strict';
 
-import ViewportTracker from './viewport/tracker';
-import ViewportAware from './viewport/aware';
+import Tracker from './viewport/tracker';
+import Aware from './viewport/aware';
 import WithPlaceholder from './viewport/withPlaceholder';
 
-export {
-  ViewportTracker,
-  ViewportAware,
+const Viewport = {
+  Tracker,
+  Aware,
   WithPlaceholder,
 };
 
+export {
+  Viewport,
+};
+
 export default {
-  ViewportTracker,
-  ViewportAware,
-  WithPlaceholder,
+  Viewport,
 };
