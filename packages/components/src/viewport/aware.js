@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { View } from 'react-native';
+import * as Utils from './utils'
 
 export default WrappedComponent => {
   return class extends React.Component {
@@ -29,27 +30,13 @@ export default WrappedComponent => {
     _onViewportChange = (parentHandle, viewportOffset, viewportHeight) => {
       if (this.state.mounted) {
         this.wrapperRef.measureLayout(parentHandle, (wrapperX, wrapperY, wrapperWidth, wrapperHeight) => {
-          const inViewport = this._isInViewport(viewportOffset, viewportHeight, wrapperY, wrapperHeight);
+          const inViewport = Utils.isInViewport(
+            viewportOffset, viewportHeight, wrapperY, wrapperHeight, this.props.preTriggerRatio);
           this.setState({
             inViewport,
           });
         });
       }
-    };
-
-    _isInViewport = (viewportOffset, viewportHeight, wrapperOffset, wrapperHeight) => {
-      let inViewport = true;
-      const preTriggerAreaSize = this.props.preTriggerRatio ?
-        this.props.preTriggerRatio * viewportHeight : 0;
-      const wrapperEnd = wrapperOffset + wrapperHeight;
-      const viewportEnd = viewportOffset + viewportHeight;
-      const isViewportOffsetAboveWrapper = viewportOffset <= wrapperOffset;
-      if (isViewportOffsetAboveWrapper) {
-        inViewport = wrapperOffset - preTriggerAreaSize <= viewportEnd;
-      } else {
-        inViewport = wrapperEnd + preTriggerAreaSize >= viewportOffset;
-      }
-      return inViewport;
     };
 
     render() {
