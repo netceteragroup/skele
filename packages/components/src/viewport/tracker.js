@@ -2,9 +2,8 @@
 
 import React from 'react';
 import { findNodeHandle } from 'react-native';
-import ListenableComponent from '../shared/listenable'
 
-export default class ViewportTracker extends ListenableComponent {
+export default class ViewportTracker extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -15,8 +14,8 @@ export default class ViewportTracker extends ListenableComponent {
 
   getChildContext() {
     return {
-      addViewportListener: this._addListener,
-      removeViewportListener: this._removeListener,
+      addViewportListener: this.props.addListener,
+      removeViewportListener: this.props.removeListener,
     };
   }
 
@@ -39,7 +38,7 @@ export default class ViewportTracker extends ListenableComponent {
   };
 
   _onViewportChange = () => {
-    this._notifyListeners({
+    this.props.notifyListeners && this.props.notifyListeners({
       parentHandle: this.nodeHandle,
       viewportOffset: this.state.viewportOffset,
       viewportHeight: this.state.viewportHeight,
@@ -59,6 +58,9 @@ export default class ViewportTracker extends ListenableComponent {
 
   static propTypes = {
     children: React.PropTypes.element.isRequired,
+    addListener: React.PropTypes.func.isRequired,
+    removeListener: React.PropTypes.func.isRequired,
+    notifyListeners: React.PropTypes.func.isRequired,
   };
 
   static childContextTypes = {
