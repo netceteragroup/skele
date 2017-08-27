@@ -8,6 +8,7 @@ export default class ViewportTracker extends React.Component {
     super(props, context);
     this.listeners = [];
     this.state = {
+      viewportOffset: 0,
       viewportHeight: 0,
     };
   }
@@ -34,9 +35,9 @@ export default class ViewportTracker extends React.Component {
     }
   };
 
-  _notifyListeners = (viewportOffset) => {
+  _notifyListeners = () => {
     this.listeners.forEach(callback => {
-      callback(this.nodeHandle, viewportOffset, this.state.viewportHeight);
+      callback(this.nodeHandle, this.state.viewportOffset, this.state.viewportHeight);
     });
   };
 
@@ -44,7 +45,9 @@ export default class ViewportTracker extends React.Component {
     const childOnScroll = React.Children.only(this.props.children).props.onScroll;
     childOnScroll && childOnScroll(event);
     const viewportOffset = event.nativeEvent.contentOffset.y;
-    this._notifyListeners(viewportOffset);
+    this.setState({
+      viewportOffset,
+    }, this._notifyListeners);
   };
 
   _onLayout = (event) => {
@@ -53,9 +56,7 @@ export default class ViewportTracker extends React.Component {
     const viewportHeight = event.nativeEvent.layout.height;
     this.setState({
       viewportHeight,
-    }, () => {
-      this._notifyListeners(0);
-    });
+    }, this._notifyListeners);
   };
 
   render() {
