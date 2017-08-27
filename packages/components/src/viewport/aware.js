@@ -27,11 +27,11 @@ export default WrappedComponent => {
         && this.context.removeViewportListener(this._onViewportChange);
     }
 
-    _onViewportChange = (parentHandle, viewportOffset, viewportHeight) => {
+    _onViewportChange = (info) => {
       if (this.state.mounted) {
-        this.wrapperRef.measureLayout(parentHandle, (wrapperX, wrapperY, wrapperWidth, wrapperHeight) => {
+        this.wrapperRef.measureLayout(info.parentHandle, (wrapperX, wrapperY, wrapperWidth, wrapperHeight) => {
           const inViewport = Utils.isInViewport(
-            viewportOffset, viewportHeight, wrapperY, wrapperHeight, this.props.preTriggerRatio);
+            info.viewportOffset, info.viewportHeight, wrapperY, wrapperHeight, this.props.preTriggerRatio);
           this.setState({
             inViewport,
           });

@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { findNodeHandle } from 'react-native';
+import ListenableComponent from '../shared/listenable'
 
-export default class ViewportTracker extends React.Component {
+export default class ViewportTracker extends ListenableComponent {
   constructor(props, context) {
     super(props, context);
-    this.listeners = [];
     this.state = {
       viewportOffset: 0,
       viewportHeight: 0,
@@ -20,34 +20,13 @@ export default class ViewportTracker extends React.Component {
     };
   }
 
-  _addListener = (callback) => {
-    if (this.listeners.indexOf(callback) === -1) {
-      this.listeners = [...this.listeners, callback];
-    }
-  };
-
-  _removeListener = (callback) => {
-    const index = this.listeners.indexOf(callback);
-    if (index !== -1) {
-      let listeners = [...this.listeners];
-      listeners.splice(index, 1);
-      this.listeners = listeners;
-    }
-  };
-
-  _notifyListeners = () => {
-    this.listeners.forEach(callback => {
-      callback(this.nodeHandle, this.state.viewportOffset, this.state.viewportHeight);
-    });
-  };
-
   _onScroll = (event) => {
     const childOnScroll = React.Children.only(this.props.children).props.onScroll;
     childOnScroll && childOnScroll(event);
     const viewportOffset = event.nativeEvent.contentOffset.y;
     this.setState({
       viewportOffset,
-    }, this._notifyListeners);
+    }, this._onViewportChange);
   };
 
   _onLayout = (event) => {
@@ -56,7 +35,15 @@ export default class ViewportTracker extends React.Component {
     const viewportHeight = event.nativeEvent.layout.height;
     this.setState({
       viewportHeight,
-    }, this._notifyListeners);
+    }, this._onViewportChange);
+  };
+
+  _onViewportChange = () => {
+    this._notifyListeners({
+      parentHandle: this.nodeHandle,
+      viewportOffset: this.state.viewportOffset,
+      viewportHeight: this.state.viewportHeight,
+    });
   };
 
   render() {
