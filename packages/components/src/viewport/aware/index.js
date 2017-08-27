@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { View } from 'react-native';
-import * as Utils from './utils'
+import * as Utils from '../utils'
 
 export default WrappedComponent => {
   return class extends React.Component {
