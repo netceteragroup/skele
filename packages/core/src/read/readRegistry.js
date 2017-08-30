@@ -44,8 +44,15 @@ export function get(pattern: ReadDef): ReadFn  {
   return registry.get(pattern);
 }
 
-export function httpRead(url: string): Promise<ReadResponse> {
-  return fetch(url)
+export function httpRead(url: string, revalidate: boolean): Promise<ReadResponse> {
+  const options = {};
+  if (revalidate) {
+    const headers = {
+      'Cache-Control': 'max-age=0'
+    };
+    options['headers'] = headers;
+  }
+  return fetch(url, options)
     .then(processResponse)
     .catch(errorResponseForUrl(url));
 }
