@@ -4,8 +4,8 @@ import { mount } from 'enzyme';
 
 import React from 'react';
 import { fromJS } from 'immutable';
-import { ui, read, Engine } from '..';
-
+import { ui, read, data, Engine } from '..';
+const { isOfKind } = data.element;
 
 describe('Reads', () => {
 
@@ -13,8 +13,7 @@ describe('Reads', () => {
     kind: 'app',
     content: {
       kind: ['__read', 'scene'],
-      uri: 'https://netcetera.com/test.json',
-      where: 'children'
+      uri: 'https://netcetera.com/test.json'
     }
   };
 
@@ -29,7 +28,7 @@ describe('Reads', () => {
         <div>Scene</div>
       );
     });
-    read.register(/test\.json$/, u => Promise.resolve({value: {kind: 'scene'}, meta: read.responseMeta({url: u})}));
+    read.register(/test\.json$/, u => Promise.resolve({value: {kind: 'scene', title: 'Scene Title'}, meta: read.responseMeta({url: u})}));
 
   });
 
@@ -39,14 +38,19 @@ describe('Reads', () => {
 
   it('should succeed when found proper response', done => {
     const engine = mount(<Engine initState={fromJS(appState)} />);
+    const loadingEls = engine.findWhere(c => isOfKind('__loading', c.prop('element')));
+    expect(loadingEls.length).toBeGreaterThan(0);
+
     let html = engine.html();
     expect(html).toMatch('loading...');
     expect(html).not.toMatch('Scene');
 
     setTimeout(() => {
-      html = engine.html();
-      expect(html).not.toMatch('loading...');
-      expect(html).toMatch('Scene');
+      const scenes = engine.findWhere(c => isOfKind('scene', c.prop('element')));
+      expect(scenes.length).toBeGreaterThan(0);
+
+      const scene = scenes.first();
+      expect(scene.prop('element').get('title')).toEqual('Scene Title');
       done();
     }, 500);
   });

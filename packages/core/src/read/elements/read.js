@@ -1,19 +1,20 @@
 'use strict';
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import ui from '../../ui';
 
 class Read extends React.Component {
 
   static propTypes = {
-    dispatch: React.PropTypes.func.isRequired,
-    kind: React.PropTypes.oneOfType([
-      React.PropTypes.string,
-      React.PropTypes.arrayOf(React.PropTypes.string)
+    dispatch: PropTypes.func.isRequired,
+    kind: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string)
     ]).isRequired,
-    uri: React.PropTypes.string.isRequired,
-    where: React.PropTypes.string.isRequired
+    uri: PropTypes.string.isRequired,
+    revalidate: PropTypes.bool
   };
 
   constructor(props) {
@@ -21,8 +22,8 @@ class Read extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch, kind, uri, where } = this.props;
-    dispatch({type: 'READ', uri, where, kind});
+    const { dispatch, kind, uri, revalidate } = this.props;
+    dispatch({type: 'READ', uri, kind, revalidate});
   }
 
   render() {
@@ -35,7 +36,8 @@ ui.register(['__read'], ({ element, dispatch }) => {
     <Read
       kind={element.get('kind').toJS()}
       uri={element.get('uri')}
-      where={element.get('where', 'content')}
-      dispatch={dispatch} />
+      dispatch={dispatch}
+      revalidate={element.get('revalidate')}
+    />
   );
 });

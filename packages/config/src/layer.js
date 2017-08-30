@@ -1,5 +1,6 @@
 import { pickBy, reverse } from 'ramda'
 import deepMerge from './utils/merge'
+import deepFreeze from './utils/freeze'
 
 export default class Layer {
   configuration
@@ -68,7 +69,7 @@ export default class Layer {
 
           Object.defineProperty(layer, feature, {
             writable: false,
-            value: computedConfiguration
+            value: deepFreeze(computedConfiguration)
           });
         }
       )
