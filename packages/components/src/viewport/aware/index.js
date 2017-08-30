@@ -1,64 +1,70 @@
-'use strict';
+'use strict'
 
-import React from 'react';
-import { View } from 'react-native';
+import React from 'react'
+import PropTypes from 'prop-types'
 import * as Utils from '../utils'
 
 export default WrappedComponent => {
   return class extends React.Component {
     constructor(props, context) {
-      super(props, context);
+      super(props, context)
       this.state = {
-        mounted: false,
         inViewport: false,
-      };
+      }
     }
 
     componentDidMount() {
-      this.context.addViewportListener
-        && this.context.addViewportListener(this._onViewportChange);
-      this.setState({
-        mounted: true,
-      });
+      this.context.addViewportListener &&
+        this.context.addViewportListener(this._onViewportChange)
     }
 
     componentWillUnmount() {
-      this.context.removeViewportListener
-        && this.context.removeViewportListener(this._onViewportChange);
+      this.context.removeViewportListener &&
+        this.context.removeViewportListener(this._onViewportChange)
     }
 
-    _onViewportChange = (info) => {
-      if (this.state.mounted) {
-        this.wrapperRef.measureLayout(info.parentHandle, (wrapperX, wrapperY, wrapperWidth, wrapperHeight) => {
-          const inViewport = Utils.isInViewport(
-            info.viewportOffset, info.viewportHeight, wrapperY, wrapperHeight, this.props.preTriggerRatio);
-          this.setState({
-            inViewport,
-          });
-        });
+    _onViewportChange = info => {
+      if (this.wrapperRef != null) {
+        this.wrapperRef.measureLayout(
+          info.parentHandle,
+          (wrapperX, wrapperY, wrapperWidth, wrapperHeight) => {
+            const inViewport = Utils.isInViewport(
+              info.viewportOffset,
+              info.viewportHeight,
+              wrapperY,
+              wrapperHeight,
+              this.props.preTriggerRatio
+            )
+            this.setState({
+              inViewport,
+            })
+          }
+        )
       }
-    };
+    }
 
     render() {
       return (
-        <View ref={ref => this.wrapperRef = ref}>
-          <WrappedComponent
-            {...this.props}
-            inViewport={this.state.inViewport} />
-        </View>
-      );
+        <WrappedComponent
+          ref={ref => (this.wrapperRef = ref)}
+          {...this.props}
+          inViewport={this.state.inViewport}
+        />
+      )
     }
 
     static propTypes = {
-      preTriggerRatio: React.PropTypes.number,
-    };
+      ...WrappedComponent.propTypes,
+      preTriggerRatio: PropTypes.number,
+    }
 
     static contextTypes = {
-      addViewportListener: React.PropTypes.func,
-      removeViewportListener: React.PropTypes.func,
-    };
+      addViewportListener: PropTypes.func,
+      removeViewportListener: PropTypes.func,
+    }
 
-    static displayName =
-      `ViewportAware(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
-  };
-};
+    static displayName = `ViewportAware(${WrappedComponent.displayName ||
+      WrappedComponent.name ||
+      'Component'})`
+  }
+}
