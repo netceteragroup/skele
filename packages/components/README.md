@@ -1,4 +1,4 @@
-# Components 
+# Components
 
 Girders Element's `components` package is a library of custom components that aid in building React and React Native apps.
 
@@ -12,7 +12,7 @@ Tracks the position and size of a `ScrollView` or `ListView` viewport. Communica
 
 ```javascript
 import { Viewport } from '@girders-elements/components';
-  
+
 render() {
   return (
     <Viewport.Tracker>
@@ -34,7 +34,7 @@ A higher-order component that processes the information communicated by the view
 import { Image } from 'react-native';
 import { Viewport } from '@girders-elements/components';
 const ViewportAwareImage = Viewport.Aware(Image);
-  
+
 render() {
   return (
     <ViewportAwareImage
@@ -57,17 +57,19 @@ A higher-order component that can be used to display a placeholder while the com
 #### Usage
 
 ```javascript
-import { Image } from 'react-native';
+import { Image, View } from 'react-native';
 import { Viewport } from '@girders-elements/components';
-const ViewportAwareImageWithPlaceholder = Viewport.Aware(Viewport.WithPlaceholder(Image));
-  
+
+const Placeholder = () => <View style={{ width: 50, height: 50, backgroundColor: 'darkgrey' }} />
+
+const ViewportAwareImageWithPlaceholder = Viewport.Aware(Viewport.WithPlaceholder(Placeholder, Image));
+
 render() {
   return (
     <ViewportAwareImageWithPlaceholder
       source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
       preTriggerRatio={0.5}
-      style={{ width: 50, height: 50 }}
-      placeholderStyle={{ width: 50, height: 50, backgroundColor: 'darkgrey' }} />
+      style={{ width: 50, height: 50 }} />
   );
 }
 ```
@@ -76,4 +78,3 @@ render() {
 
 | Prop | Description | Default |
 |---|---|---|
-|**`placeholderStyle`**| Determines the style of the placeholder. | None |

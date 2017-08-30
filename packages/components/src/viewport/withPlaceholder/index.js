@@ -1,27 +1,29 @@
-'use strict';
+'use strict'
 
-import React from 'react';
-import { View } from 'react-native';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-export default WrappedComponent => {
+export default (PlaceHolderComponent, WrappedComponent) => {
   return class extends React.Component {
     constructor(props, context) {
-      super(props, context);
+      super(props, context)
     }
 
     render() {
       if (this.props.inViewport) {
-        return <WrappedComponent {...this.props} />;
+        return <WrappedComponent {...this.props} />
       }
-      return <View style={this.props.placeholderStyle} />;
+      return <PlaceHolderComponent />
     }
 
     static propTypes = {
-      inViewport: React.PropTypes.bool.isRequired,
-      placeholderStyle: React.PropTypes.object,
-    };
+      ...WrappedComponent.propTypes,
+      inViewport: PropTypes.bool.isRequired,
+      placeholderStyle: PropTypes.object,
+    }
 
-    static displayName =
-      `WithPlaceholder(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
-  };
-};
+    static displayName = `WithPlaceholder(${WrappedComponent.displayName ||
+      WrappedComponent.name ||
+      'Component'})`
+  }
+}
