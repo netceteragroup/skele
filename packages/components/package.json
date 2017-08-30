@@ -1,9 +1,9 @@
 {
   "name": "@girders-elements/components",
-  "version": "0.0.1",
+  "version": "1.0.0-alpha.3",
   "description": "Girders Elements custom components for React and React Native.",
-  "main": "src/index.js",
-  "browser": "dist/es5/index.js",
+  "react-native": "src/index.js",
+  "main": "dist/es5/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/netceteragroup/girders-elements.git"
