@@ -1,19 +1,15 @@
 {
   "name": "@girders-elements/components",
   "version": "1.0.0-alpha.3",
-  "description": "Girders Elements custom components for React and React Native.",
+  "description":
+    "Girders Elements custom components for React and React Native.",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/netceteragroup/girders-elements.git"
   },
-  "keywords": [
-    "react",
-    "react-native",
-    "components",
-    "netcetera"
-  ],
+  "keywords": ["react", "react-native", "components", "netcetera"],
   "author": "netcetera",
   "license": "MIT",
   "bugs": {
@@ -26,5 +22,8 @@
   },
   "dependencies": {
     "prop-types": "^15.5.10"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
