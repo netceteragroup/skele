@@ -3,7 +3,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-export default (PlaceHolderComponent, WrappedComponent) => {
+export default (WrappedComponent, PlaceHolderComponent) => {
   return class extends React.Component {
     constructor(props, context) {
       super(props, context)
@@ -13,16 +13,17 @@ export default (PlaceHolderComponent, WrappedComponent) => {
       if (this.props.inViewport) {
         return <WrappedComponent {...this.props} />
       }
-      return <PlaceHolderComponent />
+      return PlaceHolderComponent
+        ? <PlaceHolderComponent />
+        : <this.props.placeHolder />
     }
 
     static propTypes = {
-      ...WrappedComponent.propTypes,
       inViewport: PropTypes.bool.isRequired,
-      placeholderStyle: PropTypes.object,
+      placeHolder: PropTypes.func,
     }
 
-    static displayName = `WithPlaceholder(${WrappedComponent.displayName ||
+    static displayName = `WithPlaceHolder(${WrappedComponent.displayName ||
       WrappedComponent.name ||
       'Component'})`
   }
