@@ -50,9 +50,9 @@ render() {
 |---|---|---|
 |**`preTriggerRatio`**| Determines pre-triggering of `inViewport`. Useful for rendering components beforehand to improve user experience. A ratio of `0.5` means that the effective viewport will be twice the size of the real viewport. | `0` |
 
-### With Placeholder
+### With Place Holder
 
-A higher-order component that can be used to display a placeholder while the component is not in the viewport. This can improve user experience.
+A higher-order component that can be used to display a place holder while the component is not in the viewport. This can improve user experience.
 
 #### Usage
 
@@ -60,9 +60,9 @@ A higher-order component that can be used to display a placeholder while the com
 import { Image, View } from 'react-native';
 import { Viewport } from '@girders-elements/components';
 
-const Placeholder = () => <View style={{ width: 50, height: 50, backgroundColor: 'darkgrey' }} />
+const PlaceHolder = () => <View style={{ width: 50, height: 50, backgroundColor: 'darkgrey' }} />
 
-const ViewportAwareImageWithPlaceholder = Viewport.Aware(Viewport.WithPlaceholder(Placeholder, Image));
+const ViewportAwareImageWithPlaceholder = Viewport.Aware(Viewport.WithPlaceHolder(Image, PlaceHolder));
 
 render() {
   return (
@@ -78,3 +78,4 @@ render() {
 
 | Prop | Description | Default |
 |---|---|---|
+|**`placeHolder`**| Useful for passing down a place holder at render time. | `null` |

@@ -13,9 +13,9 @@ export default (WrappedComponent, PlaceHolderComponent) => {
       if (this.props.inViewport) {
         return <WrappedComponent {...this.props} />
       }
-      return PlaceHolderComponent
-        ? <PlaceHolderComponent />
-        : this.props.placeHolder ? <this.props.placeHolder /> : null
+      return this.props.placeHolder
+        ? <this.props.placeHolder />
+        : PlaceHolderComponent ? <PlaceHolderComponent /> : null
     }
 
     static propTypes = {
