@@ -1,15 +1,16 @@
 {
   "name": "@girders-elements/config",
-  "version": "1.0.0-alpha.6",
-  "description":
-    "Girders elements packages that provides the posibility to define a custom configuration",
+  "version": "1.0.0-alpha.7",
+  "description": "Girders elements packages that provides the posibility to define a custom configuration",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/netceteragroup/girders-elements.git"
   },
-  "keywords": ["netcetera"],
+  "keywords": [
+    "netcetera"
+  ],
   "author": "netcetera",
   "license": "MIT",
   "bugs": {
