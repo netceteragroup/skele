@@ -1,5 +1,7 @@
 'use strict'
 
+import R from 'ramda'
+
 import invariant from 'invariant'
 
 import Registry from '../common/MultivalueRegistry'
@@ -7,13 +9,9 @@ import { isElementRef } from '../data/element'
 
 import { Iterable } from 'immutable'
 
-import R from 'ramda'
-
 import { postWalk, elementZipper } from '../zip'
 
-const transformerRegistry = new Registry()
-
-export function register(kind, transformer) {
+export const register = R.curry((transformerRegistry, kind, transformer) => {
   invariant(
     isElementRef(kind),
     'You must provide a valid element reference to register'
@@ -24,7 +22,7 @@ export function register(kind, transformer) {
   )
 
   transformerRegistry.register(kind, transformer)
-}
+})
 
 export function get(kind) {
   return transformerRegistry.get(kind)
