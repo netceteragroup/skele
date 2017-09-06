@@ -1,62 +1,38 @@
 'use strict'
 
 import R from 'ramda'
+import { kindOf } from '../data/element'
+import { Map } from 'immutable'
 
-import invariant from 'invariant'
+import { postWalk, elementZipper as makeZipper, root, value } from '../zip'
 
-import Registry from '../common/MultivalueRegistry'
-import { isElementRef } from '../data/element'
+const elementZipper = R.flip(makeZipper)
 
-import { Iterable } from 'immutable'
-
-import { postWalk, elementZipper } from '../zip'
-
-export const register = R.curry((transformerRegistry, kind, transformer) => {
-  invariant(
-    isElementRef(kind),
-    'You must provide a valid element reference to register'
+export function transformer(registry, childPositions) {
+  const elementTransformer = memoize(kind =>
+    registry.get(kind).reduce((f, g) => x => g(f(x)), R.identity)
   )
-  invariant(
-    transformer != null && typeof transformer === 'function',
-    'You must provide a transformer function'
-  )
+  const transform = element => elementTransformer(kindOf(element))(element)
 
-  transformerRegistry.register(kind, transformer)
-})
-
-export function get(kind) {
-  return transformerRegistry.get(kind)
+  return R.pipe(elementZipper(childPositions), postWalk(transform), root, value)
 }
 
-function transform(element) {
-  // this is a safety check for the case when some of the children elements also matches a field with a scalar value
-  if (!Iterable.isIndexed(element) && !Iterable.isAssociative(element)) {
-    return element
+const notPresent = '@@girders-elements/_notPreset'
+
+function memoize(fn) {
+  let cache = Map()
+
+  return arg => {
+    let res = cache.get(arg)
+
+    if (res === notPresent) return undefined
+    if (res != null) return res
+
+    res = fn(arg)
+
+    if (res == null) res = notPresent
+    cache = cache.set(arg, res)
+
+    return res === notPresent ? undefined : res
   }
-
-  // get all transformers registered for this kind
-  const transformers = get(element.get('kind'))
-
-  // if no transformers are defined for the element, just return the same element
-  if (!transformers) {
-    return element
-  }
-
-  const transformFn =
-    transformers.length === 1 ? transformers : R.pipe(...transformers)
-  return transformFn(element)
-}
-
-export function apply(element, childrenElements) {
-  let elementToProcess = element
-  // TODO: implement proper handling for the case when the root is an array with multiple elements
-  if (Iterable.isIndexed(element)) {
-    elementToProcess = element.get(0)
-  }
-  const zipper = elementZipper(elementToProcess, childrenElements)
-  return postWalk(transform, zipper)
-}
-
-export function reset() {
-  transformerRegistry.reset()
 }

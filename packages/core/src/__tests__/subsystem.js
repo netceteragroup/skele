@@ -24,7 +24,7 @@ describe('SubSystem', () => {
       },
     }))
 
-    let k = Kernel.create({}, [sub1, sub2], {})
+    let k = Kernel.create([sub1, sub2], {}, {})
 
     it('allows subsystems to talk to eachother (late binding)', () => {
       expect(k.subsystems.sub2.hello()).toEqualI(
@@ -67,7 +67,7 @@ describe('SubSystem', () => {
       sub1.read.register(1)
       sub2.read.register(2)
 
-      let k = Kernel.create({}, [sub1, sub2], {})
+      let k = Kernel.create([sub1, sub2], {}, {})
 
       expect(k.subsystems.sub1.read.registry).toEqual([1])
       expect(k.subsystems.sub2.read.registry).toEqual([2])

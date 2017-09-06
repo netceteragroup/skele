@@ -6,7 +6,7 @@ import invariant from 'invariant'
 import { isElementRef } from '../data'
 
 import * as SubSystem from '../subsystem'
-import { MultivalueRegistry, MultivalueRegistryChain } from '../registry'
+import { MultivalueRegistry, chainMultivalueRegistries } from '../registry'
 
 import * as impl from './impl'
 
@@ -34,44 +34,39 @@ SubSystem.extend(() => {
 
         registry.register(kind, transformer)
       },
+
+      reset() {
+        this[registryAttribute].reset()
+      },
     },
   }
 })
 
 export default SubSystem.create(system => ({
+  name: 'transform',
   /**
    * Creates the read transformer
    */
   buildTransformer() {
+    const combinedRegistry = getCombinedRegistry(system.subsystemSequence)
+
+    if (combinedRegistry == null) {
+      return R.identity
+    }
     return impl.transformer(
-      getCombinedRegistry(system.subsystemSequence),
-      system.config.transform.childPositions ||
-        system.config.transform.childrenElements
+      combinedRegistry,
+      getChildPostions(system.config) || getChildElements(system.config)
     )
   },
 }))
 
-const getRegistry = R.prop(registryAttribute)
+const getRegistry = R.pipe(R.prop('transform'), R.prop(registryAttribute))
 
 const getCombinedRegistry = R.pipe(
   R.map(getRegistry),
   R.reject(R.isNil),
-  R.cond(
-    [a => a.length === 0, new MultivalueRegistry()],
-    [a => a.length === 1, a[0]],
-    [
-      R.T,
-      R.reduce(
-        (a, b) => new MultivalueRegistryChain(a, b),
-        new MultivalueRegistry()
-      ),
-    ]
-  )
+  chainMultivalueRegistries
 )
 
-// export default {
-//   register,
-//   apply,
-//   get,
-//   reset,
-// }
+const getChildPostions = R.path(['transform', 'childPositions'])
+const getChildElements = R.path(['transform', 'childrenElements'])

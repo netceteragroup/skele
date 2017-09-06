@@ -16,7 +16,7 @@ import * as SubSystem from './subsystem'
 // -- registered subsystenms
 
 class Kernel {
-  constructor(config, subsystems, init) {
+  constructor(subsystems, init, config) {
     this._config = config
     this._init = I.fromJS(init)
 
@@ -26,30 +26,34 @@ class Kernel {
     //    for instantation
     const ssMap = R.reduce((ss, s) => R.assoc(s.name, s, ss), {}, subsystems)
     this._subsystems = ssMap
+    this._subsystemSequence = subsystems
 
     // 2. create actual subsystems, providing the initial map for extension
     //    lookup. Order is important here.
-    const subsystemsSeq = R.map(SubSystem.instantiate(this), subsystems)
+    const instantiatedSeq = R.map(SubSystem.instantiate(this), subsystems)
 
     // 3. put subsystems in place
 
     this._subsystems = R.reduce(
       (ss, s) => R.assoc(s.name, s, ss),
       {},
-      subsystemsSeq
+      instantiatedSeq
     )
 
-    this._subsystemSequence = subsystemsSeq
+    this._subsystemSequence = instantiatedSeq
 
     // 4. The store
 
-    const middleware = getMiddleware(subsystemsSeq)
+    const middleware = getMiddleware(this.subsystemSequence)
 
     if (R.isEmpty(middleware)) {
-      this._store = createStore(buildReducer(subsystemsSeq), this._init)
+      this._store = createStore(
+        buildReducer(this.subsystemSequence),
+        this._init
+      )
     } else {
       this._store = createStore(
-        buildReducer(subsystemsSeq),
+        buildReducer(this.subsystemSequence),
         this._init,
         applyMiddleware(...middleware)
       )
@@ -79,13 +83,13 @@ class Kernel {
 }
 
 function buildReducer(subsystems) {
-  return R.reduce(R.compose, R.identity, R.map(SubSystem.reducer, subsystems))
+  return R.reduce(R.pipe, R.identity, R.map(SubSystem.reducer, subsystems))
 }
 
 const getMiddleware = R.pipe(R.map(SubSystem.middleware), R.reject(R.isNil))
 
-export function create(config, subsystems, init) {
-  return new Kernel(config, subsystems, init)
+export function create(subsystems, init, config) {
+  return new Kernel(subsystems, init, config)
 }
 
 export default {
