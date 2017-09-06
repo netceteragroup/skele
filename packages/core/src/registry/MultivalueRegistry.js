@@ -11,14 +11,17 @@ export default class MultivalueRegistry extends Registry {
     )
   }
 
+  _getInternal(key) {
+    return this._registry.get(key) || List()
+  }
+
   _getBySpecificity(key, useSpecificity) {
     if (useSpecificity) {
       const lessSpecificKey = this._lessSpecificKey(key)
 
       if (lessSpecificKey) {
-        const lessSpecific =
-          this._getBySpecificity(lessSpecificKey, true) || List()
-        const exact = this._getInternal(key) || List()
+        const lessSpecific = this._getBySpecificity(lessSpecificKey, true)
+        const exact = this._getInternal(key)
 
         return lessSpecific.concat(exact)
       }

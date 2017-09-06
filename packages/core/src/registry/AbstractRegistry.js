@@ -10,7 +10,6 @@ export default class AbstractRegistry {
     const resolvedKey = this._adaptKey(key)
 
     return this._getBySpecificity(resolvedKey, true)
-    return undefined
   }
 
   reset() {

@@ -1,7 +1,8 @@
 'use strict'
 
 import AbstractRegistry from './AbstractRegistry'
-import { List } from 'immutable'
+import { List, is, Iterable } from 'immutable'
+import R from 'ramda'
 
 export default class PatternRegistry extends AbstractRegistry {
   constructor() {
@@ -10,16 +11,16 @@ export default class PatternRegistry extends AbstractRegistry {
   }
 
   register(key, value) {
+    let pattern
     if (typeof key === 'function') {
-      this._registry = this._registry.push(List.of(key, value))
+      pattern = List.of(key, value)
     } else if (key instanceof RegExp) {
       const regexp = key
-      this._registry = this._registry.push(
-        List.of(regexp.test.bind(regexp), value)
-      )
+      pattern = List.of(regexp.test.bind(regexp), value)
     } else {
-      throw new Error('Key must be a function or a regexp')
+      pattern = List.of(equals(key), value)
     }
+    this._registry = this._registry.push(pattern)
   }
 
   reset() {
@@ -41,3 +42,12 @@ export default class PatternRegistry extends AbstractRegistry {
     return null
   }
 }
+
+const equals = R.curryN(
+  2,
+  R.ifElse(
+    (a, b) => Iterable.isIterable(a) && Iterable.isIterable(b),
+    is,
+    R.equals
+  )
+)

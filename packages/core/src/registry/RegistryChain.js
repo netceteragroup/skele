@@ -1,6 +1,9 @@
 'use strict'
 
+import R from 'ramda'
+
 import AbstractRegistry from './AbstractRegistry'
+import Registry from './Registry'
 import MultivalueRegistry from './MultivalueRegistry'
 
 export class RegistryChain extends AbstractRegistry {
@@ -18,6 +21,12 @@ export class RegistryChain extends AbstractRegistry {
     throw new Error('This is a read-only registry')
   }
 
+  get(key) {
+    // avoid adopting the key, as we have to do it for each underlying registry
+    // separately
+    return this._getBySpecificity(key, false)
+  }
+
   _getInternal(key) {
     let val = this._primaryRegistry._getInternal(
       this._primaryRegistry._adaptKey(key)
@@ -28,18 +37,70 @@ export class RegistryChain extends AbstractRegistry {
         this._fallbackRegistry._adaptKey(key)
       )
     }
+
+    return val
   }
 
   _adaptKey(key) {
-    return key
+    // delegate to primary, to make chains of chains happy
+    return this._primaryRegistry._adaptKey(key)
   }
 
   _lessSpecificKey(key) {
-    return this._primaryRegistry._lessSpecificKey(key)
+    // specificity rules are always dictated by the primary registry
+    return this._primaryRegistry._lessSpecificKey(
+      this._primaryRegistry._adaptKey(key)
+    )
   }
 }
 
-export class MultivalueRegistryChain extends RegistryChain {}
+export class MultivalueRegistryChain extends AbstractRegistry {
+  constructor(fallback, primary) {
+    super()
+    this._fallbackRegistry = fallback
+    this._primaryRegistry = primary
+  }
+
+  register() {
+    throw new Error('This is a read-only registry')
+  }
+
+  reset() {
+    throw new Error('This is a read-only registry')
+  }
+
+  _getInternal(key) {
+    return this._fallbackRegistry
+      ._getInternal(key)
+      .concat(this._primaryRegistry._getInternal(key))
+  }
+
+  _adaptKey(key) {
+    // always works with MultivalueRegistries so
+    return this._primaryRegistry._adaptKey(key)
+  }
+
+  _lessSpecificKey(key) {
+    // specificity rules are always dictated by the primary registry
+    return this._primaryRegistry._lessSpecificKey(
+      this._primaryRegistry._adaptKey(key)
+    )
+  }
+}
 
 MultivalueRegistryChain.prototype._getBySpecificity =
   MultivalueRegistry.prototype._getBySpecificity
+
+const chain = (Chain, Zero) =>
+  R.cond([
+    [a => a.length === 0, R.always(null)],
+    [a => a.length === 1, R.head],
+    [R.T, R.reduce((a, b) => new Chain(a, b), new Zero())],
+  ])
+
+export const chainRegistries = chain(RegistryChain, Registry)
+
+export const chainMultivalueRegistries = chain(
+  MultivalueRegistryChain,
+  MultivalueRegistry
+)
