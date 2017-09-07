@@ -16,8 +16,8 @@ describe('Transform Subsytem', () => {
     [transformSS, app],
     {},
     {
-      transform: {
-        childPositions: ['content', 'children', 'left', 'right'],
+      data: {
+        defaultChildPositions: ['content', 'children', 'left', 'right'],
       },
     }
   )

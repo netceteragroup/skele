@@ -36,7 +36,7 @@ SubSystem.extend(() => {
       },
 
       reset() {
-        this[registryAttribute].reset()
+        registry.reset()
       },
     },
   }
@@ -53,20 +53,14 @@ export default SubSystem.create(system => ({
     if (combinedRegistry == null) {
       return R.identity
     }
-    return impl.transformer(
-      combinedRegistry,
-      getChildPostions(system.config) || getChildElements(system.config)
-    )
+    return impl.transformer(combinedRegistry, system.elementZipper)
   },
 }))
 
-const getRegistry = R.pipe(R.prop('transform'), R.prop(registryAttribute))
+const getRegistry = R.path(['transform', registryAttribute])
 
 const getCombinedRegistry = R.pipe(
   R.map(getRegistry),
   R.reject(R.isNil),
   chainMultivalueRegistries
 )
-
-const getChildPostions = R.path(['transform', 'childPositions'])
-const getChildElements = R.path(['transform', 'childrenElements'])
