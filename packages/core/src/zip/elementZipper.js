@@ -3,17 +3,18 @@
 import { makeZipper } from '../vendor/zippa'
 import { Iterable, List, Map } from 'immutable'
 import { curry } from 'ramda'
-import { isOfKind } from '../data'
+import {
+  isOfKind,
+  asList,
+  childPositions as childPositionsFromElement,
+} from '../data'
 
-// eslint-disable-next-line no-nested-ternary
-const asList = v =>
-  Iterable.isIndexed(v)
-    ? v
-    : Array.isArray(v) ? List(v) : v ? List.of(v) : List()
-const childPositions = (defaultPositions, el) =>
-  asList(el.get('@@girders-elements/children') || defaultPositions)
+const childPositions = curry((defaultChildPositions, el) => {
+  const fromEl = childPositionsFromElement(el)
+  return !fromEl.isEmpty() ? fromEl : asList(defaultChildPositions)
+})
 
-const isBranch = (defaultChildPositions, element) => {
+const isBranch = curry((defaultChildPositions, element) => {
   if (isOfKind('@@girders-elements/child-collection', element)) {
     const children = element.get('children')
     return children && children.count() > 0
@@ -26,9 +27,9 @@ const isBranch = (defaultChildPositions, element) => {
   //   positions.toJS()
   // )
   return positions.some(pos => element.get(pos))
-}
+})
 
-const getChildren = (defaultChildPositions, element) => {
+const getChildren = curry((defaultChildPositions, element) => {
   if (isOfKind('@@girders-elements/child-collection', element)) {
     return element.get('children').toArray()
   }
@@ -44,7 +45,7 @@ const getChildren = (defaultChildPositions, element) => {
       List()
     )
     .toArray()
-}
+})
 
 const makeChildCollection = (p, children) =>
   Map({
@@ -54,7 +55,7 @@ const makeChildCollection = (p, children) =>
     children: asList(children),
   })
 
-const makeNode = (defaultChildPositions, element, children) => {
+const makeNode = curry((defaultChildPositions, element, children) => {
   if (isOfKind('@@girders-elements/child-collection', element)) {
     return element.set('children', List(children))
   }
@@ -68,18 +69,27 @@ const makeNode = (defaultChildPositions, element, children) => {
       ),
     element
   )
-}
+})
 
 const singleChild = childColl =>
   childColl.get('isSingle') && childColl.get('children').count() === 1
 
-export default function elementZipper(data, defaultChildPositions) {
+/**
+ * Creates an element zipper with the specified config
+ * The function is hard-curried: (config) => (tree) => rootLocation
+ *
+ * @param config, configuration for the object, currently cupports o
+ *  only the `defaultChildPositions` proprty
+ */
+export default function elementZipper(config) {
+  const { defaultChildPositions } = config
   const dcp = asList(defaultChildPositions)
 
   const ElementZipperType = makeZipper(
-    curry(isBranch)(dcp),
-    curry(getChildren)(dcp),
-    curry(makeNode)(dcp)
+    isBranch(dcp),
+    getChildren(dcp),
+    makeNode(dcp)
   )
-  return ElementZipperType.from(data)
+
+  return ElementZipperType.from.bind(ElementZipperType)
 }
