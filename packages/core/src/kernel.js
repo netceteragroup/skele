@@ -4,6 +4,8 @@ import I from 'immutable'
 import Cursor from 'immutable/contrib/cursor'
 import R from 'ramda'
 
+import * as zip from './zip'
+
 import { createStore, applyMiddleware } from 'redux'
 
 // import invariant from './impl'
@@ -80,6 +82,12 @@ class Kernel {
   get config() {
     return this._config
   }
+
+  get elementZipper() {
+    return zip.elementZipper({
+      defaultChildPositions: getChildPostions(this.config),
+    })
+  }
 }
 
 function buildReducer(subsystems) {
@@ -87,6 +95,11 @@ function buildReducer(subsystems) {
 }
 
 const getMiddleware = R.pipe(R.map(SubSystem.middleware), R.reject(R.isNil))
+
+const getChildPostions = R.either(
+  R.path(['data', 'defaultChildPositions']),
+  R.path(['transform', 'childrenElements'])
+)
 
 export function create(subsystems, init, config) {
   return new Kernel(subsystems, init, config)
