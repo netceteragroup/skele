@@ -1,68 +1,68 @@
 /** @flow */
 'use strict'
 
-import { List, fromJS } from 'immutable'
 import R from 'ramda'
+import { List, fromJS } from 'immutable'
 
 import { takeEvery } from 'redux-saga'
 import { call, put } from 'redux-saga/effects'
 
 import uuid from 'uuid'
 
-import { canonical } from '../data/element'
+import { kindOf } from '../data'
+import { actionMeta } from '../action'
 
-import * as registry from './readRegistry'
+export const fallback = '@@girders-elements/_defaultRead'
 
 /**
  * Reducer function for Reads.
  *
- * @param transformation A configuration object passed from the Engine component
+ * @param config A configuration object passed, currently holds a transformation
+ *  function
  * @param cursor The cursor representing the state.
  * @param action The action.
  * @returns {*} The new state represented by updated cursor.
  */
-export const reducer = R.curry(function reducer(
-  registry,
-  transformation,
-  cursor,
-  action
-) {
+export const reducer = R.curry(function reducer(config, cursor, action) {
   if (!R.startsWith('READ', action.type)) return cursor
 
-  const element = cursor.getIn(action.fromPath)
+  const { transformation } = config
+  const { keyPath: fromPath } = actionMeta(action)
+
+  const element = cursor.getIn(fromPath)
   if (!element) {
     // the path for the action can't be accessed in the latest cursor
     // cursor has changed, so we can only discard the action
     return cursor
   }
-  const canonicalKind = canonical(element.get('kind'))
-  const pathToKind = List.of(...action.fromPath, 'kind')
+  const canonicalKind = kindOf(element)
+  const pathToKind = List.of(...fromPath, 'kind')
+
   if (action.readId) {
-    const pathToReadId = List.of(...action.fromPath, 'readId')
-    if (action.readId !== cursor.getIn(pathToReadId)) {
+    if (action.readId !== element.get('readId')) {
       // we have an obsolete mutation, discard
       return cursor
     }
   }
   switch (action.type) {
     case 'READ_SET_LOADING': {
-      const pathToReadId = List.of(...action.fromPath, 'readId')
+      const pathToReadId = List.of(...fromPath, 'readId')
       return cursor
         .setIn(pathToKind, canonicalKind.set(0, '__loading'))
         .setIn(pathToReadId, uuid())
     }
     case 'READ_SUCCEEDED': {
       return cursor.setIn(
-        action.fromPath,
+        fromPath,
         transformation(
           fromJS(action.response.value).merge({
             '@@girders-elements/metadata': action.response.meta,
           })
-        ).value()
+        )
       )
     }
     case 'READ_FAILED': {
-      const pathToMeta = List.of(...action.fromPath, 'meta')
+      const pathToMeta = List.of(...fromPath, '@@girders-elements/metadata')
       return cursor
         .setIn(pathToKind, canonicalKind.set(0, '__error'))
         .setIn(pathToMeta, fromJS(action.response.meta))
@@ -73,35 +73,40 @@ export const reducer = R.curry(function reducer(
   }
 })
 
-function* readSaga(action) {
-  yield put({ ...action, type: 'READ_SET_LOADING' })
+function readSaga(config) {
+  const { registry } = config
 
-  const pattern = action.uri
-  const revalidate = action.revalidate
-  const reader: ?ReadFn =
-    registry.get(pattern) || registry.get(registry.fallback)
-  if (reader != null) {
-    const readResponse = yield call(reader, pattern, revalidate)
-    if (readResponse.value) {
-      yield put({ ...action, type: 'READ_SUCCEEDED', response: readResponse })
+  return function*(action) {
+    yield put({ ...action, type: 'READ_SET_LOADING' })
+
+    const pattern = action.uri
+    const revalidate = action.revalidate
+    const reader: ?ReadFn = registry.get(pattern) || registry.get(fallback)
+    if (reader != null) {
+      const readResponse = yield call(reader, pattern, revalidate)
+      if (readResponse.value) {
+        yield put({ ...action, type: 'READ_SUCCEEDED', response: readResponse })
+      } else {
+        yield put({ ...action, type: 'READ_FAILED', response: readResponse })
+      }
     } else {
-      yield put({ ...action, type: 'READ_FAILED', response: readResponse })
-    }
-  } else {
-    yield put({
-      ...action,
-      type: 'READ_FAILED',
-      reponse: {
-        meta: {
-          url: pattern,
-          status: 420,
-          message: `There's no reader defined for ${pattern}. Did you forget to register a fallback reader?`,
+      yield put({
+        ...action,
+        type: 'READ_FAILED',
+        reponse: {
+          meta: {
+            url: pattern,
+            status: 420,
+            message: `There's no reader defined for ${pattern}. Did you forget to register a fallback reader?`,
+          },
         },
-      },
-    })
+      })
+    }
   }
 }
 
-export function* watchReadPerform() {
-  yield* takeEvery('READ', readSaga)
+export function watchReadPerform(config) {
+  return function* watchReadPerform() {
+    yield* takeEvery('READ', readSaga(config))
+  }
 }

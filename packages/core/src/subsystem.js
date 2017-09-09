@@ -14,12 +14,14 @@ export const name = R.prop('name')
 export const middleware = R.prop('middleware')
 
 // -- reducer (optional)
-export const reducer = R.pipe(R.prop('middleware'), R.defaultTo(R.identity))
+export const reducer = R.prop('reducer')
+
+// -- start (optional)
 
 // -- element mixins (optional)
 export const elementMixins = R.pipe(R.prop('elementMixins'), R.defaultTo([]))
 
-// -- engine mixins
+// -- engine mixins (optional)
 export const engineMixins = R.pipe(R.prop('engineMixins'), R.defaultTo([]))
 
 // default extension points
@@ -94,8 +96,8 @@ export function create(subsystemFn) {
   )
 }
 
-export const instantiate = R.curryN(2, (kernel, subsystem) => {
-  let instance = subsystem[subsystemFnAttribute](kernel)
+export const instantiate = R.curryN(2, (kernel, instantiated, subsystem) => {
+  let instance = subsystem[subsystemFnAttribute](kernel, instantiated)
 
   invariant(instance.name, 'The subsystem must have a name property')
 

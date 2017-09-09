@@ -5,6 +5,8 @@ import Cursor from 'immutable/contrib/cursor'
 import R from 'ramda'
 
 import * as zip from './zip'
+import * as actions from './action'
+import * as data from './data'
 
 import { createStore, applyMiddleware } from 'redux'
 
@@ -20,7 +22,7 @@ import * as SubSystem from './subsystem'
 class Kernel {
   constructor(subsystems, init, config) {
     this._config = config
-    this._init = I.fromJS(init)
+    this._init = I.fromJS(init || {})
 
     // booting
 
@@ -32,43 +34,56 @@ class Kernel {
 
     // 2. create actual subsystems, providing the initial map for extension
     //    lookup. Order is important here.
-    const instantiatedSeq = R.map(SubSystem.instantiate(this), subsystems)
+    let instantiatedSeq = []
+    let instantatedMap = {}
+
+    for (const s of subsystems) {
+      const instantiated = SubSystem.instantiate(this, instantatedMap, s)
+      instantiatedSeq.push(instantiated)
+      instantatedMap[instantiated.name] = instantiated
+    }
 
     // 3. put subsystems in place
 
-    this._subsystems = R.reduce(
-      (ss, s) => R.assoc(s.name, s, ss),
-      {},
-      instantiatedSeq
-    )
+    this._subsystems = instantatedMap
 
     this._subsystemSequence = instantiatedSeq
 
     // 4. The store
 
     const middleware = getMiddleware(this.subsystemSequence)
+    const reducer = buildReducer(this.subsystemSequence)
 
     if (R.isEmpty(middleware)) {
-      this._store = createStore(
-        buildReducer(this.subsystemSequence),
-        this._init
-      )
+      this._store = createStore(reducer, this._init)
     } else {
       this._store = createStore(
-        buildReducer(this.subsystemSequence),
+        reducer,
         this._init,
         applyMiddleware(...middleware)
       )
+    }
+
+    // 5. start the subsystems
+    for (const s of this.subsystemSequence) {
+      if (s.start) s.start()
     }
   }
 
   // subscribes to updates from the store
   // dispatch an elements action
-  dispatch() {}
+  dispatch(action) {
+    this._store.dispatch(action)
+  }
 
   // query the current state at a position
   query(path) {
-    return Cursor.from(this._store.getState()).getIn(path)
+    const p = data.asList(path)
+
+    const root = Cursor.from(this._store.getState())
+    const result = p.isEmpty() ? root : root.getIn(p)
+
+    return result
   }
 
   get subsystems() {
@@ -88,10 +103,44 @@ class Kernel {
       defaultChildPositions: getChildPostions(this.config),
     })
   }
+
+  focusOn(path) {
+    const self = this
+
+    return {
+      dispatch(action) {
+        self.dispatch(actions.atCursor(self.query(path), action))
+      },
+
+      query(subPath) {
+        return self.query(data.asList(path).concat(data.asList(subPath)))
+      },
+
+      get config() {
+        return self.config
+      },
+
+      get subsystems() {
+        return self.subsystems
+      },
+
+      get subsystemSequence() {
+        return self.subsystemSequence
+      },
+
+      get elementZipper() {
+        return self.elementZipper
+      },
+    }
+  }
 }
 
 function buildReducer(subsystems) {
-  return R.reduce(R.pipe, R.identity, R.map(SubSystem.reducer, subsystems))
+  const reducers = R.pipe(R.map(SubSystem.reducer), R.reject(R.isNil))(
+    subsystems
+  )
+
+  return (state, action) => R.reduce((s, r) => r(s, action), state, reducers)
 }
 
 const getMiddleware = R.pipe(R.map(SubSystem.middleware), R.reject(R.isNil))

@@ -1,16 +1,17 @@
 'use strict'
 
 import * as SubSystem from './subsystem'
-import * as Read from './read'
+import './transform'
+import './read'
 
-const coreSubSystem = SubSystem.create({
+const core = SubSystem.create(() => ({
   name: 'core',
-})
+}))
 
 // export the list of default subsystems
 
 // default stuff
 
-coreSubSystem.read.register(Read.fallback, Read.httpRead)
+core.read.register(core.read.default, core.read.httpRead)
 
-export default coreSubSystem
+export default core

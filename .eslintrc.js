@@ -39,7 +39,7 @@ module.exports = {
   },
 
   rules: {
-    'no-unused-vars': 1,
+    'no-unused-vars': [1, { args: 'after-used' }],
     'no-duplicate-imports': 0,
     'import/no-duplicates': 2,
     'import/named': 0,
