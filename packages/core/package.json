@@ -31,7 +31,7 @@
   },
   "peerDependencies": {
     "prop-types": ">= 15.5.0",
-    "react": ">= 15.0.0",
+    "react": ">= 15.0.0 || 16.0.0-rc",
     "redux": "^3.0.0"
   },
   "publishConfig": {
