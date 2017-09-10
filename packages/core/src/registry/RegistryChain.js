@@ -24,7 +24,7 @@ export class RegistryChain extends AbstractRegistry {
   get(key) {
     // avoid adopting the key, as we have to do it for each underlying registry
     // separately
-    return this._getBySpecificity(key, false)
+    return this._getBySpecificity(key, true)
   }
 
   _getInternal(key) {

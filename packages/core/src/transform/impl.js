@@ -2,7 +2,7 @@
 
 import R from 'ramda'
 import { kindOf } from '../data/element'
-import { Map } from 'immutable'
+import { memoize } from '../impl/util'
 
 import { postWalk, root, value } from '../zip'
 
@@ -13,24 +13,4 @@ export function transformer(registry, elementZipper) {
   const transform = element => elementTransformer(kindOf(element))(element)
 
   return R.pipe(elementZipper, postWalk(transform), root, value)
-}
-
-const notPresent = '@@girders-elements/_notPreset'
-
-function memoize(fn) {
-  let cache = Map()
-
-  return arg => {
-    let res = cache.get(arg)
-
-    if (res === notPresent) return undefined
-    if (res != null) return res
-
-    res = fn(arg)
-
-    if (res == null) res = notPresent
-    cache = cache.set(arg, res)
-
-    return res === notPresent ? undefined : res
-  }
 }
