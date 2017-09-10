@@ -96,23 +96,11 @@ export function create(subsystemFn) {
   )
 }
 
-export const instantiate = R.curryN(2, (kernel, instantiated, subsystem) => {
+export const instantiate = R.curry((kernel, instantiated, subsystem) => {
   let instance = subsystem[subsystemFnAttribute](kernel, instantiated)
-
   invariant(instance.name, 'The subsystem must have a name property')
 
   Object.setPrototypeOf(instance, subsystem)
 
   return instance
 })
-
-export default {
-  extend,
-  resetExtensions,
-  create,
-  name,
-  middleware,
-  reducer,
-  elementMixins,
-  engineMixins,
-}
