@@ -2,6 +2,7 @@
 
 import invariant from 'invariant'
 import R from 'ramda'
+import uuid from 'uuid'
 
 // what is a subsystem
 
@@ -18,7 +19,7 @@ export const reducer = R.prop('reducer')
 
 // -- start (optional)
 
-// -- element mixins (optional)
+// -- element mixins (optional, not implemented currently)
 export const elementMixins = R.pipe(R.prop('elementMixins'), R.defaultTo([]))
 
 // -- engine mixins (optional)
@@ -94,6 +95,15 @@ export function create(subsystemFn) {
     },
     extensions
   )
+}
+
+export function fromMiddleware(middleware, name = undefined) {
+  if (name != null) name = uuid()
+
+  return create(() => ({
+    name,
+    middleware,
+  }))
 }
 
 export const instantiate = R.curry((kernel, instantiated, subsystem) => {
