@@ -4,8 +4,6 @@ import React from 'react'
 
 import MetaError from './pure/metaError'
 
-import ui from '../../ui'
-
 export default ({ element }) => {
   const meta = element.get('meta')
   let message = meta.get('message')
