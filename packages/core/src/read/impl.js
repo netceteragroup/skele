@@ -12,7 +12,7 @@ import uuid from 'uuid'
 import { kindOf } from '../data'
 import { actionMeta } from '../action'
 
-export const fallback = '@@girders-elements/_defaultRead'
+export const fallback = '@@girders-elements/defaultRead'
 
 /**
  * Reducer function for Reads.

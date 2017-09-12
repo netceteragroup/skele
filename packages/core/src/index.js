@@ -9,6 +9,7 @@ import * as zip from './zip'
 import * as actions from './action'
 import * as registry from './registry'
 import * as propNames from './propNames'
+import * as http from './read/http'
 
 import { Engine, EntryPoint } from './Engine'
 
@@ -29,6 +30,7 @@ export {
   defaultSubsystems,
   registry,
   propNames,
+  http,
 }
 export default {
   ...core,
@@ -42,4 +44,5 @@ export default {
   defaultSubsystems,
   registry,
   propNames,
+  http,
 }
