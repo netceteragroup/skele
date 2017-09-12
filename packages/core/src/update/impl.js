@@ -62,8 +62,12 @@ export const reducer = R.curry((config, cursor, action) => {
   // handle local updates
   const update = registry.get(updateKeyForAction(action))
   const element = cursor.getIn(fromPath)
-  if (element && update) {
-    return cursor.setIn(fromPath, update(element.deref(), action))
+  if (element) {
+    if (update) {
+      return cursor.setIn(fromPath, update(element.deref(), action))
+    } else {
+      return cursor
+    }
   } else {
     warning(
       'Unable to perform local update, element has changed in meantime...'

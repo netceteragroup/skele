@@ -9,7 +9,7 @@ import * as Kernel from '../kernel'
 import * as Subsystem from '../subsystem'
 import { defaultSubsystems } from '../core'
 
-class EntryPointImpl extends ReactComponent {
+class EntryPointImpl extends React.Component {
   static propTypes = {
     kernel: PropTypes.shape({
       subscribe: PropTypes.function,
@@ -17,7 +17,16 @@ class EntryPointImpl extends ReactComponent {
       dispatch: PropTypes.function,
     }).isRequired,
 
-    keyPath: PropTypes.array.isRequired,
+    keyPath: PropTypes.oneOfType([
+      PropTypes.arrayOf(
+        PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+      ),
+      PropTypes.string,
+    ]),
+  }
+
+  static defaultProps = {
+    keyPath: [],
   }
 
   constructor(props, context) {
@@ -68,13 +77,13 @@ export class EntryPoint extends React.Component {
     const { kernel } = props
     const entryPointMixins = getCombinedMixins(kernel.subsystemSequence)
 
-    this.Impl = R.empty(entryPointMixins)
+    this.Impl = R.isEmpty(entryPointMixins)
       ? EntryPointImpl
       : R.reduce((C, M) => M(C), EntryPointImpl, entryPointMixins)
   }
 
   render() {
-    return <this.Impl {...props} />
+    return <this.Impl {...this.props} />
   }
 }
 
@@ -83,7 +92,7 @@ export class Engine extends React.Component {
     initState: PropTypes.object.isRequired,
     customMiddleware: PropTypes.arrayOf(PropTypes.func),
     subsystems: PropTypes.arrayOf(PropTypes.object),
-    additionalSubSystems: PropTypes.arrayOf(PropTypes.object),
+    additionalSubsystems: PropTypes.arrayOf(PropTypes.object),
     config: PropTypes.object,
   }
 
@@ -101,11 +110,13 @@ export class Engine extends React.Component {
 
   _reset(props) {
     let subsystems = props.subsystems || defaultSubsystems
-    if (props.additionalSubSystems != null) {
-      subsystems.push(additionalSubSystems)
+    if (props.additionalSubsystems != null) {
+      subsystems = subsystems.concat(props.additionalSubsystems)
     }
     if (props.customMiddleware != null) {
-      subsystems.push(R.map(Subsystem.fromMiddleware, props.customMiddleware))
+      subsystems = subsystems.concat(
+        R.map(Subsystem.fromMiddleware, props.customMiddleware)
+      )
     }
 
     this._kernel = Kernel.create(subsystems, props.initState, props.config)

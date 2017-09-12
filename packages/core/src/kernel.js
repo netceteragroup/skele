@@ -22,7 +22,7 @@ import * as SubSystem from './subsystem'
 class Kernel {
   constructor(subsystems, init, config) {
     this._config = config
-    this._init = I.fromJS(init || {})
+    this._init = Cursor.from(I.fromJS(init || {}))
 
     // booting
 
@@ -71,6 +71,9 @@ class Kernel {
   }
 
   // subscribes to updates from the store
+  subscribe(listener) {
+    return this._store.subscribe(listener)
+  }
   // dispatch an elements action
   dispatch(action) {
     this._store.dispatch(action)
@@ -130,6 +133,10 @@ class Kernel {
 
       get elementZipper() {
         return self.elementZipper
+      },
+
+      subscribe(listener) {
+        return self.subscribe(listener)
       },
     }
   }

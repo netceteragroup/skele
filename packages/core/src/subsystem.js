@@ -98,7 +98,7 @@ export function create(subsystemFn) {
 }
 
 export function fromMiddleware(middleware, name = undefined) {
-  if (name != null) name = uuid()
+  if (name == null) name = uuid()
 
   return create(() => ({
     name,

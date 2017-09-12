@@ -1,3 +1,3 @@
 'use static'
 
-export { Engine, EntryPoint } from './imp;'
+export { Engine, EntryPoint } from './impl'

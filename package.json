@@ -68,10 +68,10 @@
     "prettier-eslint": "^7.1.0",
     "prettier-eslint-cli": "^4.3.0",
     "prop-types": "^15.5.10",
-    "react": "^15.3.2",
-    "react-addons-test-utils": "^15.2.1",
-    "react-dom": "^15.2.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "react-native": "^0.47.2",
+    "react-test-renderer": "^15.6.1",
     "redux": "^3.5.2"
   },
   "peerDependencies": {
