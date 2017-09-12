@@ -4,10 +4,8 @@ function define(configuration) {
   return new Layer(configuration, null, false)
 }
 
-export {
-  define
-}
+export { define }
 
 export default {
-  define
+  define,
 }
