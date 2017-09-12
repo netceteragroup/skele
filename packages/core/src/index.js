@@ -11,7 +11,7 @@ import * as registry from './registry'
 import * as propNames from './propNames'
 import * as http from './read/http'
 
-import { Engine, EntryPoint } from './Engine'
+import { Engine, EntryPoint } from './engine'
 
 let { ui, read, update, transform } = core
 
