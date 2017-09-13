@@ -1,22 +1,95 @@
-/* @flow */
-'use strict';
+'use strict'
+
+import R from 'ramda'
+import invariant from 'invariant'
+
+// required subsystems
+import * as SubSystem from '../subsystem'
+import '../transform'
+
+import { PatternRegistry, chainRegistries } from '../registry'
+import createSagaMiddleware from 'redux-saga'
+
+// TODO move element registrations to coreSubSystem
 
 // register default read elements
-import './elements/read';
-import './elements/loading';
-import './elements/error';
-import './elements/container';
+//
+// import './elements/read'
+// import './elements/loading'
+// import './elements/error'
+// import './elements/container'
 
-import { register, fallback, httpRead, responseMeta } from './readRegistry';
+import * as impl from './impl'
+import * as http from './http'
 
-register(fallback, httpRead);
+const registryAttribute = '@@girders-elements/_readRegistry'
+const fallback = impl.fallback
 
-export {
-  register,
-  responseMeta
-}
+/**
+ * Extension point for defining reads
+ */
+SubSystem.extend(() => {
+  const readRegistry = new PatternRegistry()
 
-export default {
-  register,
-  responseMeta
-}
+  return {
+    read: {
+      [registryAttribute]: readRegistry,
+
+      /**
+       * registers a new read in the subystem.
+       */
+      register: readRegistry.register.bind(readRegistry),
+
+      reset: readRegistry.reset.bind(readRegistry),
+
+      /**
+       * symbol identifying the fallback read. Use it to register a fallback read
+       *
+       *     read.register(read.fallback, read.httpRead);
+       *
+       */
+      default: fallback,
+      fallback,
+
+      /**
+       * HTTP methods
+       */
+      http,
+    },
+  }
+})
+
+export default SubSystem.create((system, instantiatedSubsystems) => {
+  invariant(
+    instantiatedSubsystems.transform != null,
+    'The read subsystem depends on the transform subsystem.' +
+      'You must place it in the subsystem list **before** the read.'
+  )
+
+  const registry = getCombinedRegistry(system.subsystemSequence)
+  const transformation = instantiatedSubsystems.transform.buildTransformer()
+
+  const config = { registry, transformation }
+
+  // prepare the saga middleware (this may ba a separate subsystem)
+  const sagaMiddleware = createSagaMiddleware()
+
+  return {
+    name: 'read',
+
+    reducer: impl.reducer(config),
+    middleware: sagaMiddleware,
+
+    start() {
+      sagaMiddleware.run(impl.watchReadPerform(config))
+    },
+  }
+})
+
+const getRegistry = R.path(['read', registryAttribute])
+
+const getCombinedRegistry = R.pipe(
+  R.map(getRegistry),
+  R.reject(R.isNil),
+  chainRegistries
+)
