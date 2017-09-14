@@ -6,8 +6,8 @@ import Cursor from 'immutable/contrib/cursor'
 import * as actions from '../../action'
 import * as Subsystem from '../../subsystem'
 import * as Kernel from '../../kernel'
+import { ActionRegistry } from '../../registry'
 
-import * as impl from '../impl'
 import { flow } from '../../data'
 import updateSubS from '..'
 
@@ -40,22 +40,24 @@ describe('updates API', function() {
     const registry = app.update[registryAttribute]
 
     expect(
-      registry.get(impl.updateKey(['article', 'specific'], 'TOGGLE_BOOKMARK'))
+      registry.get(
+        ActionRegistry.keyFor(['article', 'specific'], 'TOGGLE_BOOKMARK')
+      )
     ).toEqual(expect.anything())
 
-    expect(registry.get(impl.updateKey(['article'], '.LOAD'))).toEqual(
+    expect(registry.get(ActionRegistry.keyFor(['article'], '.LOAD'))).toEqual(
       expect.anything()
     )
     expect(
-      registry.get(impl.updateKey(['article', 'specific'], '.LOAD'))
+      registry.get(ActionRegistry.keyFor(['article', 'specific'], '.LOAD'))
     ).toEqual(expect.anything())
 
-    expect(registry.get(impl.updateKey(['article'], 'unknown'))).not.toEqual(
-      expect.anything()
-    )
-    expect(registry.get(impl.updateKey(['unknown'], '.LOAD'))).not.toEqual(
-      expect.anything()
-    )
+    expect(
+      registry.get(ActionRegistry.keyFor(['article'], 'unknown'))
+    ).not.toEqual(expect.anything())
+    expect(
+      registry.get(ActionRegistry.keyFor(['unknown'], '.LOAD'))
+    ).not.toEqual(expect.anything())
   })
 
   it('reduces the app state according to registrations', function() {

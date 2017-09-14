@@ -4,7 +4,7 @@ import R from 'ramda'
 import invariant from 'invariant'
 import deprecated from '../impl/deprecated'
 
-import { chainRegistries } from '../registry'
+import { chainRegistries, ActionRegistry } from '../registry'
 import * as data from '../data'
 import * as Subsystem from '../subsystem'
 
@@ -13,7 +13,7 @@ import * as impl from './impl'
 const registryAttribute = '@@girders-elements/_updateRegistry'
 
 Subsystem.extend(() => {
-  const registry = new impl.UpdateRegistry()
+  const registry = new ActionRegistry()
 
   const _register = R.curry((kind, action, update) => {
     invariant(
@@ -24,7 +24,7 @@ Subsystem.extend(() => {
     invariant(typeof action === 'string', 'The action must be a string')
     invariant(typeof update === 'function', 'the update must be a function')
 
-    registry.register(impl.updateKey(kind, action), update)
+    registry.register(ActionRegistry.keyFor(kind, action), update)
   })
 
   const forKind = R.curry((kind, registrations) => {

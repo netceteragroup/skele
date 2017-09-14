@@ -13,11 +13,12 @@ import * as http from './read/http'
 
 import { Engine, EntryPoint } from './engine'
 
-let { ui, read, update, transform } = core
+let { ui, read, effect, update, transform } = core
 
 export {
   ui,
   read,
+  effect,
   update,
   transform,
   data,

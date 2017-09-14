@@ -52,10 +52,6 @@ export function isElementRef(obj: any): boolean {
   return false
 }
 
-export function isElement(obj: any): boolean {
-  return Iterable.isIterable(obj) && kindOf(obj) != null
-}
-
 /**
  * Like isOfKind but checks for exactly the provided type.
  *
@@ -91,6 +87,13 @@ export function kindOf(element: KeyedIterable): ?ElementRefCanonical {
   }
 
   return null
+}
+
+/**
+ * Returns true if object provided is an element
+ */
+export function isElement(obj: any): boolean {
+  return Iterable.isIterable(obj) && kindOf(obj) != null
 }
 
 /**
