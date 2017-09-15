@@ -72,6 +72,7 @@ describe('effects API', function() {
         await sleep(50)
 
         expect(specificEffect).toHaveBeenCalled()
+        expect(specificEffect2).not.toHaveBeenCalled()
         const [context, action] = specificEffect.mock.calls[
           specificEffect.mock.calls.length - 1
         ]
