@@ -43,7 +43,7 @@ export const middleware = R.curry((config, store, next, action) => {
       })
     }
   } else {
-    // the effect consume the action
+    // the effect consumes the action
     return next(action)
   }
 })
