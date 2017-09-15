@@ -36,9 +36,9 @@ export const middleware = R.curry((config, store, next, action) => {
     const result = effect(context, action)
 
     if (result && typeof result.then === 'function') {
-      result.then(rv => {
-        if (typeof rv === 'function') {
-          context.dispatch({ type: updateStateAction, updateFn: rv })
+      result.then(updateFn => {
+        if (typeof updateFn === 'function') {
+          context.dispatch({ type: updateStateAction, updateFn })
         }
       })
     }
