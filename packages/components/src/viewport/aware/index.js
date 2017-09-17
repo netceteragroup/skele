@@ -29,39 +29,42 @@ export default WrappedComponent => {
     }
 
     _onViewportChange = info => {
-      if (this.nodeHandle) {
-        if (this.state.componentOffset && this.state.componentHeight) {
-          this._isMounted &&
-            this.setState({
-              inViewport: Utils.isInViewport(
-                info.viewportOffset,
-                info.viewportHeight,
-                this.state.componentOffset,
-                this.state.componentHeight,
-                this.props.preTriggerRatio
-              ),
-            })
-        } else {
-          UIManager.measureLayout(
-            this.nodeHandle,
-            info.parentHandle,
-            () => {},
-            (offsetX, offsetY, width, height) => {
-              this._isMounted &&
-                this.setState({
-                  componentOffset: offsetY,
-                  componentHeight: height,
-                  inViewport: Utils.isInViewport(
-                    info.viewportOffset,
-                    info.viewportHeight,
-                    offsetY,
-                    height,
-                    this.props.preTriggerRatio
-                  ),
-                })
-            }
-          )
-        }
+      if (!this.nodeHandle) {
+        return
+      }
+      if (
+        this.state.componentOffset !== null &&
+        this.state.componentHeight !== null
+      ) {
+        this.setState({
+          inViewport: Utils.isInViewport(
+            info.viewportOffset,
+            info.viewportHeight,
+            this.state.componentOffset,
+            this.state.componentHeight,
+            this.props.preTriggerRatio
+          ),
+        })
+      } else {
+        UIManager.measureLayout(
+          this.nodeHandle,
+          info.parentHandle,
+          () => {},
+          (offsetX, offsetY, width, height) => {
+            this._isMounted &&
+              this.setState({
+                componentOffset: offsetY,
+                componentHeight: height,
+                inViewport: Utils.isInViewport(
+                  info.viewportOffset,
+                  info.viewportHeight,
+                  offsetY,
+                  height,
+                  this.props.preTriggerRatio
+                ),
+              })
+          }
+        )
       }
     }
 
