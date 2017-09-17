@@ -19,42 +19,46 @@ export default WrappedComponent => {
     componentDidMount() {
       this.context.addViewportListener &&
         this.context.addViewportListener(this._onViewportChange)
+      this._isMounted = true
     }
 
     componentWillUnmount() {
       this.context.removeViewportListener &&
         this.context.removeViewportListener(this._onViewportChange)
+      this._isMounted = false
     }
 
     _onViewportChange = info => {
       if (this.nodeHandle) {
         if (this.state.componentOffset && this.state.componentHeight) {
-          this.setState({
-            inViewport: Utils.isInViewport(
-              info.viewportOffset,
-              info.viewportHeight,
-              this.state.componentOffset,
-              this.state.componentHeight,
-              this.props.preTriggerRatio
-            ),
-          })
+          this._isMounted &&
+            this.setState({
+              inViewport: Utils.isInViewport(
+                info.viewportOffset,
+                info.viewportHeight,
+                this.state.componentOffset,
+                this.state.componentHeight,
+                this.props.preTriggerRatio
+              ),
+            })
         } else {
           UIManager.measureLayout(
             this.nodeHandle,
             info.parentHandle,
             () => {},
             (offsetX, offsetY, width, height) => {
-              this.setState({
-                componentOffset: offsetY,
-                componentHeight: height,
-                inViewport: Utils.isInViewport(
-                  info.viewportOffset,
-                  info.viewportHeight,
-                  offsetY,
-                  height,
-                  this.props.preTriggerRatio
-                ),
-              })
+              this._isMounted &&
+                this.setState({
+                  componentOffset: offsetY,
+                  componentHeight: height,
+                  inViewport: Utils.isInViewport(
+                    info.viewportOffset,
+                    info.viewportHeight,
+                    offsetY,
+                    height,
+                    this.props.preTriggerRatio
+                  ),
+                })
             }
           )
         }
