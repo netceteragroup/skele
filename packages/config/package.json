@@ -1,6 +1,6 @@
 {
   "name": "@girders-elements/config",
-  "version": "1.0.0-alpha.7",
+  "version": "1.0.0-alpha.8",
   "description": "Girders elements packages that provides the posibility to define a custom configuration",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
