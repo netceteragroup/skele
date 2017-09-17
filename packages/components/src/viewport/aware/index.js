@@ -10,6 +10,8 @@ export default WrappedComponent => {
     constructor(props, context) {
       super(props, context)
       this.state = {
+        componentOffset: null,
+        componentHeight: null,
         inViewport: false,
       }
     }
@@ -25,34 +27,44 @@ export default WrappedComponent => {
     }
 
     _onViewportChange = info => {
-      if (this.wrapperRef != null) {
-        UIManager.measureLayout(
-          this.nodeHandle,
-          info.parentHandle,
-          () => {},
-          (wrapperX, wrapperY, wrapperWidth, wrapperHeight) => {
-            const inViewport = Utils.isInViewport(
+      if (this.nodeHandle) {
+        if (this.state.componentOffset && this.state.componentHeight) {
+          this.setState({
+            inViewport: Utils.isInViewport(
               info.viewportOffset,
               info.viewportHeight,
-              wrapperY,
-              wrapperHeight,
+              this.state.componentOffset,
+              this.state.componentHeight,
               this.props.preTriggerRatio
-            )
-            this.setState({
-              inViewport,
-            })
-          }
-        )
+            ),
+          })
+        } else {
+          UIManager.measureLayout(
+            this.nodeHandle,
+            info.parentHandle,
+            () => {},
+            (offsetX, offsetY, width, height) => {
+              this.setState({
+                componentOffset: offsetY,
+                componentHeight: height,
+                inViewport: Utils.isInViewport(
+                  info.viewportOffset,
+                  info.viewportHeight,
+                  offsetY,
+                  height,
+                  this.props.preTriggerRatio
+                ),
+              })
+            }
+          )
+        }
       }
     }
 
     render() {
       return (
         <WrappedComponent
-          ref={ref => {
-            this.wrapperRef = ref
-            this.nodeHandle = findNodeHandle(ref)
-          }}
+          ref={ref => (this.nodeHandle = findNodeHandle(ref))}
           {...this.props}
           inViewport={this.state.inViewport}
         />
