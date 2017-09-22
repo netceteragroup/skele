@@ -102,8 +102,8 @@ export class Engine extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const current = fromJS(this.props.initState)
-    const next = fromJS(nextProps.initState)
+    const current = I.fromJS(this.props.initState)
+    const next = I.fromJS(nextProps.initState)
 
     if (!I.is(current, next)) this._reset(nextProps)
   }

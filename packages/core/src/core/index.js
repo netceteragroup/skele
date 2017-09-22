@@ -31,7 +31,7 @@ core.defaultSubsystems = defaultSubsystems
 
 // default registrations
 
-core.read.register(core.read.default, core.read.httpRead)
+core.read.register(core.read.default, core.read.http.httpRead)
 
 core.ui.register(['__read'], ({ element, dispatch }) => {
   return (

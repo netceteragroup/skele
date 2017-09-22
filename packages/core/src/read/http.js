@@ -1,5 +1,6 @@
 /* @flow */
 'use strict'
+import { fromJS } from 'immutable'
 
 export function httpRead(
   url: string,

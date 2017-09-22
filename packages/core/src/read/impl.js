@@ -93,7 +93,7 @@ function readSaga(config) {
       yield put({
         ...action,
         type: 'READ_FAILED',
-        reponse: {
+        response: {
           meta: {
             url: pattern,
             status: 420,
