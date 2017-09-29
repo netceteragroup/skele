@@ -1,18 +1,16 @@
 'use strict'
 
 import R from 'ramda'
+import I from 'immutable'
 import React from 'react'
 import PropTypes from 'prop-types'
-
-import ImmutableProps from '../impl/ImmutableProps'
-import { mix } from '../vendor/mixwith'
 
 import * as data from '../data'
 
 export default R.curry((kind, Component, runtime) => {
   const { uiFor: globalUIFor, system } = runtime
 
-  return class extends mix(React.Component).with(ImmutableProps) {
+  return class extends React.Component {
     static propTypes = {
       element: PropTypes.object.isRequired,
     }
@@ -30,6 +28,20 @@ export default R.curry((kind, Component, runtime) => {
 
     componentWillReceiveProps(nextProps) {
       this._reset(nextProps)
+    }
+
+    shouldComponentUpdate(nextProps) {
+      const { element: current } = this.props
+      const { element: next } = nextProps
+
+      if (
+        (current != null && next == null) ||
+        (current == null && next != null)
+      ) {
+        return true
+      }
+
+      return !I.is(current, next)
     }
 
     _reset(props) {
