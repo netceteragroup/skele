@@ -1,4 +1,3 @@
-/** @flow */
 'use strict'
 
 import R from 'ramda'
@@ -52,13 +51,12 @@ export const reducer = R.curry(function reducer(config, cursor, action) {
         .setIn(pathToReadId, uuid())
     }
     case 'READ_SUCCEEDED': {
+      const response = fromJS(action.response.value).merge({
+        '@@girders-elements/metadata': action.response.meta,
+      })
       return cursor.setIn(
         fromPath,
-        transformation(
-          fromJS(action.response.value).merge({
-            '@@girders-elements/metadata': action.response.meta,
-          })
-        )
+        transformation(response, { readValue: response })
       )
     }
     case 'READ_FAILED': {
@@ -81,7 +79,7 @@ function readSaga(config) {
 
     const pattern = action.uri
     const revalidate = action.revalidate
-    const reader: ?ReadFn = registry.get(pattern) || registry.get(fallback)
+    const reader = registry.get(pattern) || registry.get(fallback)
     if (reader != null) {
       const readResponse = yield call(reader, pattern, revalidate)
       if (readResponse.value) {
