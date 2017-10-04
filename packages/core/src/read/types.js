@@ -1,5 +1,5 @@
 /* @flow */
-'use strict';
+'use strict'
 
 /**
  * Metadata for a read response.
@@ -7,7 +7,7 @@
 export type Meta = {
   url: string,
   status: number,
-  message: string
+  message: string,
 }
 
 /**
@@ -18,30 +18,30 @@ export type SuccessfulResponse = {
    * The value of the response can be any JS object. It will be converted to an immutable object if it isn't so.
    */
   value: Object,
-  meta: Meta
-};
+  meta: Meta,
+}
 
 /**
  * Read response for a failure read.
  */
 export type FailureResponse = {
-  meta: Meta
+  meta: Meta,
 }
 
 /**
  * The response of a read.
  */
-export type ReadResponse = SuccessfulResponse | FailureResponse;
+export type ReadResponse = SuccessfulResponse | FailureResponse
 
 /**
  * Function that gets an error message and returns a FailureResponse.
  */
-export type ErrorFn = (error: string) => FailureResponse;
+export type ErrorFn = (error: string) => FailureResponse
 
 /**
  * Registry key for reads.
  */
-export type RegKey = string | Symbol;
+export type RegKey = string | Symbol
 
 /**
  * A read can be registered for:
@@ -51,9 +51,9 @@ export type RegKey = string | Symbol;
  * - a specific url as string
  * - a 'fallback' reader that will handle the default read case
  */
-export type ReadDef = RegExp | RegKey | ((x: string) => boolean);
+export type ReadDef = RegExp | RegKey | ((x: string) => boolean)
 
 /**
  * A read function is a function that takes an url and returns a promise for a read response.
  */
-export type ReadFn = (url: string) => Promise<ReadResponse>;
+export type ReadFn = (url: string) => Promise<ReadResponse>

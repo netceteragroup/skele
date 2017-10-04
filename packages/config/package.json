@@ -1,9 +1,9 @@
 {
   "name": "@girders-elements/config",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.8",
   "description": "Girders elements packages that provides the posibility to define a custom configuration",
-  "main": "src/index.js",
-  "browser": "dist/es5/index.js",
+  "react-native": "src/index.js",
+  "main": "dist/es5/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/netceteragroup/girders-elements.git"
@@ -19,5 +19,8 @@
   "homepage": "https://github.com/netceteragroup/girders-elements#readme",
   "dependencies": {
     "ramda": "0.23.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -282,9 +282,7 @@ In this example, for the `article` **element** we register two **updates**:
 
 Reads are a standardaized way to bring data into you app. Most prominent use-case is fetching data from the back-end systems.
 
-Reads are started by preparing:
-- the **endpoint** from where the data is going to be fetched
-- the **place** where you want the data to be stored (attached) when its successfully fetched
+Reads are started by preparing the **endpoint** from where the data is going to be fetched
 
 To kick-off a read, you create an **element** with the following structure, on the **place** where you want the data to be attached:
 
@@ -297,12 +295,38 @@ To kick-off a read, you create an **element** with the following structure, on t
 
 This **read** element, is being resolved, because the frame-work contains a default element registered for the kind `__read`. It doesn't render any UI. This element dispatches a special action and changes the kind to `["__load", "conatiner", "teasers"]`.
 
-Again, there is a default element, registered for `__load`. It renders a loading spinner on the screen. It also disaptches a special action, that will perfrom the actuall fetching of the data. If the data is fetched successfully, then the data will be stored in the node named `children`, and the first element in the kind array will be removed. This will essentially transform the data to:
+Again, there is a default element, registered for `__load`. It renders a loading spinner on the screen. It also disaptches a special action, that will perfrom the actuall fetching of the data. If the data is fetched successfully, then the data will be stored in the node which initiated the read, overriding all the existing attributes.
+Assuming the server response is the following JSON:
 
 ```javascript
 {
   "kind": ["container", "teasers"],
-  "uri": "",
+  "children": [
+    {
+      "kind":[
+         "teaser",
+         "image"
+      ],
+      "imageUrl":"http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg",
+      "title":"Sherlock Holmes"
+    },
+    {
+      "kind":[
+         "teaser",
+         "image"
+      ],
+      "imageUrl":"http://img15.deviantart.net/6ee0/i/2010/286/2/2/dr__watson_by_elenutza-d30o87s.png",
+      "title":"Dr. Watson"
+    }
+  ]
+}
+```
+
+This will essentially transform the data to:
+
+```javascript
+{
+  "kind": ["container", "teasers"],
   "children": [
     {
       "kind":[
