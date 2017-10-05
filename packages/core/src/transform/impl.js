@@ -8,13 +8,13 @@ import { postWalk, root, value } from '../zip'
 import { flow } from '../data'
 
 export function transformer(registry, elementZipper) {
-  const elementTransformer = memoize(kind => context =>
+  const elementTransformer = memoize(kind =>
     registry
       .get(kind)
-      .reduce((f, g) => x => g(f(x, context), context), R.identity)
+      .reduce((f, g) => (x, context) => g(f(x, context), context), R.identity)
   )
 
-  const transform = context => el => elementTransformer(kindOf(el))(context)(el)
+  const transform = context => el => elementTransformer(kindOf(el))(el, context)
 
   return (el, context = {}) =>
     flow(el, elementZipper, postWalk(transform(context)), root, value)
