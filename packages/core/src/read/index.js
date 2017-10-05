@@ -5,6 +5,7 @@ import invariant from 'invariant'
 
 // required subsystems
 import * as SubSystem from '../subsystem'
+import '../enrich'
 import '../transform'
 
 import { PatternRegistry, chainRegistries } from '../registry'
@@ -67,9 +68,10 @@ export default SubSystem.create((system, instantiatedSubsystems) => {
   )
 
   const registry = getCombinedRegistry(system.subsystemSequence)
+  const enrichment = instantiatedSubsystems.enrich.buildEnricher()
   const transformation = instantiatedSubsystems.transform.buildTransformer()
 
-  const config = { registry, transformation }
+  const config = { registry, enrichment, transformation, kernel: system }
 
   // prepare the saga middleware (this may ba a separate subsystem)
   const sagaMiddleware = createSagaMiddleware()

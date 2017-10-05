@@ -4,6 +4,7 @@ import { List } from 'immutable'
 
 import * as Subsystem from '../../subsystem'
 import * as Kernel from '../../kernel'
+import enrich from '../../enrich'
 import transform from '../../transform'
 import read from '..'
 
@@ -23,7 +24,7 @@ describe('Read Subsytem', () => {
   )
 
   const kernel = Kernel.create(
-    [transform, read, app],
+    [enrich, transform, read, app],
     {
       kind: 'app',
       '@@girders-elements/children': 'content',

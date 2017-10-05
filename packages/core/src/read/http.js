@@ -33,6 +33,7 @@ function errorResponseForUrl(url): ErrorFn {
   return error => ({
     meta: {
       url,
+      uri: url,
       status: 420,
       message: error,
     },
@@ -46,6 +47,7 @@ export function responseMeta(resp: Object): Meta {
   }
   return {
     url: resp.url,
+    uri: resp.url,
     status: resp.status ? resp.status : 200,
     message: message,
   }

@@ -1,11 +1,11 @@
 'use strict'
 
-// TODO: this test goes to the core subsystem
 import { mount } from 'enzyme'
 
 import React from 'react'
 import { fromJS } from 'immutable'
-import { ui, read, data, Engine, http } from '..'
+import { ui, enrich, transform, read, data, Engine, http } from '..'
+import * as propNames from '../propNames'
 const { isOfKind } = data.element
 
 describe("Reads using core subsystem's Read element", () => {
@@ -30,6 +30,14 @@ describe("Reads using core subsystem's Read element", () => {
         meta: http.responseMeta({ url: u }),
       })
     )
+
+    transform.register('scene', (scene, { readValue }) =>
+      scene.set('metaUrl', readValue.getIn([propNames.metadata, 'url']))
+    )
+
+    enrich.register('scene', async (scene, { subsystems }) =>
+      scene.set('ss', subsystems.enrich.name)
+    )
   })
 
   afterEach(() => {
@@ -53,7 +61,10 @@ describe("Reads using core subsystem's Read element", () => {
     expect(scenes.length).toBeGreaterThan(0)
 
     const scene = scenes.first()
-    expect(scene.prop('element').get('title')).toEqual('Scene Title')
+    const sceneEl = scene.prop('element')
+    expect(sceneEl.get('title')).toEqual('Scene Title')
+    expect(sceneEl.get('metaUrl')).toEqual('https://netcetera.com/test.json')
+    expect(sceneEl.get('ss')).toEqual('enrich')
   })
 })
 
