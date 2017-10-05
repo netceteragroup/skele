@@ -160,9 +160,9 @@ function normalize(kind): ?List<string> {
 }
 
 export function pathsToChildElements(element) {
-  return normalize(element.get('@@girders-elements/children'))
-         .flatMap(childrenPath => element.get(childrenPath).map((_, i) => List.of(childrenPath, i)))
-         .toList();
+  return childPositions(element).flatMap(childrenPath =>
+    element.get(childrenPath).map((_, i) => List.of(childrenPath, i))
+  )
 }
 /**
  * Property name of for the location where positions of the elements'children

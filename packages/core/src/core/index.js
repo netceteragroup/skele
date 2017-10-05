@@ -6,6 +6,7 @@ import * as SubSystem from '../subsystem'
 
 // default subsystems
 
+import enrich from '../enrich'
 import transform from '../transform'
 import read from '../read'
 import effect from '../effect'
@@ -26,7 +27,15 @@ const core = SubSystem.create(() => ({
 /**
  * The list of default subsystems
  */
-export const defaultSubsystems = [transform, read, effect, update, ui, core]
+export const defaultSubsystems = [
+  enrich,
+  transform,
+  read,
+  effect,
+  update,
+  ui,
+  core,
+]
 core.defaultSubsystems = defaultSubsystems
 
 // default registrations

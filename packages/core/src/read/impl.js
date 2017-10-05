@@ -1,4 +1,3 @@
-/** @flow */
 'use strict'
 
 import R from 'ramda'
@@ -11,6 +10,7 @@ import uuid from 'uuid'
 
 import { kindOf } from '../data'
 import { actionMeta } from '../action'
+import * as propNames from '../propNames'
 
 export const fallback = '@@girders-elements/defaultRead'
 
@@ -25,8 +25,6 @@ export const fallback = '@@girders-elements/defaultRead'
  */
 export const reducer = R.curry(function reducer(config, cursor, action) {
   if (!R.startsWith('READ', action.type)) return cursor
-
-  const { transformation } = config
   const { keyPath: fromPath } = actionMeta(action)
 
   const element = cursor.getIn(fromPath)
@@ -52,17 +50,10 @@ export const reducer = R.curry(function reducer(config, cursor, action) {
         .setIn(pathToReadId, uuid())
     }
     case 'READ_SUCCEEDED': {
-      return cursor.setIn(
-        fromPath,
-        transformation(
-          fromJS(action.response.value).merge({
-            '@@girders-elements/metadata': action.response.meta,
-          })
-        )
-      )
+      return cursor.setIn(fromPath, action.readValue)
     }
     case 'READ_FAILED': {
-      const pathToMeta = List.of(...fromPath, '@@girders-elements/metadata')
+      const pathToMeta = List.of(...fromPath, [propNames.metadata])
       return cursor
         .setIn(pathToKind, canonicalKind.set(0, '__error'))
         .setIn(pathToMeta, fromJS(action.response.meta))
@@ -74,18 +65,45 @@ export const reducer = R.curry(function reducer(config, cursor, action) {
 })
 
 function readSaga(config) {
-  const { registry } = config
+  const { registry, enrichment, transformation, kernel } = config
 
   return function*(action) {
     yield put({ ...action, type: 'READ_SET_LOADING' })
 
     const pattern = action.uri
     const revalidate = action.revalidate
-    const reader: ?ReadFn = registry.get(pattern) || registry.get(fallback)
+    const reader = registry.get(pattern) || registry.get(fallback)
+
     if (reader != null) {
       const readResponse = yield call(reader, pattern, revalidate)
+
       if (readResponse.value) {
-        yield put({ ...action, type: 'READ_SUCCEEDED', response: readResponse })
+        const readValue = fromJS(readResponse.value).merge({
+          [propNames.metadata]: readResponse.meta,
+        })
+
+        let context = {
+          readValue,
+          config: kernel.config,
+          subsystems: kernel.subsystems,
+          subsystemSequence: kernel.subsystemSequence,
+        }
+
+        const enrichedResponse = yield call(enrichment, readValue, context)
+
+        context = {
+          ...context,
+          readValue: enrichedResponse,
+        }
+
+        const transformedResponse = transformation(enrichedResponse, context)
+
+        yield put({
+          ...action,
+          type: 'READ_SUCCEEDED',
+          response: { ...readResponse, value: transformedResponse },
+          readValue: transformedResponse,
+        })
       } else {
         yield put({ ...action, type: 'READ_FAILED', response: readResponse })
       }

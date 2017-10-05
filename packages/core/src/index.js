@@ -13,7 +13,7 @@ import * as http from './read/http'
 
 import { Engine, EntryPoint } from './engine'
 
-let { ui, read, effect, update, transform } = core
+let { ui, read, effect, update, transform, enrich } = core
 
 export {
   ui,
@@ -21,6 +21,7 @@ export {
   effect,
   update,
   transform,
+  enrich,
   data,
   zip,
   actions,
