@@ -111,6 +111,13 @@ describe('chainRegistries', () => {
     expect(combined.get('a')).toEqual(3)
     expect(combined.get('b')).toEqual(6)
   })
+
+  it('combines a single registry', () => {
+    const combined = chainRegistries([reg2])
+
+    reg2.register('a', 1)
+    expect(combined.get(['a'])).toEqual(1)
+  })
 })
 
 describe('chainMultivalueRegistries', () => {
@@ -135,5 +142,12 @@ describe('chainMultivalueRegistries', () => {
     reg4.register(['a', 'b'], 4)
 
     expect(combined.get(['a', 'b'])).toEqualI(List.of(1, 2, 3, 4))
+  })
+
+  it('combines a single registry', () => {
+    const combined = chainMultivalueRegistries([reg1])
+
+    reg1.register('a', 1)
+    expect(combined.get(['a'])).toEqualI(List.of(1))
   })
 })
