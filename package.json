@@ -13,7 +13,6 @@
   },
   "homepage": "https://github.com/netceteragroup/girders-elements#readme",
   "scripts": {
-    "postinstall": "lerna bootstrap",
     "prepublish": "yarn run clean && yarn run es5",
     "test": "jest",
     "test-watch": "jest --watch",
@@ -99,5 +98,8 @@
       "!**/vendor/**",
       "!**/dist/es5/**"
     ]
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
