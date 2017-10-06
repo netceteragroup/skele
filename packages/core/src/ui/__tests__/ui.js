@@ -75,15 +75,12 @@ describe('UI Subsystem', () => {
       })
 
       // BREAKING change
-      it.skip(
-        'returns the registered element UI (not necessarily the same component)',
-        () => {
-          class Comp extends React.Component {}
+      it.skip('returns the registered element UI (not necessarily the same component)', () => {
+        class Comp extends React.Component {}
 
-          const Klass = ui.register('component', Comp)
-          expect(isSubclassOf(Klass, React.Component)).toBeTruthy()
-        }
-      )
+        const Klass = ui.register('component', Comp)
+        expect(isSubclassOf(Klass, React.Component)).toBeTruthy()
+      })
     })
   })
 
