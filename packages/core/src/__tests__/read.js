@@ -35,9 +35,10 @@ describe("Reads using core subsystem's Read element", () => {
       scene.set('metaUrl', readValue.getIn([propNames.metadata, 'url']))
     )
 
-    enrich.register('scene', async (scene, { subsystems }) =>
-      scene.set('ss', subsystems.enrich.name)
-    )
+    enrich.register('scene', async (scene, { subsystems }) => {
+      await sleep(55)
+      return scene.set('ss', subsystems.enrich.name)
+    })
   })
 
   afterEach(() => {

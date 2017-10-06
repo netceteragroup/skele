@@ -10,6 +10,7 @@ import {
   isElement,
   childrenProperty,
   childPositions,
+  pathsToChildElements,
 } from '../element'
 
 describe('element', function() {
@@ -161,4 +162,56 @@ describe('childPositions', () => {
   expect(childPositions(anArray)).toEqualI(List.of('children'))
   expect(childPositions(multiple)).toEqualI(List.of('children', 'aside'))
   expect(childPositions(missing)).toEqualI(List())
+})
+
+describe('pathsToChildElements', () => {
+  const aStringWithSingleChild = fromJS({
+    kind: 'component',
+    [childrenProperty]: 'children',
+
+    children: {
+      kind: 'child',
+    },
+  })
+
+  const anArrayWithSingleChild = fromJS({
+    kind: 'component',
+    [childrenProperty]: ['children'],
+
+    children: {
+      kind: 'child',
+    },
+  })
+
+  const aStringWithChildrenArray = fromJS({
+    kind: 'component',
+    [childrenProperty]: 'children',
+
+    children: [
+      {
+        kind: 'child',
+      },
+    ],
+  })
+
+  const anArrayWithChildrenArray = fromJS({
+    kind: 'component',
+    [childrenProperty]: ['children'],
+
+    children: [
+      {
+        kind: 'child',
+      },
+    ],
+  })
+  ;[
+    (aStringWithSingleChild,
+    anArrayWithChildrenArray,
+    anArrayWithSingleChild,
+    aStringWithChildrenArray),
+  ].forEach(el => {
+    expect(kindOf(el.getIn(pathsToChildElements(el).first()))).toEqualI(
+      List.of('child')
+    )
+  })
 })
