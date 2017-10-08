@@ -11,15 +11,6 @@ import '../transform'
 import { PatternRegistry, chainRegistries } from '../registry'
 import createSagaMiddleware from 'redux-saga'
 
-// TODO move element registrations to coreSubSystem
-
-// register default read elements
-//
-// import './elements/read'
-// import './elements/loading'
-// import './elements/error'
-// import './elements/container'
-
 import * as impl from './impl'
 import * as http from './http'
 
@@ -37,7 +28,7 @@ SubSystem.extend(() => {
       [registryAttribute]: readRegistry,
 
       /**
-       * registers a new read in the subystem.
+       * registers a new read in the subsystem.
        */
       register: readRegistry.register.bind(readRegistry),
 

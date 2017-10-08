@@ -17,7 +17,7 @@ import * as SubSystem from './subsystem'
 // what's a kernel
 // -- store
 // -- dispatch at
-// -- registered subsystenms
+// -- registered subsystems
 
 class Kernel {
   constructor(subsystems, init, config) {
@@ -26,8 +26,8 @@ class Kernel {
 
     // booting
 
-    // 1. create the initial subsystem map, so extensons are available
-    //    for instantation
+    // 1. create the initial subsystem map, so extensions are available
+    //    for instantiation
     const ssMap = R.reduce((ss, s) => R.assoc(s.name, s, ss), {}, subsystems)
     this._subsystems = ssMap
     this._subsystemSequence = subsystems
@@ -35,17 +35,17 @@ class Kernel {
     // 2. create actual subsystems, providing the initial map for extension
     //    lookup. Order is important here.
     let instantiatedSeq = []
-    let instantatedMap = {}
+    let instantiatedMap = {}
 
     for (const s of subsystems) {
-      const instantiated = SubSystem.instantiate(this, instantatedMap, s)
+      const instantiated = SubSystem.instantiate(this, instantiatedMap, s)
       instantiatedSeq.push(instantiated)
-      instantatedMap[instantiated.name] = instantiated
+      instantiatedMap[instantiated.name] = instantiated
     }
 
     // 3. put subsystems in place
 
-    this._subsystems = instantatedMap
+    this._subsystems = instantiatedMap
 
     this._subsystemSequence = instantiatedSeq
 
@@ -143,9 +143,11 @@ class Kernel {
 }
 
 function buildReducer(subsystems) {
-  const reducers = R.pipe(R.map(SubSystem.reducer), R.reject(R.isNil))(
-    subsystems
-  )
+  // prettier-ignore
+  const reducers = R.pipe(
+    R.map(SubSystem.reducer),
+    R.reject(R.isNil)
+  )(subsystems)
 
   return (state, action) => R.reduce((s, r) => r(s, action), state, reducers)
 }

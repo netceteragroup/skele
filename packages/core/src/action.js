@@ -6,7 +6,7 @@ import { kindOf } from './data'
 export const actionMetaProperty = '@@girders-elements/_actionMeta'
 
 /**
- * gets the action meadata from the action
+ * gets the action metadata from the action
  */
 export const actionMeta = R.prop(actionMetaProperty)
 
