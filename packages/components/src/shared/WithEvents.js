@@ -5,9 +5,9 @@ import PropTypes from 'prop-types'
 const listeners = '@@girders-elements.internal/listeners'
 
 /**
- * A mxin that adds event handling methods to the a react component
+ * A mixin that adds event handling methods to the a react component
  *
- * @param eventDefinitons an array of event definitions or a single event definitions
+ * @param eventDefinitions an array of event definitions or a single event definitions
  * @param OriginalComponent
  *
  * an event defintion is either

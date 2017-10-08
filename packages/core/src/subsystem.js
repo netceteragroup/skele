@@ -40,7 +40,7 @@ let extensions = []
 
   Subsystem.extend(sub)
 
-  This will add a property read  all follwoing subsystems with the methods
+  This will add a property read  all following subsystems with the methods
   defined here.
 */
 export function extend(extension) {
@@ -58,7 +58,7 @@ export function resetExtensions() {
 /*
   subsystemFnAttribute: kernel => subsystemDef
   allows subsystems to export an object
-  where calls to customized registreations can be made
+  where calls to customized registrations can be made
 
   e.g. file defaultSubsystem.s:
 
@@ -70,7 +70,7 @@ export function resetExtensions() {
     middleware: ...
   })
 
-  this object then exposes standard entrypoints for registreations:
+  this object then exposes standard entrypoints for registrations:
 
   import { ui, update } from 'defaultSubsystem'
 

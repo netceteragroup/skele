@@ -23,7 +23,7 @@ Subsystem.extend(() => {
     )
 
     invariant(typeof action === 'string', 'The action must be a string')
-    invariant(typeof effect === 'function', 'the effect must be a function')
+    invariant(typeof effect === 'function', 'The effect must be a function')
 
     registry.register(ActionRegistry.keyFor(kind, action), effect)
   })

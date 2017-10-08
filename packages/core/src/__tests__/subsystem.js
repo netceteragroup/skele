@@ -26,7 +26,7 @@ describe('SubSystem', () => {
 
     let k = Kernel.create([sub1, sub2], {}, {})
 
-    it('allows subsystems to talk to eachother (late binding)', () => {
+    it('allows subsystems to talk to each other (late binding)', () => {
       expect(k.subsystems.sub2.hello()).toEqualI(
         List.of('hello from sub1', 'hello from sub 2')
       )
