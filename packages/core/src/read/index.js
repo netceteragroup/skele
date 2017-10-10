@@ -5,23 +5,16 @@ import invariant from 'invariant'
 
 // required subsystems
 import * as SubSystem from '../subsystem'
+import '../update'
+import '../effect'
 import '../enrich'
 import '../transform'
 
 import { PatternRegistry, chainRegistries } from '../registry'
-import createSagaMiddleware from 'redux-saga'
-
-// TODO move element registrations to coreSubSystem
-
-// register default read elements
-//
-// import './elements/read'
-// import './elements/loading'
-// import './elements/error'
-// import './elements/container'
 
 import * as impl from './impl'
 import * as http from './http'
+import * as readActions from './actions'
 
 const registryAttribute = '@@girders-elements/_readRegistry'
 const fallback = impl.fallback
@@ -60,7 +53,7 @@ SubSystem.extend(() => {
   }
 })
 
-export default SubSystem.create((system, instantiatedSubsystems) => {
+const read = SubSystem.create((system, instantiatedSubsystems) => {
   invariant(
     instantiatedSubsystems.transform != null,
     'The read subsystem depends on the transform subsystem.' +
@@ -73,20 +66,20 @@ export default SubSystem.create((system, instantiatedSubsystems) => {
 
   const config = { registry, enrichment, transformation, kernel: system }
 
-  // prepare the saga middleware (this may ba a separate subsystem)
-  const sagaMiddleware = createSagaMiddleware()
-
   return {
     name: 'read',
-
-    reducer: impl.reducer(config),
-    middleware: sagaMiddleware,
-
-    start() {
-      sagaMiddleware.run(impl.watchReadPerform(config))
-    },
+    context: config,
   }
 })
+
+read.effect.register([], readActions.types.read, impl.read)
+read.update.forKind([], updates => {
+  updates.register(readActions.types.setLoading, impl.setLoading)
+  updates.register(readActions.types.apply, impl.applyRead)
+  updates.register(readActions.types.fail, impl.fail)
+})
+
+export default read
 
 const getRegistry = R.path(['read', registryAttribute])
 

@@ -12,9 +12,6 @@ export default class Loading extends React.Component {
       PropTypes.string,
       PropTypes.arrayOf(PropTypes.string),
     ]).isRequired,
-    uri: PropTypes.string.isRequired,
-    readId: PropTypes.string.isRequired,
-    revalidate: PropTypes.bool,
   }
 
   constructor(props) {

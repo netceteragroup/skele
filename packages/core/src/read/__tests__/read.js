@@ -6,10 +6,14 @@ import * as Subsystem from '../../subsystem'
 import * as Kernel from '../../kernel'
 import enrich from '../../enrich'
 import transform from '../../transform'
+import update from '../../update'
+import effect from '../../effect'
 import read from '..'
 
 import * as action from '../../action'
 import * as data from '../../data'
+
+import * as readActions from '../actions'
 
 describe('Read Subsytem', () => {
   const app = Subsystem.create(() => ({
@@ -24,7 +28,7 @@ describe('Read Subsytem', () => {
   )
 
   const kernel = Kernel.create(
-    [enrich, transform, read, app],
+    [enrich, transform, effect, update, read, app],
     {
       kind: 'app',
       '@@girders-elements/children': 'content',
@@ -44,15 +48,13 @@ describe('Read Subsytem', () => {
   it('processes reads successfully', async () => {
     let content = kernel.query(['content'])
 
-    const readAction = {
-      type: 'READ',
-      uri: content.get('uri'),
+    const readAction = readActions.read(content.get('uri'), {
       revalidate: content.get('revalidate'),
-    }
+    })
 
     kernel.dispatch(action.atCursor(content, readAction))
 
-    expect(kernel.query(['content', 'kind'])).toEqualI(
+    expect(List(kernel.query(['content', 'kind']))).toEqualI(
       List.of('__loading', 'scene')
     )
 
