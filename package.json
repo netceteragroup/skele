@@ -1,7 +1,8 @@
 {
   "name": "girders-elements-container",
   "private": true,
-  "description": "Girders Elements is an architectural framework that assists with building data-driven apps with React or React Native.",
+  "description":
+    "Girders Elements is an architectural framework that assists with building data-driven apps with React or React Native.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/netceteragroup/girders-elements.git"
@@ -19,24 +20,31 @@
     "coverage": "jest --coverage",
     "coverage-report": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint .",
-    "es5": "yarn run es5:core && yarn run es5:config && yarn run es5:components",
+    "es5":
+      "yarn run es5:core && yarn run es5:config && yarn run es5:components",
     "es5:core": "babel -q packages/core/src --out-dir packages/core/dist/es5",
-    "es5:config": "babel -q packages/config/src --out-dir packages/config/dist/es5",
-    "es5:components": "babel -q packages/components/src --out-dir packages/components/dist/es5",
-    "clean": "yarn run clean:core && yarn run clean:config && yarn run clean:components",
+    "es5:config":
+      "babel -q packages/config/src --out-dir packages/config/dist/es5",
+    "es5:components":
+      "babel -q packages/components/src --out-dir packages/components/dist/es5",
+    "clean":
+      "yarn run clean:core && yarn run clean:config && yarn run clean:components",
     "clean:core": "del-cli packages/core/dist",
     "clean:config": "del-cli packages/config/dist",
     "clean:components": "del-cli packages/components/dist",
     "build": "yarn run clean && yarn run test && yarn run lint && yarn run es5",
     "release:test-token": "test -n \"$CONVENTIONAL_GITHUB_RELEASER_TOKEN\" || (echo 'Setup your github autho token first: https://github.com/conventional-changelog/conventional-github-releaser#cli' && exit 1)",
+    "release:test-token":
+      "test -n \"$CONVENTIONAL_GITHUB_RELEASER_TOKEN\" || (echo 'Setup your github autho token first: https://github.com/conventional-changelog/conventional-github-releaser#cli' && exit 1)",
     "release:publish": "lerna publish",
     "release:github": "conventional-github-releaser -p angular",
-    "release": "yarn run build && yarn run release:test-token && yarn run release:publish && yarn run release:github"
+    "release":
+      "yarn run build && yarn run release:test-token && yarn run release:publish && yarn run release:github"
   },
   "engines": {
     "node": ">= 7.4.0",
     "npm": ">= 4.0.5",
-    "yarn": ">= 0.21.0"
+    "yarn": ">= 1.1.0"
   },
   "dependencies": {},
   "devDependencies": {
@@ -62,7 +70,7 @@
     "immutable": "^3.8.1",
     "jest": "^21.0.2",
     "jest-enzyme": "^3.8.2",
-    "lerna": "^2.0.0",
+    "lerna": "^2.4.0",
     "prettier": "^1.6.1",
     "prettier-eslint": "^7.1.0",
     "prettier-eslint-cli": "^4.3.0",
@@ -80,17 +88,13 @@
   },
   "jest": {
     "setupTestFrameworkScriptFile": "./scripts/test-setup.js",
-    "modulePathIgnorePatterns": [
-      "/dist/es5/"
-    ],
+    "modulePathIgnorePatterns": ["/dist/es5/"],
     "roots": [
       "<rootDir>/packages/core",
       "<rootDir>/packages/config",
       "<rootDir>/packages/components"
     ],
-    "testMatch": [
-      "**/__tests__/**/*.js"
-    ],
+    "testMatch": ["**/__tests__/**/*.js"],
     "collectCoverageFrom": [
       "**/*.js",
       "!**/__tests__/**",
@@ -99,7 +103,5 @@
       "!**/dist/es5/**"
     ]
   },
-  "workspaces": [
-    "packages/*"
-  ]
+  "workspaces": ["packages/*"]
 }
