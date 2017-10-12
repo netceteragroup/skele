@@ -20,7 +20,7 @@ export default class Read extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch, kind, uri, revalidate } = this.props
+    const { dispatch, uri, revalidate } = this.props
     dispatch(readAction(uri, { revalidate }))
   }
 

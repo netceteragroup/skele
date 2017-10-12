@@ -28,7 +28,7 @@ describe('Read Subsytem', () => {
     })
   )
 
-  app.read.register(/failure.json$/, u => Promise.reject(new Error('fail')))
+  app.read.register(/failure.json$/, () => Promise.reject(new Error('fail')))
 
   const kernel = Kernel.create(
     [enrich, transform, effect, update, read, app],

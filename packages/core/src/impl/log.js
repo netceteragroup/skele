@@ -14,7 +14,7 @@ function _warning(msg) {
 function _error(msg, error) {
   if (typeof console !== undefined) {
     if (console.error != null) {
-      console.error(msg)
+      console.error(msg, error)
     }
   }
 }
