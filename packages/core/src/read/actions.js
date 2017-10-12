@@ -22,8 +22,9 @@ export function read(uri, opts) {
   }
 }
 
-export function readRefresh() {
+export function readRefresh(uri = undefined) {
   return {
     type: types.readRefresh,
+    uri,
   }
 }

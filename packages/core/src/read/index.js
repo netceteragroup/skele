@@ -72,9 +72,14 @@ const read = SubSystem.create((system, instantiatedSubsystems) => {
   }
 })
 
-read.effect.register([], readActions.types.read, impl.read)
+read.effect.forKind([], effects => {
+  effects.register(readActions.types.read, impl.read)
+  effects.register(readActions.types.readRefresh, impl.readRefresh)
+})
+
 read.update.forKind([], updates => {
   updates.register(readActions.types.setLoading, impl.setLoading)
+  updates.register(readActions.types.setRefreshing, impl.setRefreshing)
   updates.register(readActions.types.apply, impl.applyRead)
   updates.register(readActions.types.fail, impl.fail)
 })

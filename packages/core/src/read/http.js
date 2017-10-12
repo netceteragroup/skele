@@ -1,25 +1,58 @@
-/* @flow */
 'use strict'
+
+import R from 'ramda'
 import { fromJS } from 'immutable'
 
-export function httpRead(
-  url: string,
-  revalidate: boolean
-): Promise<ReadResponse> {
-  const options = {}
-  if (revalidate) {
-    const headers = {
-      'Cache-Control': 'max-age=0',
-    }
-    options['headers'] = headers
+export function execute(url, options) {
+  const defaults = {
+    revalidate: false,
+    method: 'GET',
   }
-  return fetch(url, options)
-    .then(processResponse)
+
+  let opts
+  if (typeof options === 'boolean') {
+    opts = {
+      ...defaults,
+      revalidate: options,
+    }
+  } else {
+    opts = {
+      ...defaults,
+      ...options,
+    }
+  }
+
+  const headers = new Headers()
+  if (opts.revalidate) {
+    headers.append('Cache-Control', 'max-age=0')
+  }
+  if (opts.headers) {
+    R.forEachObjIndexed((v, h) => headers.append(h, v), opts.headers)
+  }
+
+  const fetchOptions = { ...opts, headers }
+  return fetch(url, fetchOptions)
+    .then(processFetchResponse)
     .catch(errorResponseForUrl(url))
 }
 
-function processResponse(resp: Object): ReadResponse | Promise<ReadResponse> {
-  if (resp.ok) {
+export function post(url, json, options) {
+  return execute(url, {
+    ...options,
+    method: 'POST',
+    body: JSON.stringify(json),
+    headers: {
+      ...(options.headers || {}),
+      'Content-Type': 'application/json',
+    },
+  })
+}
+
+export const get = execute
+export const httpRead = get
+
+function processFetchResponse(resp) {
+  if (isxOk(resp)) {
     return resp
       .json()
       .then(json => ({ value: fromJS(json), meta: responseMeta(resp) }))
@@ -29,7 +62,7 @@ function processResponse(resp: Object): ReadResponse | Promise<ReadResponse> {
   }
 }
 
-function errorResponseForUrl(url): ErrorFn {
+function errorResponseForUrl(url) {
   return error => ({
     meta: {
       url,
@@ -40,15 +73,23 @@ function errorResponseForUrl(url): ErrorFn {
   })
 }
 
-export function responseMeta(resp: Object): Meta {
+export function responseMeta(resp) {
   let message = resp.statusText
   if (!message) {
-    message = resp.ok ? 'OK' : 'NOK'
+    message = isOK(resp) ? 'OK' : 'Failure'
   }
+  const uri = resp.uri || resp.url
   return {
-    url: resp.url,
-    uri: resp.url,
+    url: uri,
+    uri,
     status: resp.status ? resp.status : 200,
     message: message,
   }
+}
+
+export function isOK(response) {
+  return (
+    response.ok ||
+    (response.meta && response.meta.status >= 200 && response.meta.status < 300)
+  )
 }
