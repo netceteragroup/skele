@@ -14,7 +14,6 @@
   },
   "homepage": "https://github.com/netceteragroup/girders-elements#readme",
   "scripts": {
-    "postinstall": "lerna bootstrap",
     "prepublish": "yarn run clean && yarn run es5",
     "test": "jest",
     "test-watch": "NODE_ENV=dev jest --watch",
@@ -44,7 +43,7 @@
   "engines": {
     "node": ">= 7.4.0",
     "npm": ">= 4.0.5",
-    "yarn": ">= 0.21.0"
+    "yarn": ">= 1.1.0"
   },
   "dependencies": {},
   "devDependencies": {
@@ -70,7 +69,7 @@
     "immutable": "^3.8.1",
     "jest": "^21.0.2",
     "jest-enzyme": "^3.8.2",
-    "lerna": "^2.0.0",
+    "lerna": "^2.4.0",
     "prettier": "^1.6.1",
     "prettier-eslint": "^7.1.0",
     "prettier-eslint-cli": "^4.3.0",
@@ -102,5 +101,6 @@
       "!**/vendor/**",
       "!**/dist/es5/**"
     ]
-  }
+  },
+  "workspaces": ["packages/*"]
 }
