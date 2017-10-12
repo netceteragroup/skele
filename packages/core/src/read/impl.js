@@ -1,130 +1,216 @@
 'use strict'
 
 import R from 'ramda'
-import { List, fromJS } from 'immutable'
-
-import { takeEvery } from 'redux-saga'
-import { call, put } from 'redux-saga/effects'
+import invariant from 'invariant'
+import { fromJS } from 'immutable'
 
 import uuid from 'uuid'
 
-import { kindOf } from '../data'
-import { actionMeta } from '../action'
+import { error } from '../impl/log'
+
+import { canonical, flow } from '../data'
+import * as readActions from './actions'
 import * as propNames from '../propNames'
+import { isOK } from './http'
 
 export const fallback = '@@girders-elements/defaultRead'
 
-/**
- * Reducer function for Reads.
- *
- * @param config A configuration object passed, currently holds a transformation
- *  function
- * @param cursor The cursor representing the state.
- * @param action The action.
- * @returns {*} The new state represented by updated cursor.
- */
-export const reducer = R.curry(function reducer(config, cursor, action) {
-  if (!R.startsWith('READ', action.type)) return cursor
-  const { keyPath: fromPath } = actionMeta(action)
+const updateKind = R.curry((update, element) =>
+  element.update('kind', R.pipe(canonical, update))
+)
+const setReadId = R.curry((id, el) =>
+  el.setIn([propNames.metadata, 'readId'], id)
+)
+const getReadId = el => el.getIn([propNames.metadata, 'readId'])
+const setMeta = R.curry((meta, el) => el.set(propNames.metadata, meta))
+const setRefreshingAttr = R.curry((value, el) =>
+  el.setIn([propNames.metadata, 'refreshing'], value)
+)
 
-  const element = cursor.getIn(fromPath)
-  if (!element) {
-    // the path for the action can't be accessed in the latest cursor
-    // cursor has changed, so we can only discard the action
-    return cursor
-  }
-  const canonicalKind = kindOf(element)
-  const pathToKind = List.of(...fromPath, 'kind')
+export function setLoading(element, action) {
+  const { readId } = action
+  return flow(
+    element,
+    updateKind(k => k.set(0, '__loading')),
+    setReadId(readId)
+  )
+  return final
+}
 
-  if (action.readId) {
-    if (action.readId !== element.get('readId')) {
-      // we have an obsolete mutation, discard
-      return cursor
-    }
-  }
-  switch (action.type) {
-    case 'READ_SET_LOADING': {
-      const pathToReadId = List.of(...fromPath, 'readId')
-      return cursor
-        .setIn(pathToKind, canonicalKind.set(0, '__loading'))
-        .setIn(pathToReadId, uuid())
-    }
-    case 'READ_SUCCEEDED': {
-      return cursor.setIn(fromPath, action.readValue)
-    }
-    case 'READ_FAILED': {
-      const pathToMeta = List.of(...fromPath, [propNames.metadata])
-      return cursor
-        .setIn(pathToKind, canonicalKind.set(0, '__error'))
-        .setIn(pathToMeta, fromJS(action.response.meta))
-    }
-    default: {
-      return cursor
-    }
-  }
-})
+export function setRefreshing(element, action) {
+  let { readId, refreshing } = action
+  if (refreshing == null) refreshing = true
 
-function readSaga(config) {
-  const { registry, enrichment, transformation, kernel } = config
+  return flow(element, setReadId(readId), setRefreshingAttr(refreshing))
+}
 
-  return function*(action) {
-    yield put({ ...action, type: 'READ_SET_LOADING' })
+export function applyRead(element, action) {
+  const { readId, readValue } = action
 
-    const pattern = action.uri
-    const revalidate = action.revalidate
-    const reader = registry.get(pattern) || registry.get(fallback)
+  if (element == null || readId !== getReadId(element)) return element
 
-    if (reader != null) {
-      const readResponse = yield call(reader, pattern, revalidate)
+  return flow(readValue, setReadId(readId))
+}
 
-      if (readResponse.value) {
-        const readValue = fromJS(readResponse.value).merge({
-          [propNames.metadata]: readResponse.meta,
-        })
+export function fail(element, action) {
+  const { readId, response } = action
 
-        let context = {
-          readValue,
-          config: kernel.config,
-          subsystems: kernel.subsystems,
-          subsystemSequence: kernel.subsystemSequence,
-        }
+  if (element == null || readId !== getReadId(element)) return element
 
-        const enrichedResponse = yield call(enrichment, readValue, context)
+  return flow(
+    element,
+    updateKind(k => k.set(0, '__error')),
+    setMeta(response.meta)
+  )
+}
 
-        context = {
-          ...context,
-          readValue: enrichedResponse,
-        }
+async function performRead(context, readParams) {
+  const {
+    registry,
+    enrichment,
+    transformation,
+  } = context.subsystems.read.context
+  const kernel = context
 
-        const transformedResponse = transformation(enrichedResponse, context)
+  const { uri, opts } = readParams
+  const reader = registry.get(uri) || registry.get(fallback)
 
-        yield put({
-          ...action,
-          type: 'READ_SUCCEEDED',
-          response: { ...readResponse, value: transformedResponse },
-          readValue: transformedResponse,
-        })
-      } else {
-        yield put({ ...action, type: 'READ_FAILED', response: readResponse })
-      }
-    } else {
-      yield put({
-        ...action,
-        type: 'READ_FAILED',
-        response: {
-          meta: {
-            url: pattern,
-            status: 420,
-            message: `There's no reader defined for ${pattern}. Did you forget to register a fallback reader?`,
-          },
-        },
+  if (reader != null) {
+    const readResponse = await reader(uri, opts)
+
+    if (isOK(readResponse)) {
+      const readValue = fromJS(readResponse.value).merge({
+        [propNames.metadata]: readResponse.meta,
       })
+
+      const enrichContext = {
+        readValue,
+        config: kernel.config,
+        subsystems: kernel.subsystems,
+        subsystemSequence: kernel.subsystemSequence,
+      }
+
+      const enrichedResponse = await enrichment(readValue, enrichContext)
+
+      const transformContext = {
+        ...enrichContext,
+        readValue: enrichedResponse,
+      }
+
+      const transformedResponse = transformation(
+        enrichedResponse,
+        transformContext
+      )
+
+      return { ...readResponse, value: transformedResponse }
+    } else {
+      return readResponse
+    }
+  } else {
+    return {
+      meta: {
+        url: uri,
+        uri,
+        status: 420,
+        message: `There's no reader defined for ${pattern}. Did you forget to register a fallback reader?`,
+      },
     }
   }
 }
 
-export function watchReadPerform(config) {
-  return function* watchReadPerform() {
-    yield* takeEvery('READ', readSaga(config))
+export async function read(context, action) {
+  const { dispatch } = context
+  const readId = uuid()
+
+  dispatch({ ...action, readId, type: readActions.types.setLoading })
+
+  try {
+    const readResponse = await performRead(context, {
+      uri: action.uri,
+      opts: R.pick(['revalidate'], action),
+    })
+
+    if (isOK(readResponse)) {
+      dispatch({
+        ...action,
+        type: readActions.types.apply,
+        readId,
+        response: readResponse,
+        readValue: readResponse.value,
+      })
+    } else {
+      dispatch({
+        ...action,
+        readId,
+        type: readActions.types.fail,
+        response: readResponse,
+      })
+    }
+  } catch (e) {
+    dispatch({
+      ...action,
+      readId,
+      type: readActions.types.fail,
+      response: {
+        meta: {
+          status: 420,
+          message: e.toString(),
+          error: e,
+        },
+      },
+    })
+  }
+}
+
+export async function readRefresh(context, action) {
+  const { dispatch } = context
+  const element = context.query()
+  const uri = action.uri || element.getIn([propNames.metadata, 'uri'])
+  const readId = uuid()
+
+  invariant(
+    uri != null,
+    'The element you are refreshing must have been loaded via a read'
+  )
+
+  context.dispatch({
+    ...action,
+    readId,
+    type: readActions.types.setRefreshing,
+  })
+
+  try {
+    const response = await performRead(context, {
+      uri: uri,
+      opts: { ...{ revalidate: true }, ...R.pick(['revalidate'], action) },
+    })
+
+    if (isOK(response)) {
+      dispatch({
+        ...action,
+        readId,
+        type: readActions.types.apply,
+        response,
+        readValue: response.value,
+      })
+    } else {
+      error(`Error while refreshing (read) ${uri} `, response)
+
+      dispatch({
+        ...action,
+        readId,
+        type: readActions.types.setRefreshing,
+        refreshing: false,
+      })
+    }
+  } catch (e) {
+    error(`Error while refreshing (read) ${uri} `, e)
+
+    dispatch({
+      ...action,
+      readId,
+      type: readActions.types.setRefreshing,
+      refreshing: false,
+    })
   }
 }

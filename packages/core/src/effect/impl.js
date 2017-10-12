@@ -7,6 +7,7 @@ import * as data from '../data'
 import { ActionRegistry } from '../registry'
 
 import { findParentEntry } from '../impl/cursor'
+import { error } from '../impl/log'
 
 const updateStateAction = '@@girders-elements/_effects.updateState'
 
@@ -36,11 +37,17 @@ export const middleware = R.curry((config, store, next, action) => {
     const result = effect(context, action)
 
     if (result && typeof result.then === 'function') {
-      result.then(updateFn => {
-        if (typeof updateFn === 'function') {
-          context.dispatch({ type: updateStateAction, updateFn })
-        }
-      })
+      result
+        .then(updateFn => {
+          if (typeof updateFn === 'function') {
+            context.dispatch({ type: updateStateAction, updateFn })
+          }
+        })
+        .catch(e => {
+          error('Exception while executing an effect: ', e)
+        })
+    } else if (typeof result === 'function') {
+      context.dispatch({ type: updateStateAction, result })
     }
   } else {
     // the effect consumes the action

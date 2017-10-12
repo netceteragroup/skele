@@ -21,7 +21,10 @@ Subsystem.extend(() => {
       'You must provide a valid element reference to register'
     )
 
-    invariant(typeof action === 'string', 'The action must be a string')
+    invariant(
+      typeof action === 'string',
+      `The action must be a string: ${action}`
+    )
     invariant(typeof update === 'function', 'the update must be a function')
 
     registry.register(ActionRegistry.keyFor(kind, action), update)

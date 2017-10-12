@@ -2,6 +2,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import { read as readAction } from '../../read/actions'
 
 export default class Read extends React.Component {
   static propTypes = {
@@ -20,7 +21,7 @@ export default class Read extends React.Component {
 
   componentDidMount() {
     const { dispatch, kind, uri, revalidate } = this.props
-    dispatch({ type: 'READ', uri, kind, revalidate })
+    dispatch(readAction(uri, { revalidate }))
   }
 
   render() {

@@ -2,7 +2,7 @@
 
 import 'core-js/fn/object/assign'
 
-import warning from './warning'
+import { warning } from './log'
 
 /**
  * This will log a single deprecation notice per function and forward the call

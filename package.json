@@ -16,7 +16,7 @@
   "scripts": {
     "prepublish": "yarn run clean && yarn run es5",
     "test": "jest",
-    "test-watch": "jest --watch",
+    "test-watch": "NODE_ENV=dev jest --watch",
     "coverage": "jest --coverage",
     "coverage-report": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint .",
@@ -33,7 +33,6 @@
     "clean:config": "del-cli packages/config/dist",
     "clean:components": "del-cli packages/components/dist",
     "build": "yarn run clean && yarn run test && yarn run lint && yarn run es5",
-    "release:test-token": "test -n \"$CONVENTIONAL_GITHUB_RELEASER_TOKEN\" || (echo 'Setup your github autho token first: https://github.com/conventional-changelog/conventional-github-releaser#cli' && exit 1)",
     "release:test-token":
       "test -n \"$CONVENTIONAL_GITHUB_RELEASER_TOKEN\" || (echo 'Setup your github autho token first: https://github.com/conventional-changelog/conventional-github-releaser#cli' && exit 1)",
     "release:publish": "lerna publish",

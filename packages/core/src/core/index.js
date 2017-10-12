@@ -30,9 +30,9 @@ const core = SubSystem.create(() => ({
 export const defaultSubsystems = [
   enrich,
   transform,
-  read,
   effect,
   update,
+  read,
   ui,
   core,
 ]

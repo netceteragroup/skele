@@ -3,7 +3,7 @@
 import R from 'ramda'
 
 import invariant from 'invariant'
-import warning from '../impl/warning'
+import { warning } from '../impl/log'
 
 import * as data from '../data'
 import * as actions from '../action'
