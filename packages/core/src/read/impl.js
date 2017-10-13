@@ -11,7 +11,7 @@ import { error } from '../impl/log'
 import { canonical, flow } from '../data'
 import * as readActions from './actions'
 import * as propNames from '../propNames'
-import { isOK } from './http'
+import { isOK, isResponse } from './http'
 
 export const fallback = '@@girders-elements/defaultRead'
 
@@ -78,6 +78,11 @@ async function performRead(context, readParams) {
   if (reader != null) {
     const readResponse = await reader(uri, opts)
 
+    if (!isResponse(readResponse)) {
+      throw new Error(
+        `The read fn acting on ${uri} has returned an invalid response: ${readResponse}`
+      )
+    }
     if (isOK(readResponse)) {
       const readValue = fromJS(readResponse.value).merge({
         [propNames.metadata]: readResponse.meta,
