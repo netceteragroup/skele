@@ -30,7 +30,7 @@ export function execute(url, options) {
     R.forEachObjIndexed((v, h) => headers.append(h, v), opts.headers)
   }
 
-  const fetchOptions = { ...opts, headers }
+  const fetchOptions = { ...R.omit(['revalidate', 'headers'], opts), headers }
   return fetch(url, fetchOptions)
     .then(processFetchResponse)
     .catch(errorResponseForUrl(url))
@@ -52,7 +52,7 @@ export const get = execute
 export const httpRead = get
 
 function processFetchResponse(resp) {
-  if (isxOk(resp)) {
+  if (resp.ok) {
     return resp
       .json()
       .then(json => ({ value: fromJS(json), meta: responseMeta(resp) }))
@@ -63,20 +63,52 @@ function processFetchResponse(resp) {
 }
 
 function errorResponseForUrl(url) {
-  return error => ({
+  return error => failedResponse(error, url)
+}
+
+export function asResponse(value, from = undefined) {
+  return {
+    value,
+    ...(from != null
+      ? { meta: { status: 200, uri: from, url: from, message: 'OK' } }
+      : {}),
+  }
+}
+
+export function failedResponse(message, object = undefined, from = undefined) {
+  if (from == null) {
+    from = object
+    object = undefined
+  }
+
+  return {
+    ...(object != null ? { value: object } : {}),
     meta: {
-      url,
-      uri: url,
+      ...(from != null ? { uri: from, url: from } : {}),
       status: 420,
-      message: error,
+      message,
     },
-  })
+  }
+}
+
+const unwrap = R.prop('value')
+const wrap = (resp, v) => (isResponse(v) ? v : { ...resp, value: v })
+/*
+ * Like data.flow() but for responses; will unwrap before calling fn;
+ * fn  can return just a value or a full blown response
+ */
+export function flow(resp, ...fns) {
+  return R.reduce(
+    (v, fn) => (isOK(v) ? wrap(v, fn(unwrap(v))) : R.reduced(v)),
+    resp,
+    fns
+  )
 }
 
 export function responseMeta(resp) {
   let message = resp.statusText
   if (!message) {
-    message = isOK(resp) ? 'OK' : 'Failure'
+    message = resp.ok || isOK(resp) ? 'OK' : 'Failure'
   }
   const uri = resp.uri || resp.url
   return {
@@ -87,9 +119,18 @@ export function responseMeta(resp) {
   }
 }
 
-export function isOK(response) {
+export function isResponse(response) {
   return (
-    response.ok ||
-    (response.meta && response.meta.status >= 200 && response.meta.status < 300)
+    response != null &&
+    (response.value != null || R.path(['meta', 'status'], response) != null)
+  )
+}
+
+export function isOK(response) {
+  const status = R.path(['meta', 'status'], response)
+
+  return (
+    (response.value != null && status == null) ||
+    (response.value != null && status >= 200 && status < 300)
   )
 }
