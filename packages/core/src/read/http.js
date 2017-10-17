@@ -47,7 +47,7 @@ export function post(url, json, options) {
     },
   }
   return execute(url, {
-    ...options,
+    ...opts,
     method: 'POST',
   })
 }
