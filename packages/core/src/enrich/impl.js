@@ -18,7 +18,9 @@ export function enricher(registry) {
   async function postWalk(el, context) {
     const paths = data.pathsToChildElements(el)
     const changedChildren = List(
-      await Promise.all(paths.map(p => postWalk(el.getIn(p), context)))
+      await Promise.all(
+        paths.map(p => postWalk(el.getIn(p), context)).toArray()
+      )
     )
 
     const enrichments = paths.zip(changedChildren)
