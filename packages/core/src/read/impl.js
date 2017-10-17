@@ -60,7 +60,7 @@ export function fail(element, action) {
   return flow(
     element,
     updateKind(k => k.set(0, '__error')),
-    setMeta(response.meta)
+    setMeta(fromJS(response.meta))
   )
 }
 
@@ -85,7 +85,7 @@ async function performRead(context, readParams) {
     }
     if (isOK(readResponse)) {
       const readValue = fromJS(readResponse.value).merge({
-        [propNames.metadata]: readResponse.meta,
+        [propNames.metadata]: fromJS(readResponse.meta),
       })
 
       const enrichContext = {

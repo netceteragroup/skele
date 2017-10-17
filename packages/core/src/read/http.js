@@ -37,14 +37,18 @@ export function execute(url, options) {
 }
 
 export function post(url, json, options) {
-  return execute(url, {
+  const opts = {
     ...options,
     method: 'POST',
     body: JSON.stringify(json),
     headers: {
-      ...(options.headers || {}),
+      ...R.defaultTo({}, R.prop(options, 'headers')),
       'Content-Type': 'application/json',
     },
+  }
+  return execute(url, {
+    ...options,
+    method: 'POST',
   })
 }
 

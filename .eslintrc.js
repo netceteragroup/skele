@@ -23,7 +23,7 @@ module.exports = {
     'react/display-name': 'warn',
   },
 
-  plugins: ['promise', 'flowtype', 'react', 'prettier'],
+  plugins: ['flowtype', 'react', 'prettier'],
 
   globals: {
     document: false,
