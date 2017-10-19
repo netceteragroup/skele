@@ -224,4 +224,17 @@ describe('pathsToChildElements', () => {
   expect(pathsToChildElements(anArrayWithChildrenArray)).toEqualI(
     fromJS([['children', 0]])
   )
+
+  const nonExistingChildPOsition = fromJS({
+    kind: 'component',
+    [childrenProperty]: ['children', 'foo'],
+
+    children: {
+      kind: 'child',
+    },
+  })
+
+  expect(pathsToChildElements(nonExistingChildPOsition)).toEqualI(
+    fromJS([['children']])
+  )
 })

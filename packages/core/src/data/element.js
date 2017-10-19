@@ -164,8 +164,10 @@ export function pathsToChildElements(element) {
     const children = element.get(childrenPath)
     if (Iterable.isIndexed(children)) {
       return children.map((_, i) => List.of(childrenPath, i))
-    } else {
+    } else if (Iterable.isAssociative(children)) {
       return List.of(List.of(childrenPath))
+    } else {
+      return List()
     }
   })
 }
