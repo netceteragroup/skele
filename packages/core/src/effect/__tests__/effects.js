@@ -30,6 +30,7 @@ describe('effects API', function() {
   describe('Effects', () => {
     const specificEffect = jest.fn()
     const specificEffect2 = jest.fn()
+    const specificEffect3 = jest.fn()
     const articleEffect = jest.fn()
     const componentEffect = jest.fn()
 
@@ -37,6 +38,7 @@ describe('effects API', function() {
       ;[
         specificEffect,
         specificEffect2,
+        specificEffect3,
         articleEffect,
         componentEffect,
       ].forEach(m => m.mockClear())
@@ -52,6 +54,7 @@ describe('effects API', function() {
     effect.forKind(['article', 'specific'], effects => {
       effects.register('toggle', specificEffect)
       effects.register('toggle2', specificEffect2)
+      effects.register('toggle3', specificEffect3)
 
       effects.register('noop', async () => {})
       effects.register('noop2', () => {})
@@ -60,6 +63,10 @@ describe('effects API', function() {
     effect.register(['article'], 'toggle', articleEffect)
 
     effect.register(['container'], '.toggle', componentEffect)
+
+    effect.register(['container'], 'fireOnSub', async context => {
+      context.focusOn(['element3']).dispatch({ type: 'toggle3' })
+    })
 
     describe('effect context', () => {
       const kernel = Kernel.create([effectSubS, app], data, {})
@@ -118,6 +125,14 @@ describe('effects API', function() {
         const [context2, action2] = componentEffect.mock.calls[1]
         expect(context2.query()._keyPath).toEqual(['element1'])
         expect(action2.type).toEqual('.toggle')
+      })
+
+      describe('action on sub-element', async () => {
+        kernel.focusOn(['element1', 'element2']).dispatch({ type: 'fireOnSub' })
+
+        await sleep(50)
+
+        expect(specificEffect3).toHaveBeenCalled()
       })
     })
 
