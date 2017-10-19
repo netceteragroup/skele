@@ -51,7 +51,10 @@ export default SubSystem.create(system => ({
     if (combinedRegistry == null) {
       return x => Promise.resolve(x)
     }
-    return impl.enricher(combinedRegistry)
+    return impl.enricher({
+      registry: combinedRegistry,
+      elementZipper: system.elementZipper,
+    })
   },
 }))
 

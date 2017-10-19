@@ -1,37 +1,54 @@
 'use strict'
 
-import { List } from 'immutable'
+import R from 'ramda'
+import { List, Seq } from 'immutable'
 import { memoize } from '../impl/util'
 import * as data from '../data'
+import * as zip from '../zip'
 
-export function enricher(registry) {
-  const elementEnricher = memoize(kind =>
-    registry
-      .get(kind)
-      .reduce(
-        (f, g) => (x, context) =>
-          Promise.resolve(f(x, context)).then(x => g(x, context)),
-        x => Promise.resolve(x)
+export function enricher(config) {
+  const { registry, elementZipper } = config
+
+  const elementEnricher = memoize(kind => {
+    const enrichers = registry.get(kind)
+    return enrichers.isEmpty()
+      ? null
+      : enrichers.reduce(
+          (f, g) => (x, context) =>
+            Promise.resolve(f(x, context)).then(x => g(x, context)),
+          x => Promise.resolve(x)
+        )
+  })
+
+  async function postWalk(loc, context) {
+    if (zip.canGoDown(loc)) {
+      const changedChildren = await Promise.all(
+        // prettier-ignore
+        data.flow(
+          zip.getChildren(loc),
+          R.map(R.pipe(elementZipper, loc => postWalk(loc, context)))
+        )
       )
-  )
-
-  async function postWalk(el, context) {
-    const paths = data.pathsToChildElements(el)
-    const changedChildren = List(
-      await Promise.all(
-        paths.map(p => postWalk(el.getIn(p), context)).toArray()
+      const changedValue = zip.makeItem(
+        loc,
+        zip.value(loc),
+        R.map(zip.value, changedChildren)
       )
-    )
 
-    const enrichments = paths.zip(changedChildren)
+      loc = zip.replace(changedValue, loc)
+    }
 
-    const withModifiedChildren = enrichments.reduce(
-      (el, [path, value]) => el.setIn(path, value),
-      el
-    )
-    const elEnricher = elementEnricher(data.kindOf(withModifiedChildren))
-    return elEnricher(withModifiedChildren, context)
+    const elEnricher = data.flow(loc, zip.value, data.kindOf, elementEnricher)
+
+    if (elEnricher != null) {
+      const changedValue = await elEnricher(zip.value(loc), context)
+
+      loc = zip.replace(changedValue, loc)
+    }
+
+    return loc
   }
 
-  return (el, context = {}) => postWalk(el, context)
+  return async (el, context = {}) =>
+    zip.value(await postWalk(elementZipper(el), context))
 }

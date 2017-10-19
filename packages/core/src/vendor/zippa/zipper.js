@@ -118,7 +118,7 @@ export const getChildren = pipe(
     converge(call, [_getChildrenFn, getItem]),
 );
 
-function makeItem(z, item, children) {
+function _makeItem(z, item, children) {
     return getMeta(z).makeItem(item, children);
 }
 
@@ -437,7 +437,7 @@ const itemsOnCurrentLevel = pipe(
     unnest
 );
 
-const makeParentItem = converge(makeItem, [identity, getParent, itemsOnCurrentLevel]);
+const makeParentItem = converge(_makeItem, [identity, getParent, itemsOnCurrentLevel]);
 
 /**
  * Moves location to the parent, constructing a new parent
@@ -541,7 +541,7 @@ export function remove(zipper) {
         const parent = _parent(path);
         return zipperFrom(
             zipper,
-            makeItem(zipper, parent, _rights),
+            _makeItem(zipper, parent, _rights),
             isTop(zipper)
                 ? parentPath
                 : assoc('changed', true, parentPath)
@@ -552,12 +552,12 @@ export function remove(zipper) {
 
 function _insertChild(item, z) {
     const newChildren = [item].concat(getChildren(z));
-    return _replace(makeItem(z, item, newChildren), z);
+    return _replace(_makeItem(z, item, newChildren), z);
 }
 
 function _appendChild(item, z) {
     const newChildren = getChildren(z).concat([item]);
-    return _replace(makeItem(z, item, newChildren), z);
+    return _replace(_makeItem(z, item, newChildren), z);
 }
 
 function makeNullaryMethod(fn) {
@@ -962,5 +962,7 @@ export const edit = curry(_edit);
  * @returns {Zipper}
  */
 export const replace = curry(_replace);
+
+export const makeItem = curry(_makeItem);
 
 export default makeZipper;
