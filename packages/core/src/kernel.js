@@ -119,6 +119,10 @@ class Kernel {
         return self.query(data.asList(path).concat(data.asList(subPath)))
       },
 
+      focusOn(subPath) {
+        return self.focusOn(data.asList(path).concat(data.asList(subPath)))
+      },
+
       get config() {
         return self.config
       },
