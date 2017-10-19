@@ -171,8 +171,13 @@ describe('pathsToChildElements', () => {
 
     children: {
       kind: 'child',
+      bla: 1,
     },
   })
+
+  expect(pathsToChildElements(aStringWithSingleChild)).toEqualI(
+    fromJS([['children']])
+  )
 
   const anArrayWithSingleChild = fromJS({
     kind: 'component',
@@ -183,6 +188,10 @@ describe('pathsToChildElements', () => {
     },
   })
 
+  expect(pathsToChildElements(anArrayWithSingleChild)).toEqualI(
+    fromJS([['children']])
+  )
+
   const aStringWithChildrenArray = fromJS({
     kind: 'component',
     [childrenProperty]: 'children',
@@ -191,8 +200,15 @@ describe('pathsToChildElements', () => {
       {
         kind: 'child',
       },
+      {
+        kind: 'child',
+      },
     ],
   })
+
+  expect(pathsToChildElements(aStringWithChildrenArray)).toEqualI(
+    fromJS([['children', 0], ['children', 1]])
+  )
 
   const anArrayWithChildrenArray = fromJS({
     kind: 'component',
@@ -204,14 +220,8 @@ describe('pathsToChildElements', () => {
       },
     ],
   })
-  ;[
-    (aStringWithSingleChild,
-    anArrayWithChildrenArray,
-    anArrayWithSingleChild,
-    aStringWithChildrenArray),
-  ].forEach(el => {
-    expect(kindOf(el.getIn(pathsToChildElements(el).first()))).toEqualI(
-      List.of('child')
-    )
-  })
+
+  expect(pathsToChildElements(anArrayWithChildrenArray)).toEqualI(
+    fromJS([['children', 0]])
+  )
 })

@@ -1,7 +1,6 @@
 'use strict'
 
 import R from 'ramda'
-import { List, Seq } from 'immutable'
 import { memoize } from '../impl/util'
 import * as data from '../data'
 import * as zip from '../zip'

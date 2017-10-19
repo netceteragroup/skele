@@ -160,9 +160,14 @@ function normalize(kind): ?List<string> {
 }
 
 export function pathsToChildElements(element) {
-  return childPositions(element).flatMap(childrenPath =>
-    element.get(childrenPath).map((_, i) => List.of(childrenPath, i))
-  )
+  return childPositions(element).flatMap(childrenPath => {
+    const children = element.get(childrenPath)
+    if (Iterable.isIndexed(children)) {
+      return children.map((_, i) => List.of(childrenPath, i))
+    } else {
+      return List.of(List.of(childrenPath))
+    }
+  })
 }
 /**
  * Property name of for the location where positions of the elements'children
