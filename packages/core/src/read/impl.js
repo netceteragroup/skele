@@ -85,7 +85,7 @@ async function performRead(context, readParams) {
     }
     if (isOK(readResponse)) {
       const readValue = fromJS(readResponse.value).merge({
-        [propNames.metadata]: fromJS(readResponse.meta),
+        [propNames.metadata]: fromJS(readResponse.meta || defaultMeta(uri)),
       })
 
       const enrichContext = {
@@ -120,6 +120,14 @@ async function performRead(context, readParams) {
         message: `There's no reader defined for ${pattern}. Did you forget to register a fallback reader?`,
       },
     }
+  }
+}
+
+function defaultMeta(uri) {
+  return {
+    status: 200,
+    uri,
+    url: uri,
   }
 }
 
