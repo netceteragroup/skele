@@ -207,8 +207,6 @@ export async function readRefresh(context, action) {
         readValue: response.value,
       })
     } else {
-      error(`Error while refreshing (read) ${uri} `, response)
-
       dispatch({
         ...action,
         readId,
