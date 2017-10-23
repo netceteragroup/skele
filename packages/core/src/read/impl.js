@@ -6,7 +6,7 @@ import { fromJS } from 'immutable'
 
 import uuid from 'uuid'
 
-import { error } from '../impl/log'
+import { info, error } from '../impl/log'
 
 import { canonical, flow } from '../data'
 import * as readActions from './actions'
@@ -207,6 +207,8 @@ export async function readRefresh(context, action) {
         readValue: response.value,
       })
     } else {
+      info(`Unsuccessful refreshing (read) ${uri} `, response)
+
       dispatch({
         ...action,
         readId,
