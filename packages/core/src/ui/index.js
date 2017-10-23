@@ -8,6 +8,7 @@ import React from 'react'
 
 import invariant from 'invariant'
 
+import { warning } from '../impl/log'
 import { Registry, chainRegistries } from '../registry'
 import ElementView from './ElementView'
 import * as data from '../data'
@@ -83,6 +84,7 @@ const forElement = runtime => {
   const componentFor = memoize(kind => {
     const C = registry.get(kind)
     if (C != null) return C(runtime)
+    warning(`Couldn't find the following kind(s) within the registry: [${kind.toJS()}]`)
     return null
   })
 
