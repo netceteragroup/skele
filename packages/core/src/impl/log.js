@@ -1,6 +1,15 @@
 'use strict'
 
 /* eslint-disable no-console */
+
+function _info(msg) {
+  if (typeof console !== undefined) {
+    if (console.log != null) {
+      console.log(msg)
+    }
+  }
+}
+
 function _warning(msg) {
   if (typeof console !== undefined) {
     if (console.warn != null) {
@@ -23,15 +32,17 @@ function _error(msg, error) {
 
 function _noop() {}
 
-let error, warning
+let info, error, warning
 
 let NODE_ENV = process.env.NODE_ENV
 if (NODE_ENV !== 'production' && NODE_ENV !== 'test') {
+  info = _info
   error = _error
   warning = _warning
 } else {
+  info = _noop
   error = _noop
   warning = _noop
 }
 
-export { error, warning }
+export { info, error, warning }
