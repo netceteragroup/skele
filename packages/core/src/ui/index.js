@@ -84,7 +84,9 @@ const forElement = runtime => {
   const componentFor = memoize(kind => {
     const C = registry.get(kind)
     if (C != null) return C(runtime)
-    warning(`Couldn't find the following kind(s) within the registry: [${kind.toJS()}]`)
+    warning(
+      `Couldn't find the following kind(s) within the registry: [${kind.toJS()}]`
+    )
     return null
   })
 
