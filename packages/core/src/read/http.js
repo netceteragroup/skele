@@ -42,7 +42,7 @@ export function post(url, json, options) {
     method: 'POST',
     body: JSON.stringify(json),
     headers: {
-      ...R.defaultTo({}, R.prop(options, 'headers')),
+      ...R.defaultTo({}, R.prop('headers', options)),
       'Content-Type': 'application/json',
     },
   }
