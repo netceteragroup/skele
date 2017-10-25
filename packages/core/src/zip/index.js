@@ -1,15 +1,17 @@
 'use strict'
 
-import { visit, onPre } from '../vendor/zippa'
+import { onPre, onPost, visit } from '../vendor/zippa'
 
 export * from '../vendor/zippa'
 
 export { default as elementZipper } from './elementZipper'
 
-const reducingVisitor = fn =>
+const preReducingVisitor = fn =>
   onPre((item, state) => ({ state: fn(state, item) }))
+const postReductingVisitor = fn =>
+  onPost((item, state) => ({ state: fn(state, item) }))
 
-export const when = (pred, fn) => (acc, i) => (pred(i) ? fn(acc, i) : acc)
-
-export const reduceZipper = (fn, initialAcc, zipper) =>
-  visit([reducingVisitor(fn)], initialAcc, zipper).state
+export const preReduce = (fn, initialAcc, zipper) =>
+  visit([preReducingVisitor(fn)], initialAcc, zipper).state
+export const postReduce = (fn, initialAcc, zipper) =>
+  visit([postReductingVisitor(fn)], initialAcc, zipper).state

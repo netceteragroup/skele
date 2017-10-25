@@ -5,19 +5,18 @@ import { List } from 'immutable'
 import { mount } from 'enzyme'
 
 import {
-  Kernel,
-  Subsystem,
-  zip,
-  data,
-  propNames,
-  defaultSubsystems,
   actions,
+  data,
+  Engine,
+  http,
+  propNames,
   read,
+  Subsystem,
   ui,
   update,
-  http,
-  Engine,
-} from '..'
+  zip,
+  data,
+} from '../..'
 
 describe('Pre-Fetching', () => {
   // application state
@@ -91,15 +90,15 @@ describe('Pre-Fetching', () => {
   afterEach(() => {
     ui.reset()
   })
-
+  
   it('should perform prefetch for certain elements', async () => {
     const prefetchSubsystem = Subsystem.create(system => ({
       name: 'prefetch',
       middleware: store => next => action => {
         const nextState = next(action)
         if (action.type === 'READ_SUCCEEDED') {
-          const toPrefetch = zip.reduceZipper(
-            zip.when(
+          const toPrefetch = zip.preReduce(
+            data.when(
               e => data.isOfKind('teaser', e),
               (acc, el) => acc.push(el)
             ),
