@@ -4,6 +4,7 @@ export const types = {
   read: '@@girders-elements/actions.read',
   readRefresh: '@@girders-elements/actions.read.refresh',
   setRefreshing: '@@girders-elements/actions.read.setRefreshing',
+  setRefreshMetadata: '@@girders-elements/actions.read.setRefreshMetadata',
   setLoading: '@@girders-elements/actions.read.setLoading',
   apply: '@@girders-elements/actions.read.apply',
   fail: '@@girders-elements/actions.read.fail',
