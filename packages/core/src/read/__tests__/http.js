@@ -45,13 +45,13 @@ describe('http', () => {
     })
     expect(http.failedResponse('Fail')).toEqual({
       meta: {
-        status: 420,
+        status: 999,
         message: 'Fail',
       },
     })
     expect(http.failedResponse('Fail', 'http://example.com')).toEqual({
       meta: {
-        status: 420,
+        status: 999,
         message: 'Fail',
         uri: 'http://example.com',
         url: 'http://example.com',
@@ -60,7 +60,7 @@ describe('http', () => {
     expect(http.failedResponse('Fail', 42, 'http://example.com')).toEqual({
       value: 42,
       meta: {
-        status: 420,
+        status: 999,
         message: 'Fail',
         uri: 'http://example.com',
         url: 'http://example.com',
@@ -78,7 +78,7 @@ describe('http', () => {
 
       expect(http.flow(http.failedResponse('Fail'), R.inc, R.add(10))).toEqual({
         meta: {
-          status: 420,
+          status: 999,
           message: 'Fail',
         },
       })
@@ -97,7 +97,7 @@ describe('http', () => {
         http.flow(resp, R.inc, () => http.failedResponse('Fail'), R.dec)
       ).toEqual({
         meta: {
-          status: 420,
+          status: 999,
           message: 'Fail',
         },
       })

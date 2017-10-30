@@ -89,7 +89,7 @@ export function failedResponse(message, object = undefined, from = undefined) {
     ...(object != null ? { value: object } : {}),
     meta: {
       ...(from != null ? { uri: from, url: from } : {}),
-      status: 420,
+      status: 999,
       message,
     },
   }
