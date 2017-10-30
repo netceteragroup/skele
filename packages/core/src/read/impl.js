@@ -116,7 +116,7 @@ async function performRead(context, readParams) {
       meta: {
         url: uri,
         uri,
-        status: 420,
+        status: 999,
         message: `There's no reader defined for ${pattern}. Did you forget to register a fallback reader?`,
       },
     }
@@ -166,7 +166,7 @@ export async function read(context, action) {
       type: readActions.types.fail,
       response: {
         meta: {
-          status: 420,
+          status: 999,
           message: e.toString(),
           error: e,
         },
