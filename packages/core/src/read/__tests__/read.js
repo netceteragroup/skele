@@ -9,6 +9,7 @@ import transform from '../../transform'
 import update from '../../update'
 import effect from '../../effect'
 import read from '..'
+import * as http from '../http'
 
 import * as action from '../../action'
 import * as data from '../../data'
@@ -22,10 +23,7 @@ describe('Read Subsytem', () => {
   }))
 
   app.read.register(/test.json$/, u =>
-    Promise.resolve({
-      value: { kind: 'scene', title: 'Scene Title' },
-      meta: app.read.http.responseMeta({ url: u }),
-    })
+    Promise.resolve(http.asResponse({ kind: 'scene', title: 'Scene Title' }, u))
   )
 
   app.read.register(/failure.json$/, () => Promise.reject(new Error('fail')))
@@ -98,18 +96,19 @@ describe('Refreshing', () => {
   app.read.register(/test.json$/, u => {
     counter += 1
 
-    return Promise.resolve({
-      value: { kind: 'scene', title: `Scene Title ${counter}` },
-      meta: app.read.http.responseMeta({ url: u }),
-    })
+    return Promise.resolve(
+      http.asResponse({ kind: 'scene', title: `Scene Title ${counter}` }, u)
+    )
   })
 
   const refresher = jest.fn()
   refresher.mockReturnValue(
-    Promise.resolve({
-      value: { kind: 'scene', title: 'Scene Title X' },
-      meta: app.read.http.responseMeta({ url: 'https://netcetera.com/x.json' }),
-    })
+    Promise.resolve(
+      http.asResponse(
+        { kind: 'scene', title: 'Scene Title X' },
+        'https://netcetera.com/x.json'
+      )
+    )
   )
 
   app.read.register(/x.json$/, refresher)
@@ -174,8 +173,16 @@ describe('Refreshing', () => {
     await sleep(60)
 
     content = kernel.query(['content'])
+
     expect(content.get('title')).toEqual('Scene Title X')
     expect(content.getIn([propNames.metadata, 'refreshing'])).not.toBeTruthy()
+
+    const status = content.getIn([
+      propNames.metadata,
+      'failedRefresh',
+      'status',
+    ])
+    expect(status >= 200 && status < 300).not.toBeTruthy()
   })
 })
 function sleep(ms) {

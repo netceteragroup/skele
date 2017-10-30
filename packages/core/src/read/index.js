@@ -80,6 +80,10 @@ read.effect.forKind([], effects => {
 read.update.forKind([], updates => {
   updates.register(readActions.types.setLoading, impl.setLoading)
   updates.register(readActions.types.setRefreshing, impl.setRefreshing)
+  updates.register(
+    readActions.types.setRefreshMetadata,
+    impl.setRefreshMetadata
+  )
   updates.register(readActions.types.apply, impl.applyRead)
   updates.register(readActions.types.fail, impl.fail)
 })

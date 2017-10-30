@@ -26,6 +26,11 @@ const setMeta = R.curry((meta, el) => el.set(propNames.metadata, meta))
 const setRefreshingAttr = R.curry((value, el) =>
   el.setIn([propNames.metadata, 'refreshing'], value)
 )
+const setRefreshMeta = R.curry((meta, el) =>
+  el
+    .setIn([propNames.metadata, 'failedRefresh'], meta)
+    .deleteIn([propNames.metadata, 'refreshing'])
+)
 
 export function setLoading(element, action) {
   const { readId } = action
@@ -42,6 +47,18 @@ export function setRefreshing(element, action) {
   if (refreshing == null) refreshing = true
 
   return flow(element, setReadId(readId), setRefreshingAttr(refreshing))
+}
+
+export function setRefreshMetadata(element, action) {
+  let { metadata, readId } = action
+
+  return flow(
+    element,
+    R.unless(
+      el => el == null || readId !== getReadId(el),
+      setRefreshMeta(metadata)
+    )
+  )
 }
 
 export function applyRead(element, action) {
@@ -212,8 +229,8 @@ export async function readRefresh(context, action) {
       dispatch({
         ...action,
         readId,
-        type: readActions.types.setRefreshing,
-        refreshing: false,
+        metadata: fromJS(response.meta),
+        type: readActions.types.setRefreshMetadata,
       })
     }
   } catch (e) {
@@ -222,8 +239,12 @@ export async function readRefresh(context, action) {
     dispatch({
       ...action,
       readId,
-      type: readActions.types.setRefreshing,
-      refreshing: false,
+      metadata: fromJS({
+        status: 420,
+        message: e.toString(),
+        error: e,
+      }),
+      type: readActions.types.setRefreshMetadata,
     })
   }
 }
