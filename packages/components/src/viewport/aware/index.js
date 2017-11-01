@@ -34,8 +34,8 @@ export default WrappedComponent => {
       }
       if (
         info.shouldMeasureLayout ||
-        this.state.componentOffset === null ||
-        this.state.componentHeight === null
+        this.state.componentOffset == null ||
+        this.state.componentHeight == null
       ) {
         UIManager.measureLayout(
           this.nodeHandle,
