@@ -16,15 +16,6 @@ export default class ViewportTracker extends WithEvents(
     this._viewportOffset = 0
   }
 
-  _onScroll = event => {
-    const childOnScroll = React.Children.only(this.props.children).props
-      .onScroll
-    childOnScroll && childOnScroll(event)
-    this._viewportOffset = event.nativeEvent.contentOffset.y
-
-    this._onViewportChange()
-  }
-
   _onLayout = event => {
     const childOnLayout = React.Children.only(this.props.children).props
       .onLayout
@@ -33,18 +24,35 @@ export default class ViewportTracker extends WithEvents(
     this._onViewportChange()
   }
 
-  _onViewportChange = () => {
+  _onContentSizeChange = event => {
+    const childOnContentSizeChange = React.Children.only(this.props.children)
+      .props.onContentSizeChange
+    childOnContentSizeChange && childOnContentSizeChange(event)
+    this._onViewportChange()
+  }
+
+  _onScroll = event => {
+    const childOnScroll = React.Children.only(this.props.children).props
+      .onScroll
+    childOnScroll && childOnScroll(event)
+    this._viewportOffset = event.nativeEvent.contentOffset.y
+    this._onViewportChange(false)
+  }
+
+  _onViewportChange = (shouldMeasureLayout = true) => {
     this.notifyViewportListeners({
       parentHandle: this.nodeHandle,
       viewportOffset: this._viewportOffset,
       viewportHeight: this._viewportHeight,
+      shouldMeasureLayout,
     })
   }
 
   render() {
     return React.cloneElement(React.Children.only(this.props.children), {
-      onScroll: this._onScroll,
       onLayout: this._onLayout,
+      onContentSizeChange: this._onContentSizeChange,
+      onScroll: this._onScroll,
       ref: ref => (this.nodeHandle = findNodeHandle(ref)),
     })
   }
