@@ -33,19 +33,10 @@ export default WrappedComponent => {
         return
       }
       if (
-        this.state.componentOffset !== null &&
-        this.state.componentHeight !== null
+        info.shouldMeasureLayout ||
+        this.state.componentOffset === null ||
+        this.state.componentHeight === null
       ) {
-        this.setState({
-          inViewport: Utils.isInViewport(
-            info.viewportOffset,
-            info.viewportHeight,
-            this.state.componentOffset,
-            this.state.componentHeight,
-            this.props.preTriggerRatio
-          ),
-        })
-      } else {
         UIManager.measureLayout(
           this.nodeHandle,
           info.parentHandle,
@@ -65,6 +56,16 @@ export default WrappedComponent => {
               })
           }
         )
+      } else {
+        this.setState({
+          inViewport: Utils.isInViewport(
+            info.viewportOffset,
+            info.viewportHeight,
+            this.state.componentOffset,
+            this.state.componentHeight,
+            this.props.preTriggerRatio
+          ),
+        })
       }
     }
 
