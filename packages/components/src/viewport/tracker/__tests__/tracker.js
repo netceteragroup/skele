@@ -30,6 +30,7 @@ describe('ViewportTracker', () => {
       parentHandle: undefined,
       viewportOffset: 0,
       viewportHeight: 40,
+      shouldMeasureLayout: true,
     })
 
     instance._onScroll({
@@ -45,6 +46,7 @@ describe('ViewportTracker', () => {
       parentHandle: undefined,
       viewportOffset: 15,
       viewportHeight: 40,
+      shouldMeasureLayout: false,
     })
   })
 })
