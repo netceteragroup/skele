@@ -3,6 +3,7 @@
 import R from 'ramda'
 
 import * as actions from '../action'
+import { types as actionTypes } from './actions'
 import * as data from '../data'
 import { ActionRegistry } from '../registry'
 
@@ -44,6 +45,7 @@ export const middleware = R.curry((config, store, next, action) => {
           }
         })
         .catch(e => {
+          kernel.dispatch({ type: actionTypes.fail, error: e })
           error('Exception while executing an effect: ', e)
         })
     } else if (typeof result === 'function') {

@@ -13,6 +13,7 @@ import * as http from './read/http'
 
 // various action Types
 import * as readActions from './read/actions'
+import * as effectActions from './effect/actions'
 
 import { Engine, EntryPoint } from './engine'
 
@@ -21,6 +22,7 @@ let { ui, read, effect, update, transform, enrich } = core
 let actions = {
   types: {
     read: readActions.types,
+    effect: effectActions.types,
   },
   read: readActions.read,
   readRefresh: readActions.readRefresh,
