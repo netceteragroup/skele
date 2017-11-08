@@ -39,6 +39,7 @@ module.exports = {
   },
 
   rules: {
+    eqeqeq: ['error', 'always', { null: 'ignore' }],
     'no-unused-vars': [1, { args: 'after-used' }],
     'no-duplicate-imports': 0,
     'import/no-duplicates': 2,
