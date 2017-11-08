@@ -87,6 +87,64 @@ describe('Read Subsytem', () => {
   })
 })
 
+describe('Read function', () => {
+  const app = Subsystem.create(() => ({
+    name: 'app',
+  }))
+
+  const readFn = jest.fn()
+  readFn.mockReturnValue(
+    Promise.resolve(
+      http.asResponse(
+        { kind: 'scene', title: 'Scene Title X' },
+        'https://netcetera.com/x.json'
+      )
+    )
+  )
+  afterEach(() => readFn.mockClear())
+
+  app.read.register(/test.json$/, readFn)
+
+  const kernel = Kernel.create(
+    [enrich, transform, effect, update, read, app],
+    {
+      kind: 'app',
+      [propNames.children]: ['content'],
+
+      content: {
+        kind: ['__read', 'scene'],
+        uri: 'https://netcetera.com/test.json',
+      },
+    },
+    { foo: 1 }
+  )
+
+  test('read fn parameters', async () => {
+    let content = kernel.query(['content'])
+
+    kernel.dispatch(
+      action.atCursor(
+        content,
+        readActions.read(content.get('uri'), { revalidate: true })
+      )
+    )
+
+    await sleep(60)
+
+    expect(readFn).toHaveBeenCalledWith(
+      'https://netcetera.com/test.json',
+      {
+        revalidate: true,
+      },
+      expect.any(Object)
+    )
+
+    const context = readFn.mock.calls[0][2]
+    expect(context).toHaveProperty('config', { foo: 1 })
+    expect(context).toHaveProperty('subsystems', expect.any(Object))
+    expect(context).toHaveProperty('subsystemSequence', expect.any(Array))
+  })
+})
 describe('Refreshing', () => {
   const app = Subsystem.create(() => ({
     name: 'app',
@@ -126,6 +184,7 @@ describe('Refreshing', () => {
     content: {
       kind: ['__read', 'scene'],
       uri: 'https://netcetera.com/test.json',
+      revalidate: true,
     },
   })
 

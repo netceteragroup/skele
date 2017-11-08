@@ -87,13 +87,18 @@ async function performRead(context, readParams) {
     enrichment,
     transformation,
   } = context.subsystems.read.context
+
   const kernel = context
 
   const { uri, opts } = readParams
   const reader = registry.get(uri) || registry.get(fallback)
 
   if (reader != null) {
-    const readResponse = await reader(uri, opts)
+    const readResponse = await reader(
+      uri,
+      opts,
+      R.pick(['config', 'subsystems', 'subsystemSequence'], context)
+    )
 
     if (!isResponse(readResponse)) {
       throw new Error(
