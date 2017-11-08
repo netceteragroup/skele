@@ -240,7 +240,7 @@ export async function readRefresh(context, action) {
       ...action,
       readId,
       metadata: fromJS({
-        status: 420,
+        status: 999,
         message: e.toString(),
         error: e,
       }),
