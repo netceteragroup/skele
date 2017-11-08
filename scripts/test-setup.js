@@ -2,6 +2,9 @@
 
 import 'jest-enzyme'
 import I from 'immutable'
+import jestFetchMock from 'jest-fetch-mock'
+
+global.fetch = jestFetchMock
 
 expect.extend({
   toEqualI(received, expected) {

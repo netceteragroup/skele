@@ -103,4 +103,14 @@ describe('http', () => {
       })
     })
   })
+
+  describe('execute', () => {
+    test('faild http call returns 998 as status code', async () => {
+      fetch.mockReject()
+
+      const response = await http.get('http://example.com')
+      console.log(response)
+      expect(response.meta.status).toEqual(998)
+    })
+  })
 })

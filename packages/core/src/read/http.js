@@ -67,7 +67,15 @@ function processFetchResponse(resp) {
 }
 
 function errorResponseForUrl(url) {
-  return error => failedResponse(error, url)
+  return error => ({
+    meta: {
+      url,
+      uri: url,
+      status: 998,
+      message: error != null ? error.message : undefined,
+      error,
+    },
+  })
 }
 
 export function asResponse(value, from = undefined) {
