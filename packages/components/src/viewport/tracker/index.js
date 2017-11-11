@@ -18,7 +18,7 @@ export default class ViewportTracker extends WithEvents(
 
   _onRef = ref => {
     const childOnRef = React.Children.only(this.props.children).ref
-    childOnRef && childOnRef(ref)
+    childOnRef && typeof childOnRef === 'function' && childOnRef(ref)
     this.nodeHandle = findNodeHandle(ref)
   }
 
