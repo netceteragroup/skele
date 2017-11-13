@@ -16,6 +16,12 @@ export default class ViewportTracker extends WithEvents(
     this._viewportOffset = 0
   }
 
+  _onRef = ref => {
+    const childOnRef = React.Children.only(this.props.children).ref
+    childOnRef && typeof childOnRef === 'function' && childOnRef(ref)
+    this.nodeHandle = findNodeHandle(ref)
+  }
+
   _onLayout = event => {
     const childOnLayout = React.Children.only(this.props.children).props
       .onLayout
@@ -50,10 +56,10 @@ export default class ViewportTracker extends WithEvents(
 
   render() {
     return React.cloneElement(React.Children.only(this.props.children), {
+      ref: this._onRef,
       onLayout: this._onLayout,
       onContentSizeChange: this._onContentSizeChange,
       onScroll: this._onScroll,
-      ref: ref => (this.nodeHandle = findNodeHandle(ref)),
     })
   }
 
