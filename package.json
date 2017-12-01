@@ -55,6 +55,7 @@
     "babel-preset-react-native": "^1.9.1",
     "conventional-github-releaser": "^1.1.11",
     "coveralls": "^2.11.15",
+    "cz-conventional-changelog": "^2.1.0",
     "del-cli": "^0.2.1",
     "enzyme": "^2.9.1",
     "eslint": "^4.6.1",
@@ -103,5 +104,10 @@
       "!**/dist/es5/**"
     ]
   },
-  "workspaces": ["packages/*"]
+  "workspaces": ["packages/*"],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
