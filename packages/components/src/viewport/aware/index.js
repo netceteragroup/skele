@@ -28,7 +28,8 @@ export default WrappedComponent => {
       this._isMounted = false
     }
 
-    _onViewportChange = info => {
+    _onViewportChange = (info = this._lastInfo) => {
+      this._lastInfo = info
       if (!this.nodeHandle) {
         return
       }
@@ -37,6 +38,9 @@ export default WrappedComponent => {
         this.state.componentOffset == null ||
         this.state.componentHeight == null
       ) {
+        if (!this._isMounted) {
+          return setTimeout(() => this._onViewportChange(), 50)
+        }
         UIManager.measureLayout(
           this.nodeHandle,
           info.parentHandle,
