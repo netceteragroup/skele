@@ -16,6 +16,7 @@ describe('ViewportTracker', () => {
     const cb = jest.fn()
 
     instance.addViewportListener(cb)
+    instance.nodeHandle = 42
 
     instance._onLayout({
       nativeEvent: {
@@ -27,7 +28,7 @@ describe('ViewportTracker', () => {
     })
 
     expect(cb).toHaveBeenLastCalledWith({
-      parentHandle: undefined,
+      parentHandle: 42,
       viewportOffset: 0,
       viewportHeight: 40,
       shouldMeasureLayout: true,
@@ -43,7 +44,7 @@ describe('ViewportTracker', () => {
     })
 
     expect(cb).toHaveBeenLastCalledWith({
-      parentHandle: undefined,
+      parentHandle: 42,
       viewportOffset: 15,
       viewportHeight: 40,
       shouldMeasureLayout: false,
