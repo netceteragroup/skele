@@ -46,12 +46,14 @@ export default class ViewportTracker extends WithEvents(
   }
 
   _onViewportChange = (shouldMeasureLayout = true) => {
-    this.notifyViewportListeners({
-      parentHandle: this.nodeHandle,
-      viewportOffset: this._viewportOffset,
-      viewportHeight: this._viewportHeight,
-      shouldMeasureLayout,
-    })
+    this.nodeHandle &&
+      this._viewportHeight > 0 &&
+      this.notifyViewportListeners({
+        parentHandle: this.nodeHandle,
+        viewportOffset: this._viewportOffset,
+        viewportHeight: this._viewportHeight,
+        shouldMeasureLayout,
+      })
   }
 
   render() {
