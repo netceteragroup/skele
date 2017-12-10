@@ -68,6 +68,7 @@ export default (eventDefinitons, OriginalComponent) => {
     Derived.prototype[d.addMethod] = function(callback) {
       if (this[listeners][d.name].indexOf(callback === -1)) {
         this[listeners][d.name].push(callback)
+        this.lastEvt && callback(this.lastEvt)
       }
     }
 
@@ -80,6 +81,7 @@ export default (eventDefinitons, OriginalComponent) => {
 
     Derived.prototype[d.notifyMethod] = function(evt) {
       this[listeners][d.name].forEach(callback => callback(evt))
+      this.lastEvt = evt
     }
   })
 
