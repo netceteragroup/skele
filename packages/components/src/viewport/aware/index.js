@@ -20,6 +20,8 @@ export default WrappedComponent => {
       this.context.addViewportListener &&
         this.context.addViewportListener(this._onViewportChange)
       this._isMounted = true
+      this._lastInfo &&
+        setTimeout(() => this._onViewportChange(this._lastInfo), 50)
     }
 
     componentWillUnmount() {
@@ -28,7 +30,7 @@ export default WrappedComponent => {
       this._isMounted = false
     }
 
-    _onViewportChange = (info = this._lastInfo) => {
+    _onViewportChange = info => {
       this._lastInfo = info
       if (!this.nodeHandle) {
         return
@@ -38,28 +40,26 @@ export default WrappedComponent => {
         this.state.componentOffset == null ||
         this.state.componentHeight == null
       ) {
-        if (!this._isMounted) {
-          return setTimeout(() => this._onViewportChange(), 50)
-        }
-        UIManager.measureLayout(
-          this.nodeHandle,
-          info.parentHandle,
-          () => {},
-          (offsetX, offsetY, width, height) => {
-            this._isMounted &&
-              this.setState({
-                componentOffset: offsetY,
-                componentHeight: height,
-                inViewport: Utils.isInViewport(
-                  info.viewportOffset,
-                  info.viewportHeight,
-                  offsetY,
-                  height,
-                  this.props.preTriggerRatio
-                ),
-              })
-          }
-        )
+        this._isMounted &&
+          UIManager.measureLayout(
+            this.nodeHandle,
+            info.parentHandle,
+            () => {},
+            (offsetX, offsetY, width, height) => {
+              this._isMounted &&
+                this.setState({
+                  componentOffset: offsetY,
+                  componentHeight: height,
+                  inViewport: Utils.isInViewport(
+                    info.viewportOffset,
+                    info.viewportHeight,
+                    offsetY,
+                    height,
+                    this.props.preTriggerRatio
+                  ),
+                })
+            }
+          )
       } else {
         this.setState({
           inViewport: Utils.isInViewport(
