@@ -5,24 +5,27 @@ import PropTypes from 'prop-types'
 const listeners = '@@girders-elements.internal/listeners'
 
 /**
- * A mxin that adds event handling methods to the a react component
+ * A mixin that adds event handling methods to a React component
  *
- * @param eventDefinitons an array of event definitions or a single event definitions
+ * @param eventDefinitons an array of event definitions or a single event definition
  * @param OriginalComponent
  *
- * an event defintion is either
+ * an event definition is either
  * - a string, representing the event name
  * - an object with the following properties:
  *   - name: the event name (required)
- *   - isChildContext: whether the event should be exposed in childContext
+ *   - inChildContext: whether the event should be exposed in childContext
+ *     defaults to false
+ *   - notifiesWithLastEventOnAdd: whether the listeners are invoked when added
  *     defaults to false
  *   - addMethod: name of the add listener method (optional)
- *   - removeMethod: name of the remove istener method (optional)
+ *   - removeMethod: name of the remove listener method (optional)
  *   - notifyMethod: name of the notify listeners method (optional)
  */
 export default (eventDefinitons, OriginalComponent) => {
   const defs = normalizeEventDefinitions(eventDefinitons)
   const inChildContext = defs.filter(d => d.inChildContext)
+  let lastEvent = null
 
   class Derived extends OriginalComponent {
     constructor(props, context) {
@@ -68,6 +71,7 @@ export default (eventDefinitons, OriginalComponent) => {
     Derived.prototype[d.addMethod] = function(callback) {
       if (this[listeners][d.name].indexOf(callback === -1)) {
         this[listeners][d.name].push(callback)
+        d.notifiesWithLastEventOnAdd && lastEvent && callback(lastEvent)
       }
     }
 
@@ -80,6 +84,7 @@ export default (eventDefinitons, OriginalComponent) => {
 
     Derived.prototype[d.notifyMethod] = function(evt) {
       this[listeners][d.name].forEach(callback => callback(evt))
+      lastEvent = evt
     }
   })
 
@@ -113,6 +118,7 @@ function normalizeEventDefinitions(eventDefs) {
 
   defs = defs.map(d => ({
     inChildContext: false,
+    notifiesWithLastEventOnAdd: false,
     addMethod: `add${d.name}Listener`,
     removeMethod: `remove${d.name}Listener`,
     notifyMethod: `notify${d.name}Listeners`,

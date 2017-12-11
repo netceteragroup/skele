@@ -7,7 +7,7 @@ import { findNodeHandle } from 'react-native'
 import WithEvents from '../../shared/WithEvents'
 
 export default class ViewportTracker extends WithEvents(
-  { name: 'viewport', inChildContext: true },
+  { name: 'viewport', inChildContext: true, notifiesWithLastEventOnAdd: true },
   React.Component
 ) {
   constructor(props, context) {
@@ -46,12 +46,14 @@ export default class ViewportTracker extends WithEvents(
   }
 
   _onViewportChange = (shouldMeasureLayout = true) => {
-    this.notifyViewportListeners({
-      parentHandle: this.nodeHandle,
-      viewportOffset: this._viewportOffset,
-      viewportHeight: this._viewportHeight,
-      shouldMeasureLayout,
-    })
+    this.nodeHandle &&
+      this._viewportHeight > 0 &&
+      this.notifyViewportListeners({
+        parentHandle: this.nodeHandle,
+        viewportOffset: this._viewportOffset,
+        viewportHeight: this._viewportHeight,
+        shouldMeasureLayout,
+      })
   }
 
   render() {
