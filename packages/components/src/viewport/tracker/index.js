@@ -7,7 +7,7 @@ import { findNodeHandle } from 'react-native'
 import WithEvents from '../../shared/WithEvents'
 
 export default class ViewportTracker extends WithEvents(
-  { name: 'viewport', inChildContext: true },
+  { name: 'viewport', inChildContext: true, notifiesWithLastEventOnAdd: true },
   React.Component
 ) {
   constructor(props, context) {
