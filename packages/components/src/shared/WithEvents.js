@@ -25,6 +25,7 @@ const listeners = '@@girders-elements.internal/listeners'
 export default (eventDefinitons, OriginalComponent) => {
   const defs = normalizeEventDefinitions(eventDefinitons)
   const inChildContext = defs.filter(d => d.inChildContext)
+  let lastEvent = null
 
   class Derived extends OriginalComponent {
     constructor(props, context) {
@@ -70,7 +71,7 @@ export default (eventDefinitons, OriginalComponent) => {
     Derived.prototype[d.addMethod] = function(callback) {
       if (this[listeners][d.name].indexOf(callback === -1)) {
         this[listeners][d.name].push(callback)
-        d.notifiesWithLastEventOnAdd && this.lastEvt && callback(this.lastEvt)
+        d.notifiesWithLastEventOnAdd && lastEvent && callback(lastEvent)
       }
     }
 
@@ -83,7 +84,7 @@ export default (eventDefinitons, OriginalComponent) => {
 
     Derived.prototype[d.notifyMethod] = function(evt) {
       this[listeners][d.name].forEach(callback => callback(evt))
-      this.lastEvt = evt
+      lastEvent = evt
     }
   })
 
