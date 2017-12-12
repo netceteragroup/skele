@@ -3,6 +3,7 @@
 import PropTypes from 'prop-types'
 
 const listeners = '@@girders-elements.internal/listeners'
+const lastEvent = '@@girders-elements.internal/lastEvent'
 
 /**
  * A mixin that adds event handling methods to a React component
@@ -25,7 +26,6 @@ const listeners = '@@girders-elements.internal/listeners'
 export default (eventDefinitons, OriginalComponent) => {
   const defs = normalizeEventDefinitions(eventDefinitons)
   const inChildContext = defs.filter(d => d.inChildContext)
-  let lastEvent = null
 
   class Derived extends OriginalComponent {
     constructor(props, context) {
@@ -71,7 +71,9 @@ export default (eventDefinitons, OriginalComponent) => {
     Derived.prototype[d.addMethod] = function(callback) {
       if (this[listeners][d.name].indexOf(callback === -1)) {
         this[listeners][d.name].push(callback)
-        d.notifiesWithLastEventOnAdd && lastEvent && callback(lastEvent)
+        d.notifiesWithLastEventOnAdd &&
+          this[lastEvent] &&
+          callback(this[lastEvent])
       }
     }
 
@@ -84,7 +86,7 @@ export default (eventDefinitons, OriginalComponent) => {
 
     Derived.prototype[d.notifyMethod] = function(evt) {
       this[listeners][d.name].forEach(callback => callback(evt))
-      lastEvent = evt
+      this[lastEvent] = evt
     }
   })
 
