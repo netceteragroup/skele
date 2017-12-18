@@ -1,10 +1,15 @@
 'use strict'
 
+import 'raf/polyfill'
 import 'jest-enzyme'
 import I from 'immutable'
 import jestFetchMock from 'jest-fetch-mock'
+import { configure } from 'enzyme'
+import Adapter from 'enzyme-adapter-react-16'
 
 global.fetch = jestFetchMock
+
+configure({ adapter: new Adapter() })
 
 expect.extend({
   toEqualI(received, expected) {

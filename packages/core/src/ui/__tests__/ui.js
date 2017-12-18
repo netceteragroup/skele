@@ -1,6 +1,6 @@
 'use strict'
 
-import { render, mount } from 'enzyme'
+import { mount } from 'enzyme'
 
 import React from 'react'
 import { Iterable, List, fromJS } from 'immutable'
@@ -98,7 +98,7 @@ describe('UI Subsystem', () => {
       return <div>Mycroft</div>
     })
     ui.register('detectives', ({ uiFor }) => {
-      return <div>{uiFor('list')}</div>
+      return <div id="list">{uiFor('list')}</div>
     })
 
     const globalUiFor = kernel.subsystems.ui.uiFor
@@ -112,36 +112,35 @@ describe('UI Subsystem', () => {
       })
 
       it('returns the corresponding element when looked for', () => {
-        const html = render(
-          globalUiFor(Cursor.from(fromJS({ kind: 'c1' })))
-        ).html()
+        const html = mount(globalUiFor(Cursor.from(fromJS({ kind: 'c1' }))))
 
-        expect(html).toContain('<div>Watson</div>')
-        expect(html).not.toContain('<div>Hudson</div>')
+        expect(html.find('div')).toMatchElement(<div>Watson</div>)
+        // expect(html).toContain('<div>Watson</div>')
+        // expect(html).not.toContain('<div>Hudson</div>')
       })
 
       it('looks up for an element by resolving the kind canonically', () => {
         // given
 
         // when
-        const htmlWithSpecificRegistered = render(
+        const htmlWithSpecificRegistered = mount(
           globalUiFor(Cursor.from(fromJS({ kind: ['c2', 'specific'] })))
-        ).html()
+        )
 
-        const htmlWithSpecificUnregistered = render(
+        const htmlWithSpecificUnregistered = mount(
           globalUiFor(Cursor.from(fromJS({ kind: ['c1', 'specific'] })))
-        ).html()
+        )
 
         // then
-        expect(htmlWithSpecificRegistered).toContain('<div>Mycroft</div>')
-        expect(htmlWithSpecificRegistered).not.toContain('<div>Hudson</div>')
-        expect(htmlWithSpecificUnregistered).toContain('<div>Watson</div>')
+        expect(htmlWithSpecificRegistered).toContainReact(<div>Mycroft</div>)
+        expect(htmlWithSpecificRegistered).not.toContainReact(<div>Hudson</div>)
+        expect(htmlWithSpecificUnregistered).toContainReact(<div>Watson</div>)
       })
     })
 
     describe('ui.uiFor (multiple elements)', () => {
       it('returns a list of elements, filtering empty (not found)', () => {
-        const html = render(
+        const html = mount(
           globalUiFor(
             Cursor.from(
               fromJS({
@@ -160,11 +159,11 @@ describe('UI Subsystem', () => {
               })
             )
           )
-        ).html()
+        )
 
-        expect(html).toContain('Watson')
-        expect(html).toContain('Hudson')
-        expect(html.match(/<div>/g).length).toEqual(3)
+        expect(html).toContainReact(<div>Watson</div>)
+        expect(html).toContainReact(<div>Hudson</div>)
+        expect(html.find('#list')).toBePresent()
       })
     })
 

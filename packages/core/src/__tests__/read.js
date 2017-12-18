@@ -58,6 +58,8 @@ describe("Reads using core subsystem's Read element", () => {
 
     await sleep(200)
 
+    engine.update()
+
     const scenes = engine.findWhere(c => isOfKind('scene', c.prop('element')))
     expect(scenes.length).toBeGreaterThan(0)
 
