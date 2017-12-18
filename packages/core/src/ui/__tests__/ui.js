@@ -1,6 +1,6 @@
 'use strict'
 
-import { shallow, mount } from 'enzyme'
+import { mount } from 'enzyme'
 
 import React from 'react'
 import { Iterable, List, fromJS } from 'immutable'
