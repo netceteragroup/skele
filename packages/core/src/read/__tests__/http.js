@@ -24,9 +24,9 @@ describe('http', () => {
       expect(http.isOK({ meta: {} })).not.toBeTruthy()
     })
 
-    test('is ok if it has a status of 2xx **and** it has a value', () => {
+    test('is ok if it has a status of 2xx or 3xx **and** it has a value', () => {
       expect(http.isOK({ value: 1, meta: { status: 222 } })).toBeTruthy()
-      expect(http.isOK({ value: 1, meta: { status: 300 } })).not.toBeTruthy()
+      expect(http.isOK({ value: 1, meta: { status: 300 } })).toBeTruthy()
       expect(http.isOK({ value: 1, meta: { status: 200 } })).toBeTruthy()
       expect(http.isOK({ meta: { status: 200 } })).not.toBeTruthy()
     })
