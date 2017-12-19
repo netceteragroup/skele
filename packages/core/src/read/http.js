@@ -143,6 +143,6 @@ export function isOK(response) {
 
   return (
     (response.value != null && status == null) ||
-    (response.value != null && status >= 200 && status < 300)
+    (response.value != null && status >= 200 && status < 400)
   )
 }
