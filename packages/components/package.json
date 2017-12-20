@@ -18,7 +18,7 @@
   "homepage": "https://github.com/netceteragroup/girders-elements#readme",
   "peerDependencies": {
     "react": "15.x || 16.x",
-    "prop-types": "^15.5.10",
+    "prop-types": "15.x || 16.x",
     "react-native": ">= 0.40.0"
   },
   "publishConfig": {

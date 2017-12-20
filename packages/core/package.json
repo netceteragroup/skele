@@ -23,7 +23,7 @@
     "uuid": "^3.1.0"
   },
   "peerDependencies": {
-    "prop-types": "^15.5.0",
+    "prop-types": "15.x || 16.x",
     "react": "15.x || 16.x",
     "redux": "3.x"
   },
