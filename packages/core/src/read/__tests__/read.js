@@ -281,8 +281,6 @@ describe('Performing reads manually', async () => {
     expect.anything() // the context
   )
 
-  console.log(result)
-
   expect(result.value.get('title')).toEqual('Scene Title X')
   expect(result.value.getIn([propNames.metadata, 'uri'])).toEqual(
     'https://netcetera.com/test.json'
