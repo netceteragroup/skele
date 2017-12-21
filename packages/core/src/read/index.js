@@ -69,6 +69,16 @@ const read = SubSystem.create((system, instantiatedSubsystems) => {
   return {
     name: 'read',
     context: config,
+
+    /**
+     * Executes a read using the running system's configuration.
+     *
+     * @param uri the URI to read
+     * @param opts the options as per the reader fn
+     *
+     * @returns Promise<ReadResponse> the read response
+     */
+    perform: (uri, opts = {}) => impl.performRead(system, { uri, opts }),
   }
 })
 

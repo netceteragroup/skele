@@ -244,6 +244,51 @@ describe('Refreshing', () => {
     expect(status >= 200 && status < 300).not.toBeTruthy()
   })
 })
+
+describe('Performing reads manually', async () => {
+  const app = Subsystem.create(() => ({
+    name: 'app',
+  }))
+
+  const readFn = jest.fn()
+  readFn.mockReturnValue(
+    Promise.resolve(
+      http.asResponse(
+        { kind: 'scene', title: 'Scene Title X' },
+        'https://netcetera.com/test.json'
+      )
+    )
+  )
+  afterEach(() => readFn.mockClear())
+
+  app.read.register(/test.json$/, readFn)
+
+  const kernel = Kernel.create([enrich, transform, effect, update, read, app], {
+    kind: 'app',
+  })
+
+  const result = await kernel.subsystems.read.perform(
+    'https://netcetera.com/test.json',
+    { revalidate: true, a: 1 }
+  )
+
+  expect(readFn).toHaveBeenCalledWith(
+    'https://netcetera.com/test.json',
+    {
+      revalidate: true,
+      a: 1,
+    },
+    expect.anything() // the context
+  )
+
+  console.log(result)
+
+  expect(result.value.get('title')).toEqual('Scene Title X')
+  expect(result.value.getIn([propNames.metadata, 'uri'])).toEqual(
+    'https://netcetera.com/test.json'
+  )
+})
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }

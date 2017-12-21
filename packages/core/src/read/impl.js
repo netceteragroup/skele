@@ -81,7 +81,7 @@ export function fail(element, action) {
   )
 }
 
-async function performRead(context, readParams) {
+export async function performRead(context, readParams) {
   const {
     registry,
     enrichment,
