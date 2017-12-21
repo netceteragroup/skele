@@ -109,7 +109,6 @@ describe('http', () => {
       fetch.mockReject()
 
       const response = await http.get('http://example.com')
-      console.log(response)
       expect(response.meta.status).toEqual(998)
     })
   })
