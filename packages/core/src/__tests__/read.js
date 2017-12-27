@@ -4,7 +4,7 @@ import { mount } from 'enzyme'
 
 import React from 'react'
 import { fromJS } from 'immutable'
-import { ui, enrich, transform, read, data, Engine, http } from '..'
+import { ui, enrich, enhance, transform, read, data, Engine, http } from '..'
 import * as propNames from '../propNames'
 const { isOfKind } = data.element
 
@@ -39,6 +39,11 @@ describe("Reads using core subsystem's Read element", () => {
       await sleep(55)
       return scene.set('ss', context.subsystems.enrich.name)
     })
+
+    enhance.register('scene', async (scene, context) => {
+      await sleep(66)
+      return scene => scene.set('ss-enhance', context.subsystems.enhance.name)
+    })
   })
 
   afterEach(() => {
@@ -68,6 +73,7 @@ describe("Reads using core subsystem's Read element", () => {
     expect(sceneEl.get('title')).toEqual('Scene Title')
     expect(sceneEl.get('metaUrl')).toEqual('https://netcetera.com/test.json')
     expect(sceneEl.get('ss')).toEqual('enrich')
+    expect(sceneEl.get('ss-enhance')).toEqual('enhance')
   })
 })
 

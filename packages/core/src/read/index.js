@@ -8,6 +8,7 @@ import * as SubSystem from '../subsystem'
 import '../update'
 import '../effect'
 import '../enrich'
+import '../enhance'
 import '../transform'
 
 import { PatternRegistry, chainRegistries } from '../registry'
@@ -62,9 +63,16 @@ const read = SubSystem.create((system, instantiatedSubsystems) => {
 
   const registry = getCombinedRegistry(system.subsystemSequence)
   const enrichment = instantiatedSubsystems.enrich.buildEnricher()
+  const enhancement = instantiatedSubsystems.enhance.buildEnhancer()
   const transformation = instantiatedSubsystems.transform.buildTransformer()
 
-  const config = { registry, enrichment, transformation, kernel: system }
+  const config = {
+    registry,
+    enrichment,
+    enhancement,
+    transformation,
+    kernel: system,
+  }
 
   return {
     name: 'read',

@@ -7,6 +7,7 @@ import * as SubSystem from '../subsystem'
 // default subsystems
 
 import enrich from '../enrich'
+import enhance from '../enhance'
 import transform from '../transform'
 import read from '../read'
 import effect from '../effect'
@@ -29,6 +30,7 @@ const core = SubSystem.create(() => ({
  */
 export const defaultSubsystems = [
   enrich,
+  enhance,
   transform,
   effect,
   update,

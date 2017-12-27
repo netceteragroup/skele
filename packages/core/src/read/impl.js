@@ -85,6 +85,7 @@ export async function performRead(context, readParams) {
   const {
     registry,
     enrichment,
+    enhancement,
     transformation,
   } = context.subsystems.read.context
 
@@ -119,13 +120,23 @@ export async function performRead(context, readParams) {
 
       const enrichedResponse = await enrichment(readValue, enrichContext)
 
-      const transformContext = {
+      const enhanceContext = {
         ...enrichContext,
         readValue: enrichedResponse,
       }
 
-      const transformedResponse = transformation(
+      const enhancedResponse = await enhancement(
         enrichedResponse,
+        enhanceContext
+      )
+
+      const transformContext = {
+        ...enhanceContext,
+        readValue: enhancedResponse,
+      }
+
+      const transformedResponse = transformation(
+        enhancedResponse,
         transformContext
       )
 
