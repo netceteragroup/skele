@@ -39,7 +39,6 @@ export function setLoading(element, action) {
     updateKind(k => k.set(0, '__loading')),
     setReadId(readId)
   )
-  return final
 }
 
 export function setRefreshing(element, action) {
@@ -111,32 +110,32 @@ export async function performRead(context, readParams) {
         [propNames.metadata]: fromJS(readResponse.meta || defaultMeta(uri)),
       })
 
-      const enrichContext = {
+      const enhanceContext = {
         readValue,
         config: kernel.config,
         subsystems: kernel.subsystems,
         subsystemSequence: kernel.subsystemSequence,
       }
 
-      const enrichedResponse = await enrichment(readValue, enrichContext)
+      const enhancedResponse = await enhancement(readValue, enhanceContext)
 
-      const enhanceContext = {
-        ...enrichContext,
-        readValue: enrichedResponse,
-      }
-
-      const enhancedResponse = await enhancement(
-        enrichedResponse,
-        enhanceContext
-      )
-
-      const transformContext = {
+      const enrichedContext = {
         ...enhanceContext,
         readValue: enhancedResponse,
       }
 
-      const transformedResponse = transformation(
+      const enrichedResponse = await enrichment(
         enhancedResponse,
+        enrichedContext
+      )
+
+      const transformContext = {
+        ...enrichedContext,
+        readValue: enrichedResponse,
+      }
+
+      const transformedResponse = transformation(
+        enrichedResponse,
         transformContext
       )
 
