@@ -119,18 +119,15 @@ export async function performRead(context, readParams) {
 
       const enhancedResponse = await enhancement(readValue, enhanceContext)
 
-      const enrichedContext = {
+      const enrichContext = {
         ...enhanceContext,
         readValue: enhancedResponse,
       }
 
-      const enrichedResponse = await enrichment(
-        enhancedResponse,
-        enrichedContext
-      )
+      const enrichedResponse = await enrichment(enhancedResponse, enrichContext)
 
       const transformContext = {
-        ...enrichedContext,
+        ...enrichContext,
         readValue: enrichedResponse,
       }
 
