@@ -20,7 +20,7 @@ SubSystem.extend(() => {
       [registryAttribute]: registry,
 
       /**
-       * Registers an enhaner for the specific kind
+       * Registers an enhancer for the specific kind
        */
       register(kind, enhancer) {
         invariant(
