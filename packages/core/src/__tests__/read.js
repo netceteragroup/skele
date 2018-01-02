@@ -42,7 +42,7 @@ describe("Reads using core subsystem's Read element", () => {
 
     enhance.register('scene', async (scene, context) => {
       await sleep(66)
-      return scene => scene.set('ss-enhance', context.subsystems.enhance.name)
+      return s => s.set('ss-enhance', context.subsystems.enhance.name)
     })
   })
 
