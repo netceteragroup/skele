@@ -5,6 +5,7 @@ import { List } from 'immutable'
 import * as Subsystem from '../../subsystem'
 import * as Kernel from '../../kernel'
 import enrich from '../../enrich'
+import enhance from '../../enhance'
 import transform from '../../transform'
 import update from '../../update'
 import effect from '../../effect'
@@ -29,7 +30,7 @@ describe('Read Subsytem', () => {
   app.read.register(/failure.json$/, () => Promise.reject(new Error('fail')))
 
   const kernel = Kernel.create(
-    [enrich, transform, effect, update, read, app],
+    [enrich, enhance, transform, effect, update, read, app],
     {
       kind: 'app',
       [propNames.children]: ['content', 'failure'],
@@ -106,7 +107,7 @@ describe('Read function', () => {
   app.read.register(/test.json$/, readFn)
 
   const kernel = Kernel.create(
-    [enrich, transform, effect, update, read, app],
+    [enrich, enhance, transform, effect, update, read, app],
     {
       kind: 'app',
       [propNames.children]: ['content'],
@@ -177,16 +178,19 @@ describe('Refreshing', () => {
     refresher.mockClear()
   })
 
-  const kernel = Kernel.create([enrich, transform, effect, update, read, app], {
-    kind: 'app',
-    [propNames.children]: ['content'],
+  const kernel = Kernel.create(
+    [enrich, enhance, transform, effect, update, read, app],
+    {
+      kind: 'app',
+      [propNames.children]: ['content'],
 
-    content: {
-      kind: ['__read', 'scene'],
-      uri: 'https://netcetera.com/test.json',
-      revalidate: true,
-    },
-  })
+      content: {
+        kind: ['__read', 'scene'],
+        uri: 'https://netcetera.com/test.json',
+        revalidate: true,
+      },
+    }
+  )
 
   test('refresh', async () => {
     let content = kernel.query(['content'])
@@ -263,9 +267,12 @@ describe('Performing reads manually', async () => {
 
   app.read.register(/test.json$/, readFn)
 
-  const kernel = Kernel.create([enrich, transform, effect, update, read, app], {
-    kind: 'app',
-  })
+  const kernel = Kernel.create(
+    [enrich, enhance, transform, effect, update, read, app],
+    {
+      kind: 'app',
+    }
+  )
 
   const result = await kernel.subsystems.read.perform(
     'https://netcetera.com/test.json',

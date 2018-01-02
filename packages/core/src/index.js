@@ -17,7 +17,7 @@ import * as effectActions from './effect/actions'
 
 import { Engine, EntryPoint } from './engine'
 
-let { ui, read, effect, update, transform, enrich } = core
+let { ui, read, effect, update, transform, enrich, enhance } = core
 
 let actions = {
   types: {
@@ -36,6 +36,7 @@ export {
   update,
   transform,
   enrich,
+  enhance,
   data,
   zip,
   actions,

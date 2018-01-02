@@ -39,7 +39,6 @@ export function setLoading(element, action) {
     updateKind(k => k.set(0, '__loading')),
     setReadId(readId)
   )
-  return final
 }
 
 export function setRefreshing(element, action) {
@@ -85,6 +84,7 @@ export async function performRead(context, readParams) {
   const {
     registry,
     enrichment,
+    enhancement,
     transformation,
   } = context.subsystems.read.context
 
@@ -110,14 +110,21 @@ export async function performRead(context, readParams) {
         [propNames.metadata]: fromJS(readResponse.meta || defaultMeta(uri)),
       })
 
-      const enrichContext = {
+      const enhanceContext = {
         readValue,
         config: kernel.config,
         subsystems: kernel.subsystems,
         subsystemSequence: kernel.subsystemSequence,
       }
 
-      const enrichedResponse = await enrichment(readValue, enrichContext)
+      const enhancedResponse = await enhancement(readValue, enhanceContext)
+
+      const enrichContext = {
+        ...enhanceContext,
+        readValue: enhancedResponse,
+      }
+
+      const enrichedResponse = await enrichment(enhancedResponse, enrichContext)
 
       const transformContext = {
         ...enrichContext,
