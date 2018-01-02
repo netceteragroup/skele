@@ -17,7 +17,9 @@ export function enhancer(config) {
     const enhancers = data.flow(loc, zip.value, data.kindOf, enhancersForKind)
     if (enhancers != null) {
       const el = zip.value(loc)
-      const updates = await Promise.all(enhancers.map(e => e(el, context)))
+      const updates = await Promise.all(
+        enhancers.map(e => e(el, context)).toArray()
+      )
       const enhancedValue = R.reduce((v, u) => u(v), el, updates)
       loc = zip.replace(enhancedValue, loc)
     }
