@@ -23,6 +23,9 @@ export default class PatternRegistry extends AbstractRegistry {
     this._registry = this._registry.push(pattern)
   }
 
+  isEmpty() {
+    return this._registry.count() === 0
+  }
   reset() {
     this._registry = new List()
   }

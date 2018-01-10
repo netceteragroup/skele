@@ -12,6 +12,10 @@ export default class AbstractRegistry {
     return this._getBySpecificity(resolvedKey, true)
   }
 
+  isEmpty() {
+    return true
+  }
+
   reset() {
     throw new Error('Must be implemented')
   }
