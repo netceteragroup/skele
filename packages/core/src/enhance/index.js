@@ -51,10 +51,19 @@ export default SubSystem.create(system => ({
     if (combinedRegistry == null) {
       return x => Promise.resolve(x)
     }
-    return impl.enhancer({
-      registry: combinedRegistry,
-      elementZipper: system.elementZipper,
-    })
+    return {
+      enhancer: impl.enhancer({
+        registry: combinedRegistry,
+        elementZipper: system.elementZipper,
+      }),
+      extractUpdates: impl.extractUpdates({
+        registry: combinedRegistry,
+        elementZipper: system.elementZipper,
+      }),
+      executeUpdates: impl.executeUpdates({
+        elementZipper: system.elementZipper,
+      }),
+    }
   },
 }))
 

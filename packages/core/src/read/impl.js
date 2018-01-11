@@ -139,24 +139,42 @@ export async function performRead(context, readParams) {
         elementZipper: kernel.elementZipper,
       }
 
-      const enhancedResponse = await time(`TIME-enhancement-(${uri})`, enhancement)(readValue, enhanceContext)
+      const enhancedResponse = await time(
+        `TIME-enhancement-(${uri})`,
+        enhancement.enhancer
+      )(readValue, enhanceContext)
+
+      const enhancementUpdates = await time(
+        `TIME-enhancement-updates-(${uri})`,
+        enhancement.extractUpdates
+      )(readValue, enhanceContext)
+
+      const enhancedResponseUsingUpdates = await time(
+        `TIME-enhancement-(${uri})`,
+        enhancement.executeUpdates
+      )(readValue, enhancementUpdates)
+
+      debugger
 
       const enrichContext = {
         ...enhanceContext,
         readValue: enhancedResponse,
       }
 
-      const enrichedResponse = await time(`TIME-enrichment-(${uri})`, enrichment)(enhancedResponse, enrichContext)
+      const enrichedResponse = await time(
+        `TIME-enrichment-(${uri})`,
+        enrichment
+      )(enhancedResponse, enrichContext)
 
       const transformContext = {
         ...enrichContext,
         readValue: enrichedResponse,
       }
 
-      const transformedResponse = time2(`TIME-transformation-(${uri})`, transformation)(
-        enrichedResponse,
-        transformContext
-      )
+      const transformedResponse = time2(
+        `TIME-transformation-(${uri})`,
+        transformation
+      )(enrichedResponse, transformContext)
 
       return { ...readResponse, value: transformedResponse }
     } else {
@@ -189,7 +207,10 @@ export async function read(context, action) {
   dispatch({ ...action, readId, type: readActions.types.setLoading })
 
   try {
-    const readResponse = await time(`TIME-performRead-(${action.uri})`, performRead)(context, {
+    const readResponse = await time(
+      `TIME-performRead-(${action.uri})`,
+      performRead
+    )(context, {
       uri: action.uri,
       opts: R.pick(['revalidate'], action),
     })

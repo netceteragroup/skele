@@ -5,7 +5,6 @@ import { memoize } from '../impl/util'
 import * as data from '../data'
 import * as zip from '../zip'
 
-
 // use this one to decorate  async functions with timing
 export function time(note, fn) {
   return async (...args) => {
@@ -58,6 +57,50 @@ export function enhancer(config) {
     zip.value(await enhance(elementZipper(el), context))
 }
 
+export function extractUpdates(config) {
+  const { registry, elementZipper } = config
+
+  const enhancersForKind = memoize(kind => {
+    const enhancers = registry.get(kind)
+    return enhancers.isEmpty() ? null : enhancers
+  })
+
+  async function _extractUpdates(loc, context) {
+    const { elementZipper } = context
+
+    const kind = data.flow(loc, zip.value, data.kindOf)
+    const enhancers = enhancersForKind(kind)
+    if (enhancers != null) {
+      let updates = await time(`TIME-ehnace-(${kind})`, Promise.all)(
+        enhancers.map(e => e(null, context)).toArray()
+      )
+      updates = compressUpdates(updates, elementZipper)
+      return updates
+    }
+    return null
+  }
+
+  return async (el, context = {}) =>
+    await _extractUpdates(elementZipper(el), context)
+}
+
+export function executeUpdates(config) {
+  const { elementZipper } = config
+
+  function _executeUpdates(loc, updates) {
+    if (updates != null) {
+      const el = zip.value(loc)
+      const enhancedValue = R.reduce((v, u) => u(v), el, updates)
+      loc = zip.replace(enhancedValue, loc)
+    }
+    return loc
+  }
+
+  return async (el, updates) =>
+    zip.value(_executeUpdates(elementZipper(el), updates))
+}
+
+
 // "compress updates"
 // partition the updates into runs of consequtive arrays / funtons
 // convert consequtive arrays into a single editCond call
@@ -66,9 +109,11 @@ function compressUpdates(updates, elementZipper) {
   const slices = partitionBy(Array.isArray, updates)
 
   return R.chain(
-    R.when(R.pipe(R.head, Array.isArray),
-      slice => [R.pipe(elementZipper, zip.editCond(concatAll(slice)), zip.value)]),
-    slices)
+    R.when(R.pipe(R.head, Array.isArray), slice => [
+      R.pipe(elementZipper, zip.editCond(concatAll(slice)), zip.value),
+    ]),
+    slices
+  )
 }
 
 function partitionBy(fn, list) {
