@@ -7,6 +7,7 @@ import { fromJS } from 'immutable'
 import uuid from 'uuid'
 
 import { info, error } from '../impl/log'
+import { time, timeSync } from '../impl/util'
 
 import { canonical, flow } from '../data'
 import * as readActions from './actions'
@@ -80,27 +81,6 @@ export function fail(element, action) {
   )
 }
 
-// use this one to decorate  async functions with timing
-export function time(note, fn) {
-  return async (...args) => {
-    const start = Date.now()
-    const result = await fn(...args)
-    const end = Date.now()
-    console.log(`${note} took ${end - start} ms`)
-    return result
-  }
-}
-
-export function time2(note, fn) {
-  return (...args) => {
-    const start = Date.now()
-    const result = fn(...args)
-    const end = Date.now()
-    console.log(`${note} took ${end - start} ms`)
-    return result
-  }
-}
-
 export async function performRead(context, readParams) {
   const {
     registry,
@@ -139,24 +119,30 @@ export async function performRead(context, readParams) {
         elementZipper: kernel.elementZipper,
       }
 
-      const enhancedResponse = await time(`TIME-enhancement-(${uri})`, enhancement)(readValue, enhanceContext)
+      const enhancedResponse = await time(
+        `TIME-enhancement-(${uri})`,
+        enhancement
+      )(readValue, enhanceContext)
 
       const enrichContext = {
         ...enhanceContext,
         readValue: enhancedResponse,
       }
 
-      const enrichedResponse = await time(`TIME-enrichment-(${uri})`, enrichment)(enhancedResponse, enrichContext)
+      const enrichedResponse = await time(
+        `TIME-enrichment-(${uri})`,
+        enrichment
+      )(enhancedResponse, enrichContext)
 
       const transformContext = {
         ...enrichContext,
         readValue: enrichedResponse,
       }
 
-      const transformedResponse = time2(`TIME-transformation-(${uri})`, transformation)(
-        enrichedResponse,
-        transformContext
-      )
+      const transformedResponse = timeSync(
+        `TIME-transformation-(${uri})`,
+        transformation
+      )(enrichedResponse, transformContext)
 
       return { ...readResponse, value: transformedResponse }
     } else {
@@ -189,7 +175,10 @@ export async function read(context, action) {
   dispatch({ ...action, readId, type: readActions.types.setLoading })
 
   try {
-    const readResponse = await time(`TIME-performRead-(${action.uri})`, performRead)(context, {
+    const readResponse = await time(
+      `TIME-performRead-(${action.uri})`,
+      performRead
+    )(context, {
       uri: action.uri,
       opts: R.pick(['revalidate'], action),
     })

@@ -1,31 +1,9 @@
 'use strict'
 
 import R from 'ramda'
-import { memoize } from '../impl/util'
+import { memoize, time } from '../impl/util'
 import * as data from '../data'
 import * as zip from '../zip'
-
-
-// use this one to decorate  async functions with timing
-export function time(note, fn) {
-  return async (...args) => {
-    const start = Date.now()
-    const result = await fn(...args)
-    const end = Date.now()
-    console.log(`${note} took ${end - start} ms`)
-    return result
-  }
-}
-
-export function time2(note, fn) {
-  return (...args) => {
-    const start = Date.now()
-    const result = fn(...args)
-    const end = Date.now()
-    console.log(`${note} took ${end - start} ms`)
-    return result
-  }
-}
 
 export function enhancer(config) {
   const { registry, elementZipper } = config
@@ -42,10 +20,10 @@ export function enhancer(config) {
     const enhancers = enhancersForKind(kind)
     if (enhancers != null) {
       const el = zip.value(loc)
-      let updates = await time(`TIME-ehnace-(${kind})`, Promise.all)(
-        enhancers.map(e => e(el, context)).toArray()
-      )
-      // debugger
+      let updates = await time(
+        `TIME-ehnacer-for-(${kind})`,
+        Promise.all.bind(Promise)
+      )(enhancers.map(e => e(el, context)).toArray())
       updates = compressUpdates(updates, elementZipper)
       const enhancedValue = R.reduce((v, u) => u(v), el, updates)
       loc = zip.replace(enhancedValue, loc)
@@ -66,9 +44,11 @@ function compressUpdates(updates, elementZipper) {
   const slices = partitionBy(Array.isArray, updates)
 
   return R.chain(
-    R.when(R.pipe(R.head, Array.isArray),
-      slice => [R.pipe(elementZipper, zip.editCond(concatAll(slice)), zip.value)]),
-    slices)
+    R.when(R.pipe(R.head, Array.isArray), slice => [
+      R.pipe(elementZipper, zip.editCond(concatAll(slice)), zip.value),
+    ]),
+    slices
+  )
 }
 
 function partitionBy(fn, list) {
