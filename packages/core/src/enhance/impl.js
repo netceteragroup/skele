@@ -68,7 +68,13 @@ export function extractUpdates(config) {
   async function _extractUpdates(loc, context) {
     const { elementZipper } = context
 
-    const kind = data.flow(loc, zip.value, data.kindOf)
+    const kind = data.flow(
+      loc,
+      zip.value,
+      el =>
+        el.update('kind', kind => kind.filterNot(term => term === '__loading')),
+      data.kindOf
+    )
     const enhancers = enhancersForKind(kind)
     if (enhancers != null) {
       let updates = await time(`TIME-ehnace-(${kind})`, Promise.all)(
@@ -99,7 +105,6 @@ export function executeUpdates(config) {
   return async (el, updates) =>
     zip.value(_executeUpdates(elementZipper(el), updates))
 }
-
 
 // "compress updates"
 // partition the updates into runs of consequtive arrays / funtons

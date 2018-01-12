@@ -110,16 +110,30 @@ export async function performRead(context, readParams) {
   } = context.subsystems.read.context
 
   const kernel = context
+  const initialValue = kernel.query()
 
   const { uri, opts } = readParams
   const reader = registry.get(uri) || registry.get(fallback)
 
   if (reader != null) {
-    const readResponse = await time(`TIME-reader-(${uri})`, reader)(
-      uri,
-      opts,
-      R.pick(['config', 'subsystems', 'subsystemSequence'], context)
-    )
+    let enhanceContext = {
+      config: kernel.config,
+      subsystems: kernel.subsystems,
+      subsystemSequence: kernel.subsystemSequence,
+      elementZipper: kernel.elementZipper,
+    }
+
+    const [readResponse, contextBasedEnhancements] = await Promise.all([
+      time(`TIME-reader-(${uri})`, reader)(
+        uri,
+        opts,
+        R.pick(['config', 'subsystems', 'subsystemSequence'], context)
+      ),
+      time(`TIME-enhancement-updates-(${uri})`, enhancement.extractUpdates)(
+        initialValue,
+        enhanceContext
+      ),
+    ])
 
     if (!isResponse(readResponse)) {
       throw new Error(
@@ -131,30 +145,15 @@ export async function performRead(context, readParams) {
         [propNames.metadata]: fromJS(readResponse.meta || defaultMeta(uri)),
       })
 
-      const enhanceContext = {
+      enhanceContext = {
+        ...enhanceContext,
         readValue,
-        config: kernel.config,
-        subsystems: kernel.subsystems,
-        subsystemSequence: kernel.subsystemSequence,
-        elementZipper: kernel.elementZipper,
       }
 
       const enhancedResponse = await time(
         `TIME-enhancement-(${uri})`,
-        enhancement.enhancer
-      )(readValue, enhanceContext)
-
-      const enhancementUpdates = await time(
-        `TIME-enhancement-updates-(${uri})`,
-        enhancement.extractUpdates
-      )(readValue, enhanceContext)
-
-      const enhancedResponseUsingUpdates = await time(
-        `TIME-enhancement-(${uri})`,
         enhancement.executeUpdates
-      )(readValue, enhancementUpdates)
-
-      debugger
+      )(readValue, contextBasedEnhancements)
 
       const enrichContext = {
         ...enhanceContext,
