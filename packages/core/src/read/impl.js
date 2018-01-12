@@ -129,7 +129,13 @@ export async function performRead(context, readParams) {
         opts,
         R.pick(['config', 'subsystems', 'subsystemSequence'], context)
       ),
-      enhancement.extractUpdates(initialValue, enhanceContext, 1),
+      time(
+        `TIME-enhancement-context-based-(${uri})`,
+        enhancement.extractUpdates
+      )(initialValue, enhanceContext, {
+        minNumberOfArgs: 0,
+        maxNumberOfArgs: 1,
+      }),
     ])
 
     if (!isResponse(readResponse)) {
@@ -147,10 +153,18 @@ export async function performRead(context, readParams) {
         readValue,
       }
 
+      const elementBasedEnhancements = await time(
+        `TIME-enhancement-element-based-(${uri})`,
+        enhancement.extractUpdates
+      )(readValue, enhanceContext, {
+        minNumberOfArgs: 2,
+        maxNumberOfArgs: 2,
+      })
+
       const enhancedResponse = await time(
         `TIME-enhancement-(${uri})`,
         enhancement.executeUpdates
-      )(readValue, contextBasedEnhancements)
+      )(readValue, contextBasedEnhancements, elementBasedEnhancements)
 
       const enrichContext = {
         ...enhanceContext,

@@ -65,8 +65,13 @@ export function extractUpdates(config) {
     return enhancers.isEmpty() ? null : enhancers
   })
 
-  async function _extractUpdates(loc, context, maxNumberOfArgs) {
-    const { elementZipper } = context
+  async function _extractUpdates(loc, context, config) {
+    if (config == null) {
+      config = {
+        minNumberOfArgs: 0,
+        maxNumberOfArgs: 2,
+      }
+    }
 
     const kind = data.flow(
       loc,
@@ -76,11 +81,12 @@ export function extractUpdates(config) {
       data.kindOf
     )
     const enhancers = enhancersForKind(kind).filter(
-      e => e.length <= maxNumberOfArgs
+      e =>
+        e.length >= config.minNumberOfArgs && e.length <= config.maxNumberOfArgs
     )
     if (enhancers != null) {
       const el = zip.value(loc)
-      let updates = await time(`TIME-enhance-(${kind})`, Promise.all)(
+      return time(`TIME-enhance-(${kind})`, Promise.all)(
         enhancers
           .map(e => {
             if (e.length <= 1) {
@@ -90,22 +96,26 @@ export function extractUpdates(config) {
           })
           .toArray()
       )
-      updates = compressUpdates(updates, elementZipper)
-      return updates
     }
 
-    return null
+    return []
   }
 
-  return async (el, context = {}, maxNumberOfArgs = 2) =>
-    await _extractUpdates(elementZipper(el), context, maxNumberOfArgs)
+  return async (el, context = {}, config) =>
+    await _extractUpdates(elementZipper(el), context, config)
 }
 
 export function executeUpdates(config) {
   const { elementZipper } = config
 
-  function _executeUpdates(loc, updates) {
+  function _executeUpdates(loc, ...updates) {
     if (updates != null) {
+      if (updates.length > 1) {
+        updates = R.concat(...updates)
+      } else {
+        updates = updates[0]
+      }
+      updates = compressUpdates(updates, elementZipper)
       const el = zip.value(loc)
       const enhancedValue = R.reduce((v, u) => u(v), el, updates)
       loc = zip.replace(enhancedValue, loc)
@@ -113,8 +123,8 @@ export function executeUpdates(config) {
     return loc
   }
 
-  return async (el, updates) =>
-    zip.value(_executeUpdates(elementZipper(el), updates))
+  return async (el, ...updates) =>
+    zip.value(_executeUpdates(elementZipper(el), ...updates))
 }
 
 // "compress updates"
