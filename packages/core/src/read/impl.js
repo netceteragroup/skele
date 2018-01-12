@@ -129,10 +129,7 @@ export async function performRead(context, readParams) {
         opts,
         R.pick(['config', 'subsystems', 'subsystemSequence'], context)
       ),
-      time(`TIME-enhancement-updates-(${uri})`, enhancement.extractUpdates)(
-        initialValue,
-        enhanceContext
-      ),
+      enhancement.extractUpdates(initialValue, enhanceContext, 1),
     ])
 
     if (!isResponse(readResponse)) {

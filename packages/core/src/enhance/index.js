@@ -52,10 +52,10 @@ export default SubSystem.create(system => ({
       return x => Promise.resolve(x)
     }
     return {
-      enhancer: impl.enhancer({
-        registry: combinedRegistry,
-        elementZipper: system.elementZipper,
-      }),
+      // enhancer: impl.enhancer({
+      //   registry: combinedRegistry,
+      //   elementZipper: system.elementZipper,
+      // }),
       extractUpdates: impl.extractUpdates({
         registry: combinedRegistry,
         elementZipper: system.elementZipper,

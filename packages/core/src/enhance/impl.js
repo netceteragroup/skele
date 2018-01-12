@@ -26,36 +26,36 @@ export function time2(note, fn) {
   }
 }
 
-export function enhancer(config) {
-  const { registry, elementZipper } = config
-
-  const enhancersForKind = memoize(kind => {
-    const enhancers = registry.get(kind)
-    return enhancers.isEmpty() ? null : enhancers
-  })
-
-  async function enhance(loc, context) {
-    const { elementZipper } = context
-
-    const kind = data.flow(loc, zip.value, data.kindOf)
-    const enhancers = enhancersForKind(kind)
-    if (enhancers != null) {
-      const el = zip.value(loc)
-      let updates = await time(`TIME-ehnace-(${kind})`, Promise.all)(
-        enhancers.map(e => e(el, context)).toArray()
-      )
-      // debugger
-      updates = compressUpdates(updates, elementZipper)
-      const enhancedValue = R.reduce((v, u) => u(v), el, updates)
-      loc = zip.replace(enhancedValue, loc)
-    }
-
-    return loc
-  }
-
-  return async (el, context = {}) =>
-    zip.value(await enhance(elementZipper(el), context))
-}
+// export function enhancer(config) {
+//   const { registry, elementZipper } = config
+//
+//   const enhancersForKind = memoize(kind => {
+//     const enhancers = registry.get(kind)
+//     return enhancers.isEmpty() ? null : enhancers
+//   })
+//
+//   async function enhance(loc, context) {
+//     const { elementZipper } = context
+//
+//     const kind = data.flow(loc, zip.value, data.kindOf)
+//     const enhancers = enhancersForKind(kind)
+//     if (enhancers != null) {
+//       const el = zip.value(loc)
+//       let updates = await time(`TIME-ehnace-(${kind})`, Promise.all)(
+//         enhancers.map(e => e(el, context)).toArray()
+//       )
+//       // debugger
+//       updates = compressUpdates(updates, elementZipper)
+//       const enhancedValue = R.reduce((v, u) => u(v), el, updates)
+//       loc = zip.replace(enhancedValue, loc)
+//     }
+//
+//     return loc
+//   }
+//
+//   return async (el, context = {}) =>
+//     zip.value(await enhance(elementZipper(el), context))
+// }
 
 export function extractUpdates(config) {
   const { registry, elementZipper } = config
@@ -65,7 +65,7 @@ export function extractUpdates(config) {
     return enhancers.isEmpty() ? null : enhancers
   })
 
-  async function _extractUpdates(loc, context) {
+  async function _extractUpdates(loc, context, maxNumberOfArgs) {
     const { elementZipper } = context
 
     const kind = data.flow(
@@ -75,19 +75,30 @@ export function extractUpdates(config) {
         el.update('kind', kind => kind.filterNot(term => term === '__loading')),
       data.kindOf
     )
-    const enhancers = enhancersForKind(kind)
+    const enhancers = enhancersForKind(kind).filter(
+      e => e.length <= maxNumberOfArgs
+    )
     if (enhancers != null) {
-      let updates = await time(`TIME-ehnace-(${kind})`, Promise.all)(
-        enhancers.map(e => e(null, context)).toArray()
+      const el = zip.value(loc)
+      let updates = await time(`TIME-enhance-(${kind})`, Promise.all)(
+        enhancers
+          .map(e => {
+            if (e.length <= 1) {
+              return e(context)
+            }
+            return e(el, context)
+          })
+          .toArray()
       )
       updates = compressUpdates(updates, elementZipper)
       return updates
     }
+
     return null
   }
 
-  return async (el, context = {}) =>
-    await _extractUpdates(elementZipper(el), context)
+  return async (el, context = {}, maxNumberOfArgs = 2) =>
+    await _extractUpdates(elementZipper(el), context, maxNumberOfArgs)
 }
 
 export function executeUpdates(config) {
