@@ -37,8 +37,8 @@ export function enhancer(config) {
 }
 
 // "compress updates"
-// partition the updates into runs of consequtive arrays / funtons
-// convert consequtive arrays into a single editCond call
+// partition the updates into runs of consecutive arrays / functions
+// convert consecutive arrays into a single editCond call
 
 function compressUpdates(updates, elementZipper) {
   const slices = partitionBy(Array.isArray, updates)
