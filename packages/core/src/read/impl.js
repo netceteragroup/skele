@@ -7,6 +7,7 @@ import { fromJS } from 'immutable'
 import uuid from 'uuid'
 
 import { info, error } from '../impl/log'
+import { time, timeSync } from '../impl/util'
 
 import { canonical, flow } from '../data'
 import * as readActions from './actions'
@@ -80,27 +81,6 @@ export function fail(element, action) {
   )
 }
 
-// use this one to decorate  async functions with timing
-export function time(note, fn) {
-  return async (...args) => {
-    const start = Date.now()
-    const result = await fn(...args)
-    const end = Date.now()
-    console.log(`${note} took ${end - start} ms`)
-    return result
-  }
-}
-
-export function time2(note, fn) {
-  return (...args) => {
-    const start = Date.now()
-    const result = fn(...args)
-    const end = Date.now()
-    console.log(`${note} took ${end - start} ms`)
-    return result
-  }
-}
-
 export async function performRead(context, readParams) {
   const {
     registry,
@@ -153,10 +133,7 @@ export async function performRead(context, readParams) {
         readValue,
       }
 
-      const elementBasedEnhancements = await time(
-        `TIME-enhancement-element-based-(${uri})`,
-        enhancement.extractUpdates
-      )(readValue, enhanceContext, {
+      const elementBasedEnhancements = await time(`TIME-enhancement-element-based-(${uri})`, enhancement.extractUpdates)(readValue, enhanceContext, {
         minNumberOfArgs: 2,
         maxNumberOfArgs: 2,
       })
@@ -181,10 +158,10 @@ export async function performRead(context, readParams) {
         readValue: enrichedResponse,
       }
 
-      const transformedResponse = time2(
-        `TIME-transformation-(${uri})`,
-        transformation
-      )(enrichedResponse, transformContext)
+      const transformedResponse = timeSync(`TIME-transformation-(${uri})`, transformation
+        )(enrichedResponse,
+        transformContext
+      )
 
       return { ...readResponse, value: transformedResponse }
     } else {
