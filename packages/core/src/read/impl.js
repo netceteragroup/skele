@@ -103,7 +103,10 @@ export async function performRead(context, readParams) {
       elementZipper: kernel.elementZipper,
     }
 
-    const [readResponse, contextBasedEnhancements] = await Promise.all([
+    const [readResponse, contextBasedEnhancements] = await time(
+      `TIME-reader-enhancement-parallel-(${uri})`,
+      Promise.all
+    )([
       time(`TIME-reader-(${uri})`, reader)(
         uri,
         opts,
@@ -111,11 +114,8 @@ export async function performRead(context, readParams) {
       ),
       time(
         `TIME-enhancement-context-based-(${uri})`,
-        enhancement.extractUpdates
-      )(initialValue, enhanceContext, {
-        minNumberOfArgs: 0,
-        maxNumberOfArgs: 1,
-      }),
+        enhancement.extractContextBased
+      )(initialValue, enhanceContext),
     ])
 
     if (!isResponse(readResponse)) {
@@ -133,14 +133,14 @@ export async function performRead(context, readParams) {
         readValue,
       }
 
-      const elementBasedEnhancements = await time(`TIME-enhancement-element-based-(${uri})`, enhancement.extractUpdates)(readValue, enhanceContext, {
-        minNumberOfArgs: 2,
-        maxNumberOfArgs: 2,
-      })
+      const elementBasedEnhancements = await time(
+        `TIME-enhancement-element-based-(${uri})`,
+        enhancement.extractElementBased
+      )(readValue, enhanceContext)
 
       const enhancedResponse = await time(
         `TIME-enhancement-(${uri})`,
-        enhancement.executeUpdates
+        enhancement.execute
       )(readValue, contextBasedEnhancements, elementBasedEnhancements)
 
       const enrichContext = {
@@ -158,10 +158,10 @@ export async function performRead(context, readParams) {
         readValue: enrichedResponse,
       }
 
-      const transformedResponse = timeSync(`TIME-transformation-(${uri})`, transformation
-        )(enrichedResponse,
-        transformContext
-      )
+      const transformedResponse = timeSync(
+        `TIME-transformation-(${uri})`,
+        transformation
+      )(enrichedResponse, transformContext)
 
       return { ...readResponse, value: transformedResponse }
     } else {

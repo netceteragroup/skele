@@ -52,15 +52,19 @@ export default SubSystem.create(system => ({
       return x => Promise.resolve(x)
     }
     return {
-      // enhancer: impl.enhancer({
-      //   registry: combinedRegistry,
-      //   elementZipper: system.elementZipper,
-      // }),
-      extractUpdates: impl.extractUpdates({
+      extractContextBased: impl.extract({
         registry: combinedRegistry,
         elementZipper: system.elementZipper,
+        minNumOfArgs: 0,
+        maxNumOfArgs: 1,
       }),
-      executeUpdates: impl.executeUpdates({
+      extractElementBased: impl.extract({
+        registry: combinedRegistry,
+        elementZipper: system.elementZipper,
+        minNumOfArgs: 2,
+        maxNumOfArgs: 2,
+      }),
+      execute: impl.execute({
         elementZipper: system.elementZipper,
       }),
     }
