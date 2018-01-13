@@ -104,7 +104,7 @@ export async function performRead(context, readParams) {
     }
 
     const [readResponse, contextBasedEnhancements] = await time(
-      `TIME-reader-enhancement-parallel-(${uri})`,
+      `TIME-reader-plus-enhancement-(${uri})`,
       Promise.all
     )([
       time(`TIME-reader-(${uri})`, reader)(
@@ -113,7 +113,7 @@ export async function performRead(context, readParams) {
         R.pick(['config', 'subsystems', 'subsystemSequence'], context)
       ),
       time(
-        `TIME-enhancement-context-based-(${uri})`,
+        `TIME-enhancement-extract-context-based-(${uri})`,
         enhancement.extractContextBased
       )(initialValue, enhanceContext),
     ])
@@ -134,12 +134,12 @@ export async function performRead(context, readParams) {
       }
 
       const elementBasedEnhancements = await time(
-        `TIME-enhancement-element-based-(${uri})`,
+        `TIME-enhancement-extract-element-based-(${uri})`,
         enhancement.extractElementBased
       )(readValue, enhanceContext)
 
-      const enhancedResponse = await time(
-        `TIME-enhancement-(${uri})`,
+      const enhancedResponse = timeSync(
+        `TIME-enhancement-execute-(${uri})`,
         enhancement.execute
       )(readValue, contextBasedEnhancements, elementBasedEnhancements)
 

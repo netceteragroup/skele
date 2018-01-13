@@ -23,11 +23,11 @@ export function extract(config) {
         R.or(R.isNil(maxNumOfArgs), R.lte(e.length, maxNumOfArgs))
       )
     )
-    if (enhancers != null && !enhancers.isEmpty()) {
+    if (!enhancers.isEmpty()) {
       const el = zip.value(loc)
       return Promise.all(
         enhancers
-          .map(e => (R.lte(e.length, 1) ? e(context) : e(el, context)))
+          .map(e => (e.length <= 1 ? e(context) : e(el, context)))
           .toArray()
       )
     }
@@ -53,8 +53,7 @@ export function execute(config) {
     return loc
   }
 
-  return async (el, ...updates) =>
-    zip.value(_execute(elementZipper(el), ...updates))
+  return (el, ...updates) => zip.value(_execute(elementZipper(el), ...updates))
 }
 
 // "compress updates"
