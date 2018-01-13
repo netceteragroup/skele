@@ -35,7 +35,7 @@ export function extract(config) {
     return []
   }
 
-  return async (el, context = {}) => await _extract(elementZipper(el), context)
+  return async (el, context = {}) => _extract(elementZipper(el), context)
 }
 
 export function execute(config) {
