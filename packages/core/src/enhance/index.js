@@ -55,14 +55,12 @@ export default SubSystem.create(system => ({
       extractContextBased: impl.extract({
         registry: combinedRegistry,
         elementZipper: system.elementZipper,
-        minNumOfArgs: 0,
         maxNumOfArgs: 1,
       }),
       extractElementBased: impl.extract({
         registry: combinedRegistry,
         elementZipper: system.elementZipper,
         minNumOfArgs: 2,
-        maxNumOfArgs: 2,
       }),
       execute: impl.execute({
         elementZipper: system.elementZipper,

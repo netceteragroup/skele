@@ -1,7 +1,7 @@
 'use strict'
 
 import R from 'ramda'
-import { memoize, time } from '../impl/util'
+import { memoize } from '../impl/util'
 import * as data from '../data'
 import * as zip from '../zip'
 
@@ -18,11 +18,14 @@ export function extract(config) {
       data.kindOf
     )
     const enhancers = enhancersForKind(kind).filter(e =>
-      R.and(R.gte(e.length, minNumOfArgs), R.lte(e.length, maxNumOfArgs))
+      R.and(
+        R.or(R.isNil(minNumOfArgs), R.gte(e.length, minNumOfArgs)),
+        R.or(R.isNil(maxNumOfArgs), R.lte(e.length, maxNumOfArgs))
+      )
     )
     if (enhancers != null && !enhancers.isEmpty()) {
       const el = zip.value(loc)
-      return time(`TIME-enhance-(${kind})`, Promise.all)(
+      return Promise.all(
         enhancers
           .map(e => (R.lte(e.length, 1) ? e(context) : e(el, context)))
           .toArray()
