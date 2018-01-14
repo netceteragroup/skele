@@ -1,30 +1,51 @@
 'use strict'
 
 import R from 'ramda'
-import { memoize, time } from '../impl/util'
+import { memoize } from '../impl/util'
 import * as data from '../data'
 import * as zip from '../zip'
 
-export function enhancer(config) {
-  const { registry, elementZipper } = config
+export function extract(config) {
+  const { registry, elementZipper, minNumOfArgs, maxNumOfArgs } = config
 
-  const enhancersForKind = memoize(kind => {
-    const enhancers = registry.get(kind)
-    return enhancers.isEmpty() ? null : enhancers
-  })
+  const enhancersForKind = memoize(kind => registry.get(kind))
 
-  async function enhance(loc, context) {
-    const { elementZipper } = context
-
-    const kind = data.flow(loc, zip.value, data.kindOf)
-    const enhancers = enhancersForKind(kind)
-    if (enhancers != null) {
+  async function _extract(loc, context) {
+    const kind = data.flow(
+      loc,
+      zip.value,
+      el => el.update('kind', k => k.filterNot(R.equals('__loading'))),
+      data.kindOf
+    )
+    const enhancers = enhancersForKind(kind).filter(e =>
+      R.and(
+        R.or(R.isNil(minNumOfArgs), R.gte(e.length, minNumOfArgs)),
+        R.or(R.isNil(maxNumOfArgs), R.lte(e.length, maxNumOfArgs))
+      )
+    )
+    if (!enhancers.isEmpty()) {
       const el = zip.value(loc)
-      let updates = await time(
-        `TIME-ehnacer-for-(${kind})`,
-        Promise.all.bind(Promise)
-      )(enhancers.map(e => e(el, context)).toArray())
+      return Promise.all(
+        enhancers
+          .map(e => (e.length <= 1 ? e(context) : e(el, context)))
+          .toArray()
+      )
+    }
+
+    return []
+  }
+
+  return async (el, context = {}) => _extract(elementZipper(el), context)
+}
+
+export function execute(config) {
+  const { elementZipper } = config
+
+  function _execute(loc, ...updates) {
+    if (updates != null && updates.length > 0) {
+      updates = updates.length > 1 ? R.concat(...updates) : updates[0]
       updates = compressUpdates(updates, elementZipper)
+      const el = zip.value(loc)
       const enhancedValue = R.reduce((v, u) => u(v), el, updates)
       loc = zip.replace(enhancedValue, loc)
     }
@@ -32,8 +53,7 @@ export function enhancer(config) {
     return loc
   }
 
-  return async (el, context = {}) =>
-    zip.value(await enhance(elementZipper(el), context))
+  return (el, ...updates) => zip.value(_execute(elementZipper(el), ...updates))
 }
 
 // "compress updates"
