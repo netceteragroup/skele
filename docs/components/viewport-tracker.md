@@ -1,6 +1,6 @@
 # Viewport Tracker
 
-Tracks the position and size of a`ScrollView`or`ListView`viewport. Communicates it to all viewport aware child components.
+Tracks the position and size of a `ScrollView` or `ListView` viewport. Communicates it to all viewport aware child components.
 
 ## Usage
 
