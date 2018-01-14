@@ -1,7 +1,7 @@
 # Summary
 
 * [Introduction](/README.md)
-* Core
+* [Core](/docs/core/README.md)
 * [Components](/docs/components/README.md)
   * [Viewport Tracker](/docs/components/viewport-tracker.md)
   * [Viewport Aware](/docs/components/viewport-aware.md)
