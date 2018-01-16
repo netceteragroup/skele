@@ -9,7 +9,7 @@ import uuid from 'uuid'
 import { info, error } from '../impl/log'
 import { time, timeSync } from '../impl/util'
 
-import { canonical, flow } from '../data'
+import { canonical, flow, kindOf } from '../data'
 import * as readActions from './actions'
 import * as propNames from '../propNames'
 import { isOK, isResponse } from './http'
@@ -101,11 +101,13 @@ export async function performRead(context, readParams) {
       subsystems: kernel.subsystems,
       subsystemSequence: kernel.subsystemSequence,
       elementZipper: kernel.elementZipper,
+      uri,
+      opts,
     }
 
-    const [readResponse, contextBasedEnhancements] = await time(
+    const [readResponse, readIndependentEnhancements] = await time(
       `TIME-reader-plus-enhancement-(${uri})`,
-      Promise.all
+      Promise.all.bind(Promise)
     )([
       time(`TIME-reader-(${uri})`, reader)(
         uri,
@@ -113,9 +115,9 @@ export async function performRead(context, readParams) {
         R.pick(['config', 'subsystems', 'subsystemSequence'], context)
       ),
       time(
-        `TIME-enhancement-extract-context-based-(${uri})`,
-        enhancement.extractContextBased
-      )(initialValue, enhanceContext),
+        `TIME-enhancement-run-independent-(${uri})`,
+        enhancement.runEnhancers
+      )(null, enhanceContext, enhancement.readIndependentEnhancers()),
     ])
 
     if (!isResponse(readResponse)) {
@@ -133,15 +135,22 @@ export async function performRead(context, readParams) {
         readValue,
       }
 
-      const elementBasedEnhancements = await time(
-        `TIME-enhancement-extract-element-based-(${uri})`,
-        enhancement.extractElementBased
-      )(readValue, enhanceContext)
+      const readDependentEnhancements = await time(
+        `TIME-enhancement-run-read-dependent-(${uri})`,
+        enhancement.runEnhancers
+      )(
+        readValue,
+        enhanceContext,
+        enhancement.readDependentEnhancers(kindOf(readValue))
+      )
 
       const enhancedResponse = timeSync(
-        `TIME-enhancement-execute-(${uri})`,
-        enhancement.execute
-      )(readValue, contextBasedEnhancements, elementBasedEnhancements)
+        `TIME-enhancement-aply-(${uri})`,
+        enhancement.applyEnhancements
+      )(readValue, enhanceContext, [
+        ...readIndependentEnhancements,
+        ...readDependentEnhancements,
+      ])
 
       const enrichContext = {
         ...enhanceContext,

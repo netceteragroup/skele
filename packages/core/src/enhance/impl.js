@@ -1,59 +1,20 @@
 'use strict'
 
 import R from 'ramda'
-import { memoize } from '../impl/util'
-import * as data from '../data'
+import I from 'immutable'
 import * as zip from '../zip'
 
-export function extract(config) {
-  const { registry, elementZipper, minNumOfArgs, maxNumOfArgs } = config
-
-  const enhancersForKind = memoize(kind => registry.get(kind))
-
-  async function _extract(loc, context) {
-    const kind = data.flow(
-      loc,
-      zip.value,
-      el => el.update('kind', k => k.filterNot(R.equals('__loading'))),
-      data.kindOf
-    )
-    const enhancers = enhancersForKind(kind).filter(e =>
-      R.and(
-        R.or(R.isNil(minNumOfArgs), R.gte(e.length, minNumOfArgs)),
-        R.or(R.isNil(maxNumOfArgs), R.lte(e.length, maxNumOfArgs))
-      )
-    )
-    if (!enhancers.isEmpty()) {
-      const el = zip.value(loc)
-      return Promise.all(
-        enhancers
-          .map(e => (e.length <= 1 ? e(context) : e(el, context)))
-          .toArray()
-      )
-    }
-
-    return []
-  }
-
-  return async (el, context = {}) => _extract(elementZipper(el), context)
+export async function runEnhancers(el, context, enhancers) {
+  return Promise.all(
+    asArray(enhancers).map(e => (el == null ? e(context) : e(el, context)))
+  )
 }
 
-export function execute(config) {
-  const { elementZipper } = config
+export function applyEnhancements(result, context, enhancements) {
+  const { elementZipper } = context
+  const updates = compressUpdates(asArray(enhancements), elementZipper)
 
-  function _execute(loc, ...updates) {
-    if (updates != null && updates.length > 0) {
-      updates = updates.length > 1 ? R.concat(...updates) : updates[0]
-      updates = compressUpdates(updates, elementZipper)
-      const el = zip.value(loc)
-      const enhancedValue = R.reduce((v, u) => u(v), el, updates)
-      loc = zip.replace(enhancedValue, loc)
-    }
-
-    return loc
-  }
-
-  return (el, ...updates) => zip.value(_execute(elementZipper(el), ...updates))
+  return R.reduce((el, update) => update(el), result, updates)
 }
 
 // "compress updates"
@@ -84,3 +45,5 @@ function partitionBy(fn, list) {
 }
 
 const concatAll = lists => R.reduce(R.concat, [], lists)
+const asArray = enhancements =>
+  I.Iterable.isIterable(enhancements) ? enhancements.toArray() : enhancements
