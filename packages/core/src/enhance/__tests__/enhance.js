@@ -35,13 +35,6 @@ describe('Enhancers', () => {
     ],
   }
 
-  const increment = prop => async (el, context) => {
-    await sleep(randomMs(100))
-
-    return el => el.update(prop, d => d + 1)
-  }
-  const incrementData = increment('data')
-
   // deprecated enhancers: enhance.register :: async (el, context) => el => el
   // read dependent enhancers
   enhance.register('document', async (el, context) => {
