@@ -8,6 +8,8 @@ import * as zip from '../zip'
 export function enricher(config) {
   const { registry, elementZipper } = config
 
+  if (registry.isEmpty()) return async (el, context = {}) => el // identity
+
   const elementEnricher = memoize(kind => {
     const enrichers = registry.get(kind)
     return enrichers.isEmpty()

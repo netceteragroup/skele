@@ -27,6 +27,10 @@ export class RegistryChain extends AbstractRegistry {
     return this._getBySpecificity(key, true)
   }
 
+  isEmpty() {
+    return this._primaryRegistry.isEmpty() && this._fallbackRegistry.isEmpty()
+  }
+
   _getInternal(key) {
     let val = this._primaryRegistry._getInternal(
       this._primaryRegistry._adaptKey(key)
@@ -90,6 +94,8 @@ export class MultivalueRegistryChain extends AbstractRegistry {
 
 MultivalueRegistryChain.prototype._getBySpecificity =
   MultivalueRegistry.prototype._getBySpecificity
+
+MultivalueRegistryChain.prototype.isEmpty = RegistryChain.prototype.isEmpty
 
 const chain = (Chain, Zero) =>
   R.cond([

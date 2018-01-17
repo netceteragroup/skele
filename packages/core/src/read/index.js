@@ -63,7 +63,7 @@ const read = SubSystem.create((system, instantiatedSubsystems) => {
 
   const registry = getCombinedRegistry(system.subsystemSequence)
   const enrichment = instantiatedSubsystems.enrich.buildEnricher()
-  const enhancement = instantiatedSubsystems.enhance.buildEnhancer()
+  const enhancement = instantiatedSubsystems.enhance.buildEnhanceHelper()
   const transformation = instantiatedSubsystems.transform.buildTransformer()
 
   const config = {

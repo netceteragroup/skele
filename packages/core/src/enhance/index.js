@@ -1,6 +1,7 @@
 'use strict'
 
 import R from 'ramda'
+import { List } from 'immutable'
 import invariant from 'invariant'
 
 import { isElementRef } from '../data'
@@ -10,21 +11,30 @@ import { MultivalueRegistry, chainMultivalueRegistries } from '../registry'
 
 import * as impl from './impl'
 
-const registryAttribute = '@@girders-elements/_enhanceRegistry'
+const readDependentRegistryAttribute =
+  '@@girders-elements/_readDependentEnhanceRegistry'
+const readIndependentListAttribute =
+  '@@girders-elements/_readIndependentEnhanceList'
 
 SubSystem.extend(() => {
-  const registry = new MultivalueRegistry()
+  const readDependentRegistry = new MultivalueRegistry()
+  const readIndependentList = List().asMutable()
 
   return {
     enhance: {
-      [registryAttribute]: registry,
+      [readDependentRegistryAttribute]: readDependentRegistry,
+      [readIndependentListAttribute]: readIndependentList,
 
       /**
        * Registers an enhancer for the specific kind
        */
       register(kind, enhancer) {
+        if (enhancer == null) {
+          enhancer = kind
+          kind = null
+        }
         invariant(
-          isElementRef(kind),
+          isElementRef(kind) || kind == null,
           'You must provide a valid element reference to register'
         )
         invariant(
@@ -32,11 +42,14 @@ SubSystem.extend(() => {
           'You must provide an enhancer function'
         )
 
-        registry.register(kind, enhancer)
+        kind != null
+          ? readDependentRegistry.register(kind, enhancer)
+          : readIndependentList.push(enhancer)
       },
 
       reset() {
-        registry.reset()
+        readDependentRegistry.reset()
+        readIndependentList.clear()
       },
     },
   }
@@ -45,23 +58,51 @@ SubSystem.extend(() => {
 export default SubSystem.create(system => ({
   name: 'enhance',
 
-  buildEnhancer() {
-    const combinedRegistry = getCombinedRegistry(system.subsystemSequence)
+  buildEnhanceHelper() {
+    const combinedReadDependentRegistry = getCombinedRegistry(
+      system.subsystemSequence
+    )
+    const combinedReadIndependentList = getCombinedList(
+      system.subsystemSequence
+    )
 
-    if (combinedRegistry == null) {
-      return x => Promise.resolve(x)
+    if (
+      combinedReadDependentRegistry.isEmpty() &&
+      combinedReadIndependentList.isEmpty()
+    ) {
+      return {
+        readDependentEnhancers: R.always(List()),
+        readIndependentEnhancers: R.always(List()),
+        runEnhancers: x => Promise.all([Promise.resolve(x)]),
+        // runEnhancers: x => Promise.resolve(x),
+        applyEnhancements: R.identity,
+      }
     }
-    return impl.enhancer({
-      registry: combinedRegistry,
-      elementZipper: system.elementZipper,
-    })
+
+    return {
+      readDependentEnhancers: kind => combinedReadDependentRegistry.get(kind),
+      readIndependentEnhancers: () => combinedReadIndependentList,
+
+      runEnhancers: impl.runEnhancers,
+      applyEnhancements: impl.applyEnhancements,
+    }
   },
 }))
 
-const getRegistry = R.path(['enhance', registryAttribute])
+const getRegistry = R.path(['enhance', readDependentRegistryAttribute])
 
 const getCombinedRegistry = R.pipe(
   R.map(getRegistry),
   R.reject(R.isNil),
   chainMultivalueRegistries
+)
+
+const getList = R.path(['enhance', readIndependentListAttribute])
+const iconcat = (a, b) => a.concat(b)
+
+const getCombinedList = R.pipe(
+  R.map(getList),
+  R.reject(R.isNil),
+  R.map(l => l.asImmutable()),
+  R.reduce(iconcat, List())
 )

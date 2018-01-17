@@ -15,6 +15,10 @@ export default class Registry extends AbstractRegistry {
     this._registry = this._registry.set(adaptedKey, element)
   }
 
+  isEmpty() {
+    return this._registry.count() === 0
+  }
+
   reset() {
     this._registry = new Map()
   }
