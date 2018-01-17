@@ -90,7 +90,6 @@ export async function performRead(context, readParams) {
   } = context.subsystems.read.context
 
   const kernel = context
-  const initialValue = kernel.query()
 
   const { uri, opts } = readParams
   const reader = registry.get(uri) || registry.get(fallback)
