@@ -1,6 +1,6 @@
 'use strict'
 
-import { fromJS, List } from 'immutable'
+import { fromJS } from 'immutable'
 import * as SubSystem from '../../subsystem'
 import * as Kernel from '../../kernel'
 import * as propNames from '../../propNames'
@@ -35,6 +35,9 @@ describe('Enhancers', () => {
     ],
   }
 
+  // we use context for documentation purpose, so disable eslint temporary
+  /* eslint-disable no-unused-vars */
+
   // deprecated enhancers: enhance.register :: async (el, context) => el => el
   // read dependent enhancers
   enhance.register('document', async (el, context) => {
@@ -60,6 +63,8 @@ describe('Enhancers', () => {
     await sleep(randomMs(100))
     return el => el.update('value', v => v + 3)
   })
+
+  /* eslint-enable no-unused-vars */
 
   test('read dependent enhancers should run only for root element', async () => {
     const kernel = Kernel.create([enhanceSubsystem, app], appState, {})

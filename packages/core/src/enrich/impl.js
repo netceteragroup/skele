@@ -8,6 +8,7 @@ import * as zip from '../zip'
 export function enricher(config) {
   const { registry, elementZipper } = config
 
+  // eslint-disable-next-line no-unused-vars
   if (registry.isEmpty()) return async (el, context = {}) => el // identity
 
   const elementEnricher = memoize(kind => {
