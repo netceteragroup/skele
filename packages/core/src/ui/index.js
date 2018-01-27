@@ -1,7 +1,5 @@
 'use strict'
 
-'use strict'
-
 import R from 'ramda'
 import { Iterable } from 'immutable'
 import React from 'react'
