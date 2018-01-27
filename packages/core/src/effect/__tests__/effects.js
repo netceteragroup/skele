@@ -46,7 +46,11 @@ describe('effects API', function() {
 
     // a typical effect that updates the element state when finishing
 
-    effect.register(['article'], 'mark', async (context, action) => {
+    effect.register(['article'], 'mark', (context, action) => {
+      return el => el.set('marked', action.type)
+    })
+
+    effect.register(['article'], 'mark-async', async (context, action) => {
       await sleep(50)
       return el => el.set('marked', action.type)
     })
@@ -142,15 +146,25 @@ describe('effects API', function() {
       test('Effect can return an updating fn state => newState', async () => {
         const focus = kernel.focusOn(['element1', 'element2', 'element3'])
 
+        expect(focus.query().get('marked')).not.toEqual('mark')
+
         focus.dispatch({ type: 'mark' })
+
+        expect(focus.query().get('marked')).toEqual('mark')
+      })
+
+      test('An async effect can return an updating fn state => newState', async () => {
+        const focus = kernel.focusOn(['element1', 'element2', 'element3'])
+
+        focus.dispatch({ type: 'mark-async' })
 
         await sleep(25)
 
-        expect(focus.query().get('marked')).not.toEqual('mark')
+        expect(focus.query().get('marked')).not.toEqual('mark-async')
 
         await sleep(50)
 
-        expect(focus.query().get('marked')).toEqual('mark')
+        expect(focus.query().get('marked')).toEqual('mark-async')
       })
 
       test('An async effect can return undefined', () => {
