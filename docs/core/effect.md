@@ -2,7 +2,7 @@
 
 ## `register(kind, actionType, asyncFn)`
 
-Registers an effect for a specific kind and action type.
+Registers an effect to a specific kind and action type.
 
 ### Usage
 
@@ -21,7 +21,7 @@ function sleep(ms) {
 
 ## `forKind(kind, registrationFn)`
 
-Registers effects for a specific kind using a registration function.
+Registers effects to a specific kind using a registration function.
 
 ### Usage
 
