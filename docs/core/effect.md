@@ -14,9 +14,7 @@ effect.register(['scene', 'article'], '.setMarked', async (context, action) => {
   return el => el.set('marked', action.isMarked)
 })
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 ``` 
 
 ## `forKind(kind, registrationFn)`
