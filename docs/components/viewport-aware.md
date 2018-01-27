@@ -4,7 +4,7 @@ A higher-order component that processes the information communicated by the view
 
 ## Usage
 
-```js
+```javascript
 import { Image } from 'react-native';
 import { Viewport } from '@girders-elements/components';
 const ViewportAwareImage = Viewport.Aware(Image);
@@ -21,8 +21,5 @@ render() {
 ## Properties
 
 | Prop | Description | Default |
-| :--- | :--- | :--- |
-| `preTriggerRatio` | Determines pre-triggering of `inViewport`. Useful for rendering components beforehand to improve user experience. A ratio of `0.5` means that the effective viewport will be twice the size of the real viewport. | `0` |
-
-
-
+|---|---|---|
+|**`preTriggerRatio`**| Determines pre-triggering of `inViewport`. Useful for rendering components beforehand to improve user experience. A ratio of `0.5` means that the effective viewport will be twice the size of the real viewport. | `0` |

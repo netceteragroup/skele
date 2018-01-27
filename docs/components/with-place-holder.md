@@ -4,7 +4,7 @@ A higher-order component that can be used to display a place holder while the co
 
 ## Usage
 
-```js
+```javascript
 import { Image, View } from 'react-native';
 import { Viewport } from '@girders-elements/components';
 
@@ -25,8 +25,5 @@ render() {
 ## Properties
 
 | Prop | Description | Default |
-| :--- | :--- | :--- |
-| **`placeHolder`** | Useful for passing down a place holder at render time. | `null` |
-
-
-
+|---|---|---|
+|**`placeHolder`**| Useful for passing down a place holder at render time. | `null` |

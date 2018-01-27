@@ -4,7 +4,7 @@ Tracks the position and size of a `ScrollView` or `ListView` viewport. Communica
 
 ## Usage
 
-```js
+```javascript
 import { Viewport } from '@girders-elements/components';
 
 render() {
@@ -17,6 +17,3 @@ render() {
   );
 }
 ```
-
-
-

@@ -6,6 +6,3 @@
   * [Viewport Tracker](/docs/components/viewport-tracker.md)
   * [Viewport Aware](/docs/components/viewport-aware.md)
   * [With Place Holder](/docs/components/with-place-holder.md)
-
-
-
