@@ -2,7 +2,7 @@
 
 ## `actionMeta(action)`
 
-Gets the action metadata from an action.
+Gets the metadata of an action.
 
 ### Usage
 
