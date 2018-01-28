@@ -1,3 +1,19 @@
 # Kernel
 
-...
+## `create(subsystems, initData, [config])`
+
+Creates an app kernel using a given array of subsystems, initial structure of the app and an optional configuration. 
+
+### Usage
+
+```javascript
+import { Kernel, defaultSubsystems } from '@girders-elements/core'
+import navigationSubsystem from './customSubsystems/navigation'
+
+const initData = { kind: 'app' }
+
+Kernel.create(
+  [...defaultSubsystems, navigationSubsystem],
+  initData
+)
+```
