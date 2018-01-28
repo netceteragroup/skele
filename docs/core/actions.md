@@ -53,3 +53,27 @@ const middleware = store => next => async action => {
   return result
 }
 ```
+
+## `readRefresh([uri])`
+
+Returns an action that refreshes the read.
+
+```javascript
+import React from 'react'
+import { ScrollView, RefreshControl } from 'react-native'
+import { actions } from '@girders-elements/core'
+
+export default class extends React.Component {
+  render() {
+    return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            onRefresh={() => this.props.dispatch(actions.readRefresh())}
+          />
+        }
+      />
+    )
+  }
+}
+```
