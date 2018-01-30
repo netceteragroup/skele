@@ -1,5 +1,7 @@
 # Effect
 
+Effects are `async` functions that have access to the system context. An effect can execute asynchronous operations before (optionally) altering the element to which it is registered. In order to alter an element, an effect must result with an updater function that takes the element as a single argument and returns an element as a result. Effects are triggered via dispatching of actions.
+
 ## `register(kind, actionType, asyncFn)`
 
 Registers an effect to a specific kind and action type.

@@ -1,5 +1,7 @@
 # Read
 
+Reads enable dynamic loading of content, usually by fetching data from a remote server using an HTTP request.
+
 ## `register(uri, read)`
 
 Registers a custom read to a specific URI or URI scheme.

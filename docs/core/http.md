@@ -1,5 +1,7 @@
 # HTTP
 
+Functions for working with HTTP requests and responses.
+
 ## `get(url, [options])`
 
 Executes a GET request.

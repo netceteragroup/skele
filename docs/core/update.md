@@ -1,5 +1,7 @@
 # Update
 
+Updates are functions that enable simple transformations of elements. An update is triggered via dispatching of actions.
+
 ## `register(kind, actionType, fn)`
 
 Registers an update to a specific kind and action type.

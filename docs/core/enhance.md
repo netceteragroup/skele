@@ -1,5 +1,7 @@
 # Enhance
 
+Enhancers are `async` functions that have access to the system context. The enhancers are executed during reads and are only triggered on root elements of a read. An enhancer should result with an array of updates for the element subtree.
+
 ## `register(asyncFn)`
 
 Registers an enhancer.

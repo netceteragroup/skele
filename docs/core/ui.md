@@ -1,5 +1,7 @@
 # UI
 
+Used for registration of UI components.
+
 ## `register(kind, Component)`
 
 Registers a component to a specific kind.

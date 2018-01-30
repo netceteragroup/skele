@@ -1,5 +1,7 @@
 # Data
 
+Utility functions for easier handling and processing of data.
+
 ## `flow(value, ...fns)`
 
 Executes a function composition on a given value.

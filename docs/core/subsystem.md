@@ -1,5 +1,7 @@
 # Subsystem
 
+A subsystem is a modular part of an app responsible for providing a particular functionality to the kernel. 
+
 ## `create(subsystemFn)`
 
 Creates a subsystem using a subsystem generation function.

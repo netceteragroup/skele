@@ -1,5 +1,7 @@
 # Actions
 
+Provides various utilities for easier working with actions.
+
 ## `actionMeta(action)`
 
 Gets the metadata of an action.

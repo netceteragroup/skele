@@ -1,5 +1,7 @@
 # Enrich
 
+Enrichers are `async` functions that have access to the system context. The enrichers are executed during reads and, contrary to enhancers, are triggered on both root and child elements. An enricher results with an altered element. Enhancers are generally recommended to use instead of enrichers.
+
 ## `register(kind, asyncFn)`
 
 Registers an enricher to a specific kind.
