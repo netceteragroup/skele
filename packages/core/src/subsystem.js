@@ -1,7 +1,7 @@
 'use strict'
 
 import invariant from 'invariant'
-import R from 'ramda'
+import * as R from 'ramda'
 import uuid from 'uuid'
 
 // what is a subsystem

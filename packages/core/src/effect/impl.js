@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import { curry } from 'ramda'
 
 import * as actions from '../action'
 import { types as actionTypes } from './actions'
@@ -12,7 +12,7 @@ import { error } from '../impl/log'
 
 const updateStateAction = '@@girders-elements/_effects.updateState'
 
-export const middleware = R.curry((config, store, next, action) => {
+export const middleware = curry((config, store, next, action) => {
   const { kernel, effectsRegistry } = config
   const actionMeta = actions.actionMeta(action)
 
@@ -57,7 +57,7 @@ export const middleware = R.curry((config, store, next, action) => {
   }
 })
 
-export const reducer = R.curry((config, state, action) => {
+export const reducer = curry((config, state, action) => {
   if (action.type === updateStateAction) {
     const { keyPath } = actions.actionMeta(action)
     return state.updateIn(keyPath, action.updateFn)

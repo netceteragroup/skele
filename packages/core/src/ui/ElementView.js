@@ -1,13 +1,13 @@
 'use strict'
 
-import R from 'ramda'
+import { curry } from 'ramda'
 import I from 'immutable'
 import React from 'react'
 import PropTypes from 'prop-types'
 
 import * as data from '../data'
 
-export default R.curry((kind, Component, runtime) => {
+export default curry((kind, Component, runtime) => {
   const { uiFor: globalUIFor, system } = runtime
 
   return class extends React.Component {

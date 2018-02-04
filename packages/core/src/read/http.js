@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 import { fromJS } from 'immutable'
 
 export function execute(url, options) {

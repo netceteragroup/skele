@@ -2,7 +2,7 @@
 
 import { mount } from 'enzyme'
 
-import R from 'ramda'
+import { curry, toUpper } from 'ramda'
 import React from 'react'
 
 import * as Subsystem from '../../subsystem'
@@ -28,7 +28,7 @@ describe('Engine: wiring everything together', () => {
     app.ui.register('c1', Foo)
     app.ui.register('c2', Foo)
 
-    const capitalize = e => e.update('text', R.toUpper)
+    const capitalize = e => e.update('text', toUpper)
     const capitalizeTitles = n => n.update('scenes', ss => ss.map(capitalize))
 
     app.update.register('nav', '.capitalize', capitalizeTitles)
@@ -119,7 +119,7 @@ describe('Engine: wiring everything together', () => {
       ui.reset()
     })
 
-    const twiddlingMiddleware = R.curry((store, next, action) => {
+    const twiddlingMiddleware = curry((store, next, action) => {
       let nextAction
       if (action.type === 'twiddle') {
         nextAction = { ...action, type: 'capitalize' }
@@ -134,7 +134,7 @@ describe('Engine: wiring everything together', () => {
       ui.register('s1', Foo)
 
       update.register('s1', updates => {
-        updates.register('capitalize', e => e.update('text', R.toUpper))
+        updates.register('capitalize', e => e.update('text', toUpper))
       })
 
       const e = mount(<Engine initState={{ kind: 's1', text: 's1' }} />)
@@ -154,7 +154,7 @@ describe('Engine: wiring everything together', () => {
       ui.register('m1', Foo)
 
       update.register('m1', updates => {
-        updates.register('capitalize', e => e.update('text', R.toUpper))
+        updates.register('capitalize', e => e.update('text', toUpper))
       })
 
       const e = mount(
@@ -179,7 +179,7 @@ describe('Engine: wiring everything together', () => {
       ui.register('ss1', Foo)
 
       update.register('ss1', updates => {
-        updates.register('capitalize', e => e.update('text', R.toUpper))
+        updates.register('capitalize', e => e.update('text', toUpper))
       })
 
       const twiddler = Subsystem.create(() => ({
@@ -210,7 +210,7 @@ describe('Engine: wiring everything together', () => {
       ui.register('ssx1', Foo)
 
       update.register('ssx1', updates => {
-        updates.register('capitalize', e => e.update('text', R.toUpper))
+        updates.register('capitalize', e => e.update('text', toUpper))
       })
 
       const twiddler = Subsystem.create(() => ({

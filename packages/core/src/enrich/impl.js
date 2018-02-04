@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import { map, pipe } from 'ramda'
 import { memoize } from '../impl/util'
 import * as data from '../data'
 import * as zip from '../zip'
@@ -28,13 +28,13 @@ export function enricher(config) {
         // prettier-ignore
         data.flow(
           zip.getChildren(loc),
-          R.map(R.pipe(elementZipper, loc => postWalk(loc, context)))
+          map(pipe(elementZipper, loc => postWalk(loc, context)))
         )
       )
       const changedValue = zip.makeItem(
         loc,
         zip.value(loc),
-        R.map(zip.value, changedChildren)
+        map(zip.value, changedChildren)
       )
 
       loc = zip.replace(changedValue, loc)
