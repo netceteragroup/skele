@@ -1,4 +1,4 @@
-import { pickBy, reverse } from 'ramda'
+import * as R from 'ramda'
 import deepMerge from './utils/merge'
 import deepFreeze from './utils/freeze'
 
@@ -22,7 +22,7 @@ export default class Layer {
     // and overridden with values from the more important profiles
     let activeProfiles = profiles
     if (profiles) {
-      activeProfiles = reverse(profiles)
+      activeProfiles = R.reverse(profiles)
     }
 
     // create a sequence of layers, starting from the current one, up to the root, in reverse order (root comes first)
@@ -43,7 +43,7 @@ export default class Layer {
       Object.entries(layer.configuration).forEach(
         ([feature, configOfLayer]) => {
           // values from (default) profile
-          const defaultProfileForLayer = pickBy(
+          const defaultProfileForLayer = R.pickBy(
             (val, key) => key !== 'profiles',
             configOfLayer
           )

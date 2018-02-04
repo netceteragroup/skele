@@ -1,10 +1,10 @@
 'use strict'
 
-import { curry } from 'ramda'
+import * as R from 'ramda'
 import { isOfKind } from '../data'
 import { postWalk } from '../zip'
 
-export const editCond = curry((patterns, zipper) =>
+export const editCond = R.curry((patterns, zipper) =>
   postWalk(el => {
     patterns.forEach(pattern => {
       const pred = pattern[0]

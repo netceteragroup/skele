@@ -1,6 +1,6 @@
 'use strict'
 
-import { identity } from 'ramda'
+import * as R from 'ramda'
 import { kindOf } from '../data/element'
 import { memoize } from '../impl/util'
 
@@ -11,7 +11,7 @@ export function transformer(registry, elementZipper) {
   const elementTransformer = memoize(kind =>
     registry
       .get(kind)
-      .reduce((f, g) => (x, context) => g(f(x, context), context), identity)
+      .reduce((f, g) => (x, context) => g(f(x, context), context), R.identity)
   )
 
   const transform = context => el => elementTransformer(kindOf(el))(el, context)

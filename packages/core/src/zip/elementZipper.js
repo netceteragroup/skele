@@ -2,19 +2,19 @@
 
 import { makeZipper } from '../vendor/zippa'
 import { Iterable, List, Map } from 'immutable'
-import { curry } from 'ramda'
+import * as R from 'ramda'
 import {
   isOfKind,
   asList,
   childPositions as childPositionsFromElement,
 } from '../data'
 
-const childPositions = curry((defaultChildPositions, el) => {
+const childPositions = R.curry((defaultChildPositions, el) => {
   const fromEl = childPositionsFromElement(el)
   return !fromEl.isEmpty() ? fromEl : asList(defaultChildPositions)
 })
 
-const isBranch = curry((defaultChildPositions, element) => {
+const isBranch = R.curry((defaultChildPositions, element) => {
   if (isOfKind('@@girders-elements/child-collection', element)) {
     const children = element.get('children')
     return children && children.count() > 0
@@ -29,7 +29,7 @@ const isBranch = curry((defaultChildPositions, element) => {
   return positions.some(pos => element.get(pos))
 })
 
-const getChildren = curry((defaultChildPositions, element) => {
+const getChildren = R.curry((defaultChildPositions, element) => {
   if (isOfKind('@@girders-elements/child-collection', element)) {
     return element.get('children').toArray()
   }
@@ -55,7 +55,7 @@ const makeChildCollection = (p, children) =>
     children: asList(children),
   })
 
-const makeNode = curry((defaultChildPositions, element, children) => {
+const makeNode = R.curry((defaultChildPositions, element, children) => {
   if (isOfKind('@@girders-elements/child-collection', element)) {
     return element.set('children', List(children))
   }

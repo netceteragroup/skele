@@ -2,7 +2,7 @@
 
 import AbstractRegistry from './AbstractRegistry'
 import { List, is, Iterable } from 'immutable'
-import { curryN, equals, ifElse } from 'ramda'
+import * as R from 'ramda'
 
 export default class PatternRegistry extends AbstractRegistry {
   constructor() {
@@ -18,7 +18,7 @@ export default class PatternRegistry extends AbstractRegistry {
       const regexp = key
       pattern = List.of(regexp.test.bind(regexp), value)
     } else {
-      pattern = List.of(equalsFn(key), value)
+      pattern = List.of(equals(key), value)
     }
     this._registry = this._registry.push(pattern)
   }
@@ -46,7 +46,11 @@ export default class PatternRegistry extends AbstractRegistry {
   }
 }
 
-const equalsFn = curryN(
+const equals = R.curryN(
   2,
-  ifElse((a, b) => Iterable.isIterable(a) && Iterable.isIterable(b), is, equals)
+  R.ifElse(
+    (a, b) => Iterable.isIterable(a) && Iterable.isIterable(b),
+    is,
+    R.equals
+  )
 )
