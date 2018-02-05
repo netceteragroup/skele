@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 
 import AbstractRegistry from './AbstractRegistry'
 import Registry from './Registry'

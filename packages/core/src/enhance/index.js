@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 import { List } from 'immutable'
 import invariant from 'invariant'
 

@@ -2,7 +2,7 @@
 
 import { mount } from 'enzyme'
 
-import R from 'ramda'
+import * as R from 'ramda'
 import React from 'react'
 
 import * as Subsystem from '../../subsystem'

@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 import { memoize } from '../impl/util'
 import * as data from '../data'
 import * as zip from '../zip'

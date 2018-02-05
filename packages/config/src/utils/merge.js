@@ -1,7 +1,7 @@
-import { is, mergeWith } from 'ramda'
+import * as R from 'ramda'
 
 export default function deepMerge(a = {}, b = {}) {
-  return is(Array, b) && !is(Object, b[0])
+  return R.is(Array, b) && !R.is(Object, b[0])
     ? b
-    : is(Object, a) && is(Object, b) ? mergeWith(deepMerge, a, b) : b
+    : R.is(Object, a) && R.is(Object, b) ? R.mergeWith(deepMerge, a, b) : b
 }

@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 import I from 'immutable'
 import React from 'react'
 import PropTypes from 'prop-types'

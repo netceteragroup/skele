@@ -2,7 +2,7 @@
 
 import AbstractRegistry from './AbstractRegistry'
 import { List, is, Iterable } from 'immutable'
-import R from 'ramda'
+import * as R from 'ramda'
 
 export default class PatternRegistry extends AbstractRegistry {
   constructor() {
