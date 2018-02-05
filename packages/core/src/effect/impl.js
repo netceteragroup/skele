@@ -49,7 +49,7 @@ export const middleware = R.curry((config, store, next, action) => {
           error('Exception while executing an effect: ', e)
         })
     } else if (typeof result === 'function') {
-      context.dispatch({ type: updateStateAction, result })
+      context.dispatch({ type: updateStateAction, updateFn: result })
     }
   } else {
     // the effect consumes the action
