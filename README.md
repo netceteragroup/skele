@@ -45,7 +45,7 @@ A Girders Elements app, in rough terms, works by
   interaction
 - having a way how to affect the outside world
 
-![Overview Diagram](docs/illustrations/overview.png)
+![Overview Diagram](packages/core/docs/illustrations/overview.png)
 
 ### Application State
 

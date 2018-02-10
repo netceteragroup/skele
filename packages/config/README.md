@@ -1,6 +1,6 @@
-# Config 
+# Girders Elements Config 
 
-Girders Element's `config` package is a small library that can be used to create **layered configuration** setup useful when building platforms. 
+Girders Elements' `config` package is a small library that can be used to create **layered configuration** setup useful when building platforms. 
 
 A *configuration* consists of one or more **feature configuration objects** (ex. translations, theme etc). 
 

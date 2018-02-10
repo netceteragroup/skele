@@ -1,6 +1,6 @@
-# Components
+# Girders Elements Components
 
-Girders Element's `components` package is a library of custom components that aid in building React and React Native apps.
+Girders Elements' `components` package is a library of custom components that aid in building React and React Native apps.
 
 ## Available Components
 
