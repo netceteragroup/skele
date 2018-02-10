@@ -1,14 +1,15 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 import invariant from 'invariant'
 import { fromJS } from 'immutable'
 
 import uuid from 'uuid'
 
 import { info, error } from '../impl/log'
+import { time, timeSync } from '../impl/util'
 
-import { canonical, flow } from '../data'
+import { canonical, flow, kindOf } from '../data'
 import * as readActions from './actions'
 import * as propNames from '../propNames'
 import { isOK, isResponse } from './http'
@@ -94,11 +95,29 @@ export async function performRead(context, readParams) {
   const reader = registry.get(uri) || registry.get(fallback)
 
   if (reader != null) {
-    const readResponse = await reader(
+    let enhanceContext = {
+      config: kernel.config,
+      subsystems: kernel.subsystems,
+      subsystemSequence: kernel.subsystemSequence,
+      elementZipper: kernel.elementZipper,
       uri,
       opts,
-      R.pick(['config', 'subsystems', 'subsystemSequence'], context)
-    )
+    }
+
+    const [readResponse, readIndependentEnhancements] = await time(
+      `TIME-reader-plus-enhancement-(${uri})`,
+      Promise.all.bind(Promise)
+    )([
+      time(`TIME-reader-(${uri})`, reader)(
+        uri,
+        opts,
+        R.pick(['config', 'subsystems', 'subsystemSequence'], context)
+      ),
+      time(
+        `TIME-enhancement-run-independent-(${uri})`,
+        enhancement.runEnhancers
+      )(null, enhanceContext, enhancement.readIndependentEnhancers()),
+    ])
 
     if (!isResponse(readResponse)) {
       throw new Error(
@@ -110,31 +129,47 @@ export async function performRead(context, readParams) {
         [propNames.metadata]: fromJS(readResponse.meta || defaultMeta(uri)),
       })
 
-      const enhanceContext = {
+      enhanceContext = {
+        ...enhanceContext,
         readValue,
-        config: kernel.config,
-        subsystems: kernel.subsystems,
-        subsystemSequence: kernel.subsystemSequence,
       }
 
-      const enhancedResponse = await enhancement(readValue, enhanceContext)
+      const readDependentEnhancements = await time(
+        `TIME-enhancement-run-read-dependent-(${uri})`,
+        enhancement.runEnhancers
+      )(
+        readValue,
+        enhanceContext,
+        enhancement.readDependentEnhancers(kindOf(readValue))
+      )
+
+      const enhancedResponse = timeSync(
+        `TIME-enhancement-aply-(${uri})`,
+        enhancement.applyEnhancements
+      )(readValue, enhanceContext, [
+        ...readIndependentEnhancements,
+        ...readDependentEnhancements,
+      ])
 
       const enrichContext = {
         ...enhanceContext,
         readValue: enhancedResponse,
       }
 
-      const enrichedResponse = await enrichment(enhancedResponse, enrichContext)
+      const enrichedResponse = await time(
+        `TIME-enrichment-(${uri})`,
+        enrichment
+      )(enhancedResponse, enrichContext)
 
       const transformContext = {
         ...enrichContext,
         readValue: enrichedResponse,
       }
 
-      const transformedResponse = transformation(
-        enrichedResponse,
-        transformContext
-      )
+      const transformedResponse = timeSync(
+        `TIME-transformation-(${uri})`,
+        transformation
+      )(enrichedResponse, transformContext)
 
       return { ...readResponse, value: transformedResponse }
     } else {
@@ -167,7 +202,10 @@ export async function read(context, action) {
   dispatch({ ...action, readId, type: readActions.types.setLoading })
 
   try {
-    const readResponse = await performRead(context, {
+    const readResponse = await time(
+      `TIME-performRead-(${action.uri})`,
+      performRead
+    )(context, {
       uri: action.uri,
       opts: R.pick(['revalidate'], action),
     })

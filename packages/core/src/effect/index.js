@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 import invariant from 'invariant'
 
 import { chainRegistries, ActionRegistry } from '../registry'

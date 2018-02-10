@@ -1,6 +1,6 @@
 'use strict'
 
-import { fromJS, List } from 'immutable'
+import { fromJS } from 'immutable'
 import * as SubSystem from '../../subsystem'
 import * as Kernel from '../../kernel'
 import * as propNames from '../../propNames'
@@ -19,55 +19,106 @@ describe('Enhancers', () => {
     kind: 'document',
     [propNames.children]: 'children',
     data: 1,
+    value: 1,
     items: [1, 2, 3],
     children: [
       {
         kind: 'teaser',
         data: 10,
+        value: 10,
       },
       {
         kind: 'teaser',
         data: 20,
+        value: 20,
       },
     ],
   }
 
-  const incrementData = async el => {
+  // we use context for documentation purpose, so disable eslint temporary
+  /* eslint-disable no-unused-vars */
+
+  // deprecated enhancers: enhance.register :: async (el, context) => el => el
+  // read dependent enhancers
+  enhance.register('document', async (el, context) => {
     await sleep(randomMs(100))
-
     return el => el.update('data', d => d + 1)
-  }
-
-  enhance.register('document', incrementData)
-  enhance.register('teaser', incrementData)
-
-  test('enhancers should run only for root element', async () => {
-    const kernel = Kernel.create([enhanceSubsystem, app], appState, {})
-    const enhancer = kernel.subsystems.enhance.buildEnhancer()
-
-    const result = await enhancer(fromJS(appState))
-
-    expect(result.get('data')).toEqualI(2)
-    expect(result.getIn(['children', 0, 'data'])).toEqualI(10)
-    expect(result.getIn(['children', 1, 'data'])).toEqualI(20)
+  })
+  enhance.register('document', async (el, context) => {
+    await sleep(randomMs(100))
+    return [['teaser', el => el.update('data', d => d + 1)]]
+  })
+  enhance.register('teaser', async (el, context) => {
+    await sleep(randomMs(100))
+    return el => el.update('data', d => d + 1)
   })
 
-  const appendItem = item => async el => {
+  // preferred enhancers: enhance.register :: async (context) => [[pattern, el => el], ...]
+  // read independent enhancers
+  enhance.register(async context => {
     await sleep(randomMs(100))
+    return [[['teaser'], el => el.update('value', v => v + 2)]]
+  })
+  enhance.register(async context => {
+    await sleep(randomMs(100))
+    return el => el.update('value', v => v + 3)
+  })
 
-    return el => el.update('items', items => items.concat(item))
-  }
+  /* eslint-enable no-unused-vars */
 
-  enhance.register(['document'], appendItem(10))
-  enhance.register(['document'], appendItem(100))
-
-  test('enhancers should apply all registered enhancments', async () => {
+  test('read dependent enhancers should run only for root element', async () => {
     const kernel = Kernel.create([enhanceSubsystem, app], appState, {})
-    const enhancer = kernel.subsystems.enhance.buildEnhancer()
+    const enhanceHelper = kernel.subsystems.enhance.buildEnhanceHelper()
 
-    const result = await enhancer(fromJS(appState))
+    const readValue = fromJS(appState)
+    const enhancers = enhanceHelper.readDependentEnhancers(
+      data.kindOf(readValue)
+    )
+    const updates = await enhanceHelper.runEnhancers(
+      readValue,
+      {
+        elementZipper: kernel.elementZipper,
+      },
+      enhancers
+    )
 
-    expect(result.get('items')).toEqualI(List.of(1, 2, 3, 10, 100))
+    const result = enhanceHelper.applyEnhancements(
+      readValue,
+      {
+        elementZipper: kernel.elementZipper,
+      },
+      updates
+    )
+
+    expect(result.get('data')).toEqualI(2)
+    expect(result.getIn(['children', 0, 'data'])).toEqualI(11)
+    expect(result.getIn(['children', 1, 'data'])).toEqualI(21)
+  })
+
+  test('read independent enhancers should apply all registered enhancements', async () => {
+    const kernel = Kernel.create([enhanceSubsystem, app], appState, {})
+    const enhanceHelper = kernel.subsystems.enhance.buildEnhanceHelper()
+    const enhancers = enhanceHelper.readIndependentEnhancers()
+
+    const updates = await enhanceHelper.runEnhancers(
+      null,
+      {
+        elementZipper: kernel.elementZipper,
+      },
+      enhancers
+    )
+
+    const result = enhanceHelper.applyEnhancements(
+      fromJS(appState),
+      {
+        elementZipper: kernel.elementZipper,
+      },
+      updates
+    )
+
+    expect(result.get('value')).toEqualI(4)
+    expect(result.getIn(['children', 0, 'value'])).toEqualI(12)
+    expect(result.getIn(['children', 1, 'value'])).toEqualI(22)
   })
 })
 

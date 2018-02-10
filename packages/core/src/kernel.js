@@ -2,7 +2,7 @@
 
 import I from 'immutable'
 import Cursor from 'immutable/contrib/cursor'
-import R from 'ramda'
+import * as R from 'ramda'
 
 import * as zip from './zip'
 import * as actions from './action'

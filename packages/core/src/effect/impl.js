@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 
 import * as actions from '../action'
 import { types as actionTypes } from './actions'
@@ -49,7 +49,7 @@ export const middleware = R.curry((config, store, next, action) => {
           error('Exception while executing an effect: ', e)
         })
     } else if (typeof result === 'function') {
-      context.dispatch({ type: updateStateAction, result })
+      context.dispatch({ type: updateStateAction, updateFn: result })
     }
   } else {
     // the effect consumes the action

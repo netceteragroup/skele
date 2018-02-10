@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 
 import AbstractRegistry from './AbstractRegistry'
 import Registry from './Registry'
@@ -25,6 +25,10 @@ export class RegistryChain extends AbstractRegistry {
     // avoid adopting the key, as we have to do it for each underlying registry
     // separately
     return this._getBySpecificity(key, true)
+  }
+
+  isEmpty() {
+    return this._primaryRegistry.isEmpty() && this._fallbackRegistry.isEmpty()
   }
 
   _getInternal(key) {
@@ -90,6 +94,8 @@ export class MultivalueRegistryChain extends AbstractRegistry {
 
 MultivalueRegistryChain.prototype._getBySpecificity =
   MultivalueRegistry.prototype._getBySpecificity
+
+MultivalueRegistryChain.prototype.isEmpty = RegistryChain.prototype.isEmpty
 
 const chain = (Chain, Zero) =>
   R.cond([

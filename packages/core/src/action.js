@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 import { kindOf } from './data'
 
 export const actionMetaProperty = '@@girders-elements/_actionMeta'

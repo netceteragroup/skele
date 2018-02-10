@@ -1,6 +1,6 @@
 {
   "name": "@girders-elements/core",
-  "version": "1.0.0-alpha.25",
+  "version": "1.0.0-alpha.26",
   "description": "Girders Elements is an architectural framework that assists with building data-driven apps with React or React Native.",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
@@ -25,7 +25,7 @@
     "immutable": "^3.8.1",
     "invariant": "^2.2.2",
     "ramda": "^0.25.0",
-    "uuid": "^3.1.0"
+    "uuid": "^3.2.1"
   },
   "peerDependencies": {
     "prop-types": "15.x || 16.x",

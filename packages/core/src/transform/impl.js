@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 import { kindOf } from '../data/element'
 import { memoize } from '../impl/util'
 

@@ -1,7 +1,7 @@
 /* @flow */
 'use strict'
 
-import { all, curry } from 'ramda'
+import * as R from 'ramda'
 import invariant from 'invariant'
 import {
   List,
@@ -21,7 +21,7 @@ import type { ElementRef, ElementRefCanonical } from './types'
  * @param element the element
  * @returns {*}
  */
-export const isOfKind = curry(function isOfKind(
+export const isOfKind = R.curry(function isOfKind(
   kind: ElementRef,
   element: ?KeyedIterable
 ): boolean {
@@ -45,7 +45,7 @@ export function isElementRef(obj: any): boolean {
   const isString = o => typeof o === 'string'
 
   if (isString(obj)) return true
-  if (Array.isArray(obj) && (all(isString)(obj) || obj.length === 0))
+  if (Array.isArray(obj) && (R.all(isString)(obj) || obj.length === 0))
     return true
   if (obj instanceof List && (obj.every(isString) || obj.isEmpty())) return true
 
@@ -59,7 +59,7 @@ export function isElementRef(obj: any): boolean {
  * @param element tne element
  * @returns {*}
  */
-export const isExactlyOfKind = curry(function isExactlyOfKind(
+export const isExactlyOfKind = R.curry(function isExactlyOfKind(
   kind: ElementRef,
   element: ?KeyedIterable
 ): boolean {
