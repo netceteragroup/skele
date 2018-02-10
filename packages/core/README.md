@@ -34,8 +34,14 @@ or
 yarn add @girders-elements/core
 ```
 
-You will also need to add `react`, `redux`,`react-dom` / `react-native`
+Also, you will need to add `react`, `redux` and `react-dom` / `react-native`
 to your project's dependencies.
+
+Some necessary polyfills will need to be provided too. One options is to
+add [`babel-polyfill`][babel-polyfill] to your project's dependencies and
+import it at the top of the entry point to your app.
+
+[babel-polyfill]: https://babeljs.io/docs/usage/polyfill/
 
 ### Overview
 
