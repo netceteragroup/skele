@@ -37,11 +37,25 @@ yarn add @girders-elements/core
 Also, you will need to add `react`, `redux` and `react-dom` / `react-native`
 to your project's dependencies.
 
+#### Polyfills
+
 Some necessary polyfills will need to be provided too. One options is to
-add [`babel-polyfill`][babel-polyfill] to your project's dependencies and
+add [`babel-polyfill`][babel] to your project's dependencies and
 import it at the top of the entry point to your app.
 
-[babel-polyfill]: https://babeljs.io/docs/usage/polyfill/
+Another option is to import only the specific polyfills the framework requires.
+On the web, you will need [`regenerator-runtime`][regenerator].
+If you are building an Android app with React Native,
+you will need a few [`core-js`][core-js] modules:
+
+```javascript
+import 'core-js/modules/es6.object.set-prototype-of'
+import 'core-js/modules/es6.symbol'
+```
+
+[babel]: https://babeljs.io/docs/usage/polyfill/
+[regenerator]: https://github.com/facebook/regenerator/tree/master/packages/regenerator-runtime
+[core-js]: https://github.com/zloirock/core-js
 
 ### Overview
 
