@@ -1,0 +1,28 @@
+{
+  "name": "@girders-elements/system",
+  "version": "1.0.0-alpha.26",
+  "description":
+    "A small framework managing the lifecycle and dependencies of software componenes (sub-systems)/",
+  "react-native": "src/index.js",
+  "main": "dist/es5/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netceteragroup/girders-elements.git"
+  },
+  "keywords": ["react", "react-native", "redux", "redux-saga", "netcetera"],
+  "author": "netcetera",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/netceteragroup/girders-elements/issues"
+  },
+  "homepage": "https://github.com/netceteragroup/girders-elements#readme",
+  "dependencies": {
+    "immutable": "^3.8.1",
+    "invariant": "^2.2.2",
+    "ramda": "^0.25.0",
+    "uuid": "^3.2.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
