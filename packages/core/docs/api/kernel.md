@@ -9,7 +9,7 @@ Creates an app kernel using a given array of subsystems, initial structure of th
 ### Usage
 
 ```javascript
-import { Kernel, defaultSubsystems } from '@girders-elements/core'
+import { Kernel, defaultSubsystems } from '@skele/core'
 import navigationSubsystem from './customSubsystems/navigation'
 
 const initData = { kind: 'app' }

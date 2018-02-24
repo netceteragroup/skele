@@ -9,7 +9,7 @@ Registers an effect to a specific kind and action type.
 ### Usage
 
 ```javascript
-import { effect } from '@girders-elements/core'
+import { effect } from '@skele/core'
 
 effect.register(['scene', 'article'], '.setMarked', async (context, action) => {
   await sleep(50)
@@ -26,7 +26,7 @@ Registers effects to a specific kind using a registration function.
 ### Usage
 
 ```javascript
-import { effect } from '@girders-elements/core'
+import { effect } from '@skele/core'
 import { setRead, setMarked } from './effects'
 
 effect.forKind(['scene', 'article'], effects => {

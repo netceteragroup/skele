@@ -14,7 +14,7 @@ import * as readActions from './actions'
 import * as propNames from '../propNames'
 import { isOK, isResponse } from './http'
 
-export const fallback = '@@girders-elements/defaultRead'
+export const fallback = '@@skele/defaultRead'
 
 const updateKind = R.curry((update, element) =>
   element.update('kind', R.pipe(canonical, update))

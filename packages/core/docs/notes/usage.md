@@ -1,19 +1,16 @@
-# Using Girders elements
+# Using Skele
 
 # Hello World
 
 ## Importing
 
-    import {ui} from 'elements';
-    // equivalent with
-    import ui from 'elements/ui';
+    import { ui } from '@skele/core';
 
-    import elements from 'elements';
-
+    import skele from '@skele/core';
     // what's inside
-    elements.ui
-    elements.read
-    elements.update
+    skele.ui
+    skele.read
+    skele.update
 
 
 

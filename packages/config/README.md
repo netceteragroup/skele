@@ -1,6 +1,6 @@
-# Girders Elements Config 
+# Skele Config 
 
-Girders Elements' `config` package is a small library that can be used to create **layered configuration** setup useful when building platforms. 
+Skele's `config` package is a small library that can be used to create **layered configuration** setup useful when building platforms. 
 
 A *configuration* consists of one or more **feature configuration objects** (ex. translations, theme etc). 
 
@@ -54,13 +54,13 @@ const theme = {
 Simply add the package to your `package.json`:
 
 ```
-$ yarn add @girders-elements/config
+$ yarn add @skele/config
 ```
 
 or 
 
 ```
-$ npm install --save @girders-elements/config
+$ npm install --save @skele/config
 ```
 
 ### Defining layers
@@ -70,7 +70,7 @@ Calling `define` on an *existing layer* also creates a new layer *over the exist
 
 
 ```javascript
-import config from '@girders-elements/config'
+import config from '@skele/config'
 
 import videoRoot from './videoRoot'
 import translationsRoot from './translationsRoot'

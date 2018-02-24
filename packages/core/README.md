@@ -1,9 +1,9 @@
-# Girders Elements Core
+# Skele Core
 
-[![Build Status](https://img.shields.io/travis/netceteragroup/girders-elements/master.svg?style=flat-square)](https://travis-ci.org/netceteragroup/girders-elements)
-[![Coverage Status](https://img.shields.io/coveralls/netceteragroup/girders-elements/master.svg?style=flat-square)](https://coveralls.io/github/netceteragroup/girders-elements?branch=master)
+[![Build Status](https://img.shields.io/travis/netceteragroup/skele/master.svg?style=flat-square)](https://travis-ci.org/netceteragroup/skele)
+[![Coverage Status](https://img.shields.io/coveralls/netceteragroup/skele/master.svg?style=flat-square)](https://coveralls.io/github/netceteragroup/skele?branch=master)
 
-Girders Elements is an architectural framework that assists building
+Skele is an architectural framework that assists building
 **data-driven** apps with **[React](https://facebook.github.io/react/)** or
  **[React Native](https://facebook.github.io/react-native/)**.
 It is extremely well-suited for creating highly **dynamic UIs**,
@@ -11,7 +11,7 @@ that are driven by back-end systems (like Content Management Systems).
 
 It uses **[redux](http://github.com/reactjs/redux)** for managing the state of
 the application. All great tools around the redux eco-system can be leveraged,
-because **Girders Elements** builds on top of it.
+because **Skele** builds on top of it.
 
 **[Immutable](https://facebook.github.io/immutable-js/)** data structures are
 used to represent the application state. This allows for a substantially more
@@ -20,18 +20,18 @@ efficient `shouldComponentUpdate` implementation compared to **react-redux**.
 more efficient (space and time-wise) changes to the application state. This
 makes the framework well suited for mobile application use.
 
-The documentation of Girders Elements' API is available [here](https://netcetera.gitbooks.io/girders-elements/).
+The documentation of Skele's API is available [here](https://netcetera.gitbooks.io/skele/).
 
 [persistent-data-structures]: https://github.com/facebook/immutable-js/#immutable-collections-for-javascript
 
 ### Installation
 
 ```
-npm install --save @girders-elements/core
+npm install --save @skele/core
 ```
 or
 ```
-yarn add @girders-elements/core
+yarn add @skele/core
 ```
 
 Also, you will need to add `react`, `redux` and `react-dom` / `react-native`
@@ -59,7 +59,7 @@ import 'core-js/modules/es6.symbol'
 
 ### Overview
 
-A Girders Elements app, in rough terms, works by
+A Skele app, in rough terms, works by
 
 - mapping a well defined data structure (a single tree of polymorphic elements)
   to an user interface
@@ -213,7 +213,7 @@ ui.register('__app', ({ element, uiFor }) =>
 
 Here we are specifying the UI for [our top-level element][application-state]
 (root element). The `__app` has an `entryPoint` property which is an element of
-any kind. By invoking `uiFor('entryPoint')` we are asking Girders Elements to
+any kind. By invoking `uiFor('entryPoint')` we are asking Skele to
 produce the UI for the element under the property `entryPoint` for us.  
 
 `uiFor` can be used to render a list of elements as well:
@@ -229,7 +229,7 @@ ui.register('vertical-container', ({ element, uiFor }) =>
 Here, we are registering the UI for the element of kind `vertical-container`
 from [our example][application-state]. This element has a `children` property,
 which is a list of elements (of varying kind). By invoking `uiFor` on this
-property we are asking Girders Elements to render the ui for all the elements
+property we are asking Skele to render the ui for all the elements
 in this list, using the appropriate UI for each of those elements.
 
 `uiFor` can also be called with a a key-path:
@@ -242,13 +242,13 @@ ui.register('__app', ({ uiFor }) =>
 );
 ```
 
-Here, in the UI for `__app`, we are are asking Girders Elements to render the
+Here, in the UI for `__app`, we are are asking Skele to render the
 UI for the first element of the `children` of `entryPoint` of the current
 element.
 
 #### UI Resolution
 
-Whenever Girders Elements encounters a request to present a UI for some element
+Whenever Skele encounters a request to present a UI for some element
 
 1. it will try to find the UI using the requested element first
 2. if it doesn't find an UI, it will try with **a more general kind**
@@ -377,7 +377,7 @@ The elements registered with kinds `__load` and `__error`, are good examples for
 
 ### Engine
 
-The Engine is your App.js. You use it to bootstrap an app based on `girders-elements`. It is a React Component that you pass the `initState` prop:
+The Engine is your App.js. You use it to bootstrap an app based on Skele. It is a React Component that you pass the `initState` prop:
 
 ```javascript
 const initState = {

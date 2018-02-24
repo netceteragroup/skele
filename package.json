@@ -1,17 +1,17 @@
 {
-  "name": "girders-elements-container",
+  "name": "skele-container",
   "private": true,
-  "description": "Girders Elements is an architectural framework that assists with building data-driven apps with React or React Native.",
+  "description": "Skele is an architectural framework that assists with building data-driven apps with React or React Native.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/netceteragroup/girders-elements.git"
+    "url": "git+https://github.com/netceteragroup/skele.git"
   },
   "author": "Netcetera",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/netceteragroup/girders-elements/issues"
+    "url": "https://github.com/netceteragroup/skele/issues"
   },
-  "homepage": "https://github.com/netceteragroup/girders-elements#readme",
+  "homepage": "https://netcetera.gitbooks.io/skele/",
   "scripts": {
     "prepublish": "yarn run clean && yarn run es5",
     "test": "jest",

@@ -9,7 +9,7 @@ Registers an enhancer.
 ### Usage
 
 ```javascript
-import { enhance } from '@girders-elements/core'
+import { enhance } from '@skele/core'
 
 enhance.register(async context => {
   await sleep(50)

@@ -32,7 +32,7 @@ export const engineMixins = R.pipe(R.prop('engineMixins'), R.defaultTo([]))
 // -- ui
 // -- custom methods
 
-export const subsystemFnAttribute = '@@girders-elements/subsystemFn'
+export const subsystemFnAttribute = '@@skele/subsystemFn'
 let extensions = []
 
 /*

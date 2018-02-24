@@ -3,7 +3,7 @@
 import * as R from 'ramda'
 import { kindOf } from './data'
 
-export const actionMetaProperty = '@@girders-elements/_actionMeta'
+export const actionMetaProperty = '@@skele/_actionMeta'
 
 /**
  * gets the action meadata from the action

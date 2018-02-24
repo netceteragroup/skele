@@ -9,7 +9,7 @@ Gets the metadata of an action.
 ### Usage
 
 ```javascript
-import { actions, propNames } from '@girders-elements/core'
+import { actions, propNames } from '@skele/core'
 
 const tsExtractorWithActionMeta = async (action, prevState, nextState) =>
   nextState
@@ -24,7 +24,7 @@ Returns the prop name of the action metadata.
 ### Usage
 
 ```javascript
-import { actions, propNames } from '@girders-elements/core'
+import { actions, propNames } from '@skele/core'
 
 const tsExtractorWithActionMetaProperty = async (action, prevState, nextState) =>
   nextState
@@ -39,7 +39,7 @@ Sets the action's metadata to reflect the element (cursor) at which the action w
 ### Usage
 
 ```javascript
-import { actions } from '@girders-elements/core'
+import { actions } from '@skele/core'
 
 const middleware = store => next => async action => {
   const result = next(action)
@@ -63,7 +63,7 @@ Returns an action that refreshes the read.
 ```javascript
 import React from 'react'
 import { ScrollView, RefreshControl } from 'react-native'
-import { actions } from '@girders-elements/core'
+import { actions } from '@skele/core'
 
 export default class extends React.Component {
   render() {

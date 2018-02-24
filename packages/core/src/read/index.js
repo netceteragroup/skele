@@ -17,7 +17,7 @@ import * as impl from './impl'
 import * as http from './http'
 import * as readActions from './actions'
 
-const registryAttribute = '@@girders-elements/_readRegistry'
+const registryAttribute = '@@skele/_readRegistry'
 const fallback = impl.fallback
 
 /**

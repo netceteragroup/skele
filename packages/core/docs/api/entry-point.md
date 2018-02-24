@@ -6,7 +6,7 @@ Provides an entry point to the kernel.
 
 ```javascript
 import React from 'react'
-import { EntryPoint } from '@girders-elements/core'
+import { EntryPoint } from '@skele/core'
 
 export const EntryPointWrapper = system =>
   class extends React.Component {

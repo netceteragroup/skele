@@ -11,7 +11,7 @@ import { ActionRegistry } from '../../registry'
 import { flow } from '../../data'
 import updateSubS from '..'
 
-const registryAttribute = '@@girders-elements/_updateRegistry'
+const registryAttribute = '@@skele/_updateRegistry'
 
 describe('updates API', function() {
   const app = Subsystem.create(() => ({

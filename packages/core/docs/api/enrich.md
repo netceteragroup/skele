@@ -9,7 +9,7 @@ Registers an enricher to a specific kind.
 ### Usage
 
 ```javascript
-import { enrich } from '@girders-elements/core'
+import { enrich } from '@skele/core'
 import I from 'immutable'
 
 enrich.register(['scene', 'article', 'briefing'], async el => {

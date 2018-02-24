@@ -9,7 +9,7 @@ Creates a subsystem using a subsystem generation function.
 ### Usage
 
 ```javascript
-import { Subsystem } from '@girders-elements/core'
+import { Subsystem } from '@skele/core'
 
 const navigationSubsystem = Subsystem.create(system => {
   return {
@@ -26,7 +26,7 @@ Creates a subsystem from a middleware.
 ### Usage
 
 ```javascript
-import { Kernel, Subsystem, defaultSubsystems } from '@girders-elements/core'
+import { Kernel, Subsystem, defaultSubsystems } from '@skele/core'
 import { tracking, logging } from './middleware'
 
 const initData = { kind: 'app' }

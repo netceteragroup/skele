@@ -1,12 +1,12 @@
 {
-  "name": "@girders-elements/config",
+  "name": "@skele/config",
   "version": "1.0.0-alpha.26",
-  "description": "Girders elements packages that provides the posibility to define a custom configuration",
+  "description": "Skele package that provides the posibility to define a custom configuration",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/netceteragroup/girders-elements.git"
+    "url": "git+https://github.com/netceteragroup/skele.git"
   },
   "keywords": [
     "netcetera"
@@ -14,9 +14,9 @@
   "author": "netcetera",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/netceteragroup/girders-elements/issues"
+    "url": "https://github.com/netceteragroup/skele/issues"
   },
-  "homepage": "https://github.com/netceteragroup/girders-elements#readme",
+  "homepage": "https://netcetera.gitbooks.io/skele/",
   "dependencies": {
     "ramda": "^0.25.0"
   },

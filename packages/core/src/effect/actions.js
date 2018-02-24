@@ -1,5 +1,5 @@
 'use strict'
 
 export const types = {
-  fail: '@@girders-elements/actions.effect.fail',
+  fail: '@@skele/actions.effect.fail',
 }
