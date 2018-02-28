@@ -13,6 +13,7 @@ export default class Read extends React.Component {
     ]).isRequired,
     uri: PropTypes.string.isRequired,
     revalidate: PropTypes.bool,
+    readMeta: PropTypes.object,
   }
 
   constructor(props) {
