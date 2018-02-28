@@ -51,6 +51,7 @@ core.ui.register(['__read'], ({ element, dispatch }) => {
       uri={element.get('uri')}
       dispatch={dispatch}
       revalidate={element.get('revalidate')}
+      readMeta={element.get('readMeta')}
     />
   )
 })

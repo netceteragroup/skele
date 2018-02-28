@@ -91,7 +91,7 @@ export async function performRead(context, readParams) {
 
   const kernel = context
 
-  const { uri, opts } = readParams
+  const { uri, opts, readMeta } = readParams
   const reader = registry.get(uri) || registry.get(fallback)
 
   if (reader != null) {
@@ -102,6 +102,7 @@ export async function performRead(context, readParams) {
       elementZipper: kernel.elementZipper,
       uri,
       opts,
+      readMeta,
     }
 
     const [readResponse, readIndependentEnhancements] = await time(
@@ -126,7 +127,9 @@ export async function performRead(context, readParams) {
     }
     if (isOK(readResponse)) {
       const readValue = fromJS(readResponse.value).merge({
-        [propNames.metadata]: fromJS(readResponse.meta || defaultMeta(uri)),
+        [propNames.metadata]: fromJS(
+          readResponse.meta || defaultMeta(uri)
+        ).merge({ readMeta }),
       })
 
       enhanceContext = {
@@ -208,6 +211,7 @@ export async function read(context, action) {
     )(context, {
       uri: action.uri,
       opts: R.pick(['revalidate'], action),
+      readMeta: action.readMeta,
     })
 
     if (isOK(readResponse)) {
