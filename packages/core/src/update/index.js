@@ -10,7 +10,7 @@ import * as Subsystem from '../subsystem'
 
 import * as impl from './impl'
 
-const registryAttribute = '@@girders-elements/_updateRegistry'
+const registryAttribute = '@@skele/_updateRegistry'
 
 Subsystem.extend(() => {
   const registry = new ActionRegistry()

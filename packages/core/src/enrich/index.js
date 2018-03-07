@@ -10,7 +10,7 @@ import { MultivalueRegistry, chainMultivalueRegistries } from '../registry'
 
 import * as impl from './impl'
 
-const registryAttribute = '@@girders-elements/_enrichRegistry'
+const registryAttribute = '@@skele/_enrichRegistry'
 
 SubSystem.extend(() => {
   const registry = new MultivalueRegistry()

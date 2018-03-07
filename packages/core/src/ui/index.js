@@ -13,7 +13,7 @@ import * as data from '../data'
 import { memoize } from '../impl/util'
 import { isSubclassOf } from '../impl/classes'
 
-const registryAttribute = '@@girders-elements/_uiRegistry'
+const registryAttribute = '@@skele/_uiRegistry'
 
 // required subsystems
 import * as SubSystem from '../subsystem'

@@ -1,6 +1,6 @@
-# Girders Elements Components
+# Skele Components
 
-Girders Elements' `components` package is a library of custom components that aid in building React and React Native apps.
+Skele's `components` package is a library of custom components that aid in building React and React Native apps.
 
 ## Available Components
 
@@ -11,7 +11,7 @@ Tracks the position and size of a `ScrollView` or `ListView` viewport. Communica
 #### Usage
 
 ```javascript
-import { Viewport } from '@girders-elements/components';
+import { Viewport } from '@skele/components';
 
 render() {
   return (
@@ -32,7 +32,7 @@ A higher-order component that processes the information communicated by the view
 
 ```javascript
 import { Image } from 'react-native';
-import { Viewport } from '@girders-elements/components';
+import { Viewport } from '@skele/components';
 const ViewportAwareImage = Viewport.Aware(Image);
 
 render() {
@@ -58,7 +58,7 @@ A higher-order component that can be used to display a place holder while the co
 
 ```javascript
 import { Image, View } from 'react-native';
-import { Viewport } from '@girders-elements/components';
+import { Viewport } from '@skele/components';
 
 const PlaceHolder = () => <View style={{ width: 50, height: 50, backgroundColor: 'darkgrey' }} />
 

@@ -9,8 +9,8 @@ import * as Subsystem from '../subsystem'
 
 import * as impl from './impl'
 
-const effectsRegistryAttribute = '@@girders-elements/_effectsRegistry'
-const sideEffectsRegistryAttribute = '@@girders-elements/_sideEffectsRegistry'
+const effectsRegistryAttribute = '@@skele/_effectsRegistry'
+const sideEffectsRegistryAttribute = '@@skele/_sideEffectsRegistry'
 
 Subsystem.extend(() => {
   const effectsRegistry = new ActionRegistry()

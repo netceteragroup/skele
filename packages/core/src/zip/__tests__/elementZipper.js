@@ -4,7 +4,7 @@ import { fromJS } from 'immutable'
 import * as zip from '..'
 import * as data from '../../data'
 
-const childCollectionKind = '@@girders-elements/child-collection'
+const childCollectionKind = '@@skele/child-collection'
 
 function elementZipper(data, defaultChildPositions) {
   return zip.elementZipper({ defaultChildPositions })(data)
@@ -269,7 +269,7 @@ describe('Zipper', () => {
   const withChildrenPositions = {
     id: 1,
     kind: 'tX',
-    '@@girders-elements/children': ['left', 'right'],
+    '@@skele/children': ['left', 'right'],
 
     left: [
       {
@@ -289,7 +289,7 @@ describe('Zipper', () => {
     ],
   }
 
-  it('supports the @@girders-elements/children hint for child positions', () => {
+  it('supports the @@skele/children hint for child positions', () => {
     const zipper = elementZipper(fromJS(withChildrenPositions))
 
     expect(zipper.value().get('id')).toEqual(1)

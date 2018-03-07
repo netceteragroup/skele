@@ -15,7 +15,7 @@ const childPositions = R.curry((defaultChildPositions, el) => {
 })
 
 const isBranch = R.curry((defaultChildPositions, element) => {
-  if (isOfKind('@@girders-elements/child-collection', element)) {
+  if (isOfKind('@@skele/child-collection', element)) {
     const children = element.get('children')
     return children && children.count() > 0
   }
@@ -30,7 +30,7 @@ const isBranch = R.curry((defaultChildPositions, element) => {
 })
 
 const getChildren = R.curry((defaultChildPositions, element) => {
-  if (isOfKind('@@girders-elements/child-collection', element)) {
+  if (isOfKind('@@skele/child-collection', element)) {
     return element.get('children').toArray()
   }
   // at a children collection level
@@ -49,14 +49,14 @@ const getChildren = R.curry((defaultChildPositions, element) => {
 
 const makeChildCollection = (p, children) =>
   Map({
-    kind: '@@girders-elements/child-collection',
+    kind: '@@skele/child-collection',
     propertyName: p,
     isSingle: !Iterable.isIndexed(children),
     children: asList(children),
   })
 
 const makeNode = R.curry((defaultChildPositions, element, children) => {
-  if (isOfKind('@@girders-elements/child-collection', element)) {
+  if (isOfKind('@@skele/child-collection', element)) {
     return element.set('children', List(children))
   }
   return children.reduce(

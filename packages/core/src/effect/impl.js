@@ -10,7 +10,7 @@ import { ActionRegistry } from '../registry'
 import { findParentEntry } from '../impl/cursor'
 import { error } from '../impl/log'
 
-const updateStateAction = '@@girders-elements/_effects.updateState'
+const updateStateAction = '@@skele/_effects.updateState'
 
 export const middleware = R.curry((config, store, next, action) => {
   const { kernel, effectsRegistry } = config

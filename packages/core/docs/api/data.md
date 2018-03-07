@@ -9,7 +9,7 @@ Executes a function composition on a given value.
 ### Usage
 
 ```javascript
-import { effect, data } from '@girders-elements/core'
+import { effect, data } from '@skele/core'
 import { pushScene } from './navigation'
 
 effect.register('app', '.pushScene', async (context, action) =>
@@ -24,7 +24,7 @@ A helper for easier reduce with zippers.
 ### Usage
 
 ```javascript
-import { zip, data } from '@girders-elements/core'
+import { zip, data } from '@skele/core'
 import I from 'immutable'
 
 import { initData } from './app'

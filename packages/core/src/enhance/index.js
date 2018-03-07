@@ -11,10 +11,8 @@ import { MultivalueRegistry, chainMultivalueRegistries } from '../registry'
 
 import * as impl from './impl'
 
-const readDependentRegistryAttribute =
-  '@@girders-elements/_readDependentEnhanceRegistry'
-const readIndependentListAttribute =
-  '@@girders-elements/_readIndependentEnhanceList'
+const readDependentRegistryAttribute = '@@skele/_readDependentEnhanceRegistry'
+const readIndependentListAttribute = '@@skele/_readIndependentEnhanceList'
 
 SubSystem.extend(() => {
   const readDependentRegistry = new MultivalueRegistry()

@@ -9,7 +9,7 @@ Registers an update to a specific kind and action type.
 ### Usage
 
 ```javascript
-import { update } from '@girders-elements/core'
+import { update } from '@skele/core'
 
 update.register(['scene', 'article'], 'toggleIsBookmarked', el =>
   el.set('isBookmarked', !el.get('isBookmarked'))
@@ -23,7 +23,7 @@ Registers updates to a specific kind using a registration function.
 ### Usage
 
 ```javascript
-import { update } from '@girders-elements/core'
+import { update } from '@skele/core'
 
 update.forKind(['scene', 'article', 'briefing'], updates => {
   updates.register('toggleIsBookmarked', el =>

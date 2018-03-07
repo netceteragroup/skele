@@ -172,10 +172,10 @@ export function pathsToChildElements(element) {
   })
 }
 /**
- * Property name of for the location where positions of the elements'children
+ * Property name of the location where positions of the elements' children
  * can be found
  */
-export const childrenProperty = '@@girders-elements/children'
+export const childrenProperty = '@@skele/children'
 
 /**
  * Returns the value as a list.

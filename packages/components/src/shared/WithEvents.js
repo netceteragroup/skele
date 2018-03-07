@@ -2,8 +2,8 @@
 
 import PropTypes from 'prop-types'
 
-const listeners = '@@girders-elements.internal/listeners'
-const lastEvent = '@@girders-elements.internal/lastEvent'
+const listeners = '@@skele.internal/listeners'
+const lastEvent = '@@skele.internal/lastEvent'
 
 /**
  * A mixin that adds event handling methods to a React component

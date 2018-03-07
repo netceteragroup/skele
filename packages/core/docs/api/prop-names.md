@@ -5,10 +5,10 @@ Returns some essential prop name constants.
 ## Usage
 
 ```javascript
-import { propNames } from '@girders-elements/core'
+import { propNames } from '@skele/core'
 
-console.log(propNames.children)     // @@girders-elements/children
-console.log(propNames.metadata)     // @@girders-elements/metadata
-console.log(propNames.readFallback) // @@girders-elements/defaultRead
-console.log(propNames.actionMeta)   // @@girders-elements/_actionMeta
+console.log(propNames.children)     // @@skele/children
+console.log(propNames.metadata)     // @@skele/metadata
+console.log(propNames.readFallback) // @@skele/defaultRead
+console.log(propNames.actionMeta)   // @@skele/_actionMeta
 ```

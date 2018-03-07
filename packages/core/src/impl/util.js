@@ -2,7 +2,7 @@
 
 import { Map } from 'immutable'
 
-const notPresent = '@@girders-elements/_notPreset'
+const notPresent = '@@skele/_notPreset'
 
 export function memoize(fn) {
   let cache = Map()
@@ -24,7 +24,7 @@ export function memoize(fn) {
 
 // Use to time an async function
 export function time(note, fn) {
-  if (process.env.GIRDERS_PROFILING !== 'enable') {
+  if (process.env.SKELE_PROFILING !== 'enable') {
     return fn
   }
   return async (...args) => {
@@ -38,7 +38,7 @@ export function time(note, fn) {
 
 // Use to time a sync function
 export function timeSync(note, fn) {
-  if (process.env.GIRDERS_PROFILING !== 'enable') {
+  if (process.env.SKELE_PROFILING !== 'enable') {
     return fn
   }
   return (...args) => {
