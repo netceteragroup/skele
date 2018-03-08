@@ -19,8 +19,6 @@ to
 import ... from '@skele/classic'
 ```
 
-This is the only mandatory step, except if you were using action names directly.
-
 ## 2. Use the new property names
 
 The following property names have been renamed:
@@ -31,9 +29,11 @@ The following property names have been renamed:
 * `@@skele/_actionMeta` -> `@@skele/actionMeta`
 
 If you have been using them directly, please rename them in your code. Better yet,
-start using the `propNames` [object](api/prop-names.md) which lists them correctly.
+start using the `propNames` [object](api/prop-names.md) which will safeguard you
+from future changes.
 
-The old names will still work but will trigger deprecation warning.
+Because, `@girders-elements/children` is an important property name that is usually
+coming from a server, _it is still supported_ but it will triger a deprecation warning.
 
 ### 3. Use the new action types
 
