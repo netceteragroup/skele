@@ -3,5 +3,5 @@
 export { actionMetaProperty as actionMeta } from './action'
 export { fallback as readFallback } from './read'
 
-export const children = '@@skele/children'
+export { childrenProperty as children } from './data'
 export const metadata = '@@skele/metadata'

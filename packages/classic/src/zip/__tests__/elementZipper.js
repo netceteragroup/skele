@@ -269,7 +269,7 @@ describe('Zipper', () => {
   const withChildrenPositions = {
     id: 1,
     kind: 'tX',
-    '@@skele/children': ['left', 'right'],
+    [data.childrenProperty]: ['left', 'right'],
 
     left: [
       {

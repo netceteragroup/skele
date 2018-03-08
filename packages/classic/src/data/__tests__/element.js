@@ -158,10 +158,16 @@ describe('childPositions', () => {
     kind: 'component',
   })
 
+  const deprecatedUse = fromJS({
+    kind: 'component',
+    '@@girders-elements/children': ['children'],
+  })
+
   expect(childPositions(aString)).toEqualI(List.of('children'))
   expect(childPositions(anArray)).toEqualI(List.of('children'))
   expect(childPositions(multiple)).toEqualI(List.of('children', 'aside'))
   expect(childPositions(missing)).toEqualI(List())
+  expect(childPositions(deprecatedUse)).toEqualI(List.of('children'))
 })
 
 describe('pathsToChildElements', () => {
