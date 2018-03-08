@@ -1,15 +1,20 @@
 {
   "name": "@skele/classic",
-  "version": "1.0.0-alpha.26",
-  "description":
-    "Skele is an architectural framework that assists with building data-driven apps with React or React Native.",
+  "version": "1.0.0-alpha.27",
+  "description": "Skele is an architectural framework that assists with building data-driven apps with React or React Native.",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/netceteragroup/skele.git"
   },
-  "keywords": ["react", "react-native", "redux", "redux-saga", "netcetera"],
+  "keywords": [
+    "react",
+    "react-native",
+    "redux",
+    "redux-saga",
+    "netcetera"
+  ],
   "author": "netcetera",
   "license": "MIT",
   "bugs": {
