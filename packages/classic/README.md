@@ -26,6 +26,8 @@ The documentation of Skele's API is available [here](https://netcetera.gitbooks.
 
 ### Note on Transitioning from Girders Elements
 
+Please follow [this manual](docs/transitioning-from-girders-elements.md).
+
 ### Installation
 
 ```
