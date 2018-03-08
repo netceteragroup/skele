@@ -3,6 +3,7 @@
 
 import * as R from 'ramda'
 import invariant from 'invariant'
+import deprecated from '../impl/deprecated'
 import {
   List,
   Seq,
@@ -176,7 +177,7 @@ export function pathsToChildElements(element) {
  * can be found
  */
 export const childrenProperty = '@@skele/children'
-
+const deprecatedChildrenProperty = '@@girders-elements/children'
 /**
  * Returns the value as a list.
  *
@@ -192,9 +193,21 @@ export const asList = v =>
     ? v
     : Array.isArray(v) ? List(v) : v != null ? List.of(v) : List()
 
+const deprecatedChildrenGetter = deprecated(
+  'The use of `@@girders-elements/children` to demarcate child positions in an element ' +
+    'is deprecated. Please use `@@skele/children` or `propNames.children` instead',
+  el => el.get(deprecatedChildrenProperty)
+)
+
 /**
  * Returns a list of property names where the element's children may be found
  *
  * @parma the element, the default value
  */
-export const childPositions = element => asList(element.get(childrenProperty))
+export const childPositions = element =>
+  asList(
+    element.get(childrenProperty) ||
+      (element.has(deprecatedChildrenProperty)
+        ? deprecatedChildrenGetter(element)
+        : null)
+  )

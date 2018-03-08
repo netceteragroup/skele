@@ -1,4 +1,4 @@
 node_modules/
 dist/
 coverage/
-packages/core/src/vendor
+packages/classic/src/vendor

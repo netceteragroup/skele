@@ -9,12 +9,12 @@ Registers an update to a specific kind and action type.
 ### Usage
 
 ```javascript
-import { update } from '@skele/core'
+import { update } from '@skele/classic'
 
 update.register(['scene', 'article'], 'toggleIsBookmarked', el =>
   el.set('isBookmarked', !el.get('isBookmarked'))
 )
-``` 
+```
 
 ## `forKind(kind, registrationFn)`
 
@@ -23,12 +23,12 @@ Registers updates to a specific kind using a registration function.
 ### Usage
 
 ```javascript
-import { update } from '@skele/core'
+import { update } from '@skele/classic'
 
 update.forKind(['scene', 'article', 'briefing'], updates => {
   updates.register('toggleIsBookmarked', el =>
-    el.set('bookmarked', !el.get('bookmarked')))
-  updates.register('toggleIsRead', el =>
-    el.set('isRead', !el.get('isRead')))
+    el.set('bookmarked', !el.get('bookmarked'))
+  )
+  updates.register('toggleIsRead', el => el.set('isRead', !el.get('isRead')))
 })
 ```

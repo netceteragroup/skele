@@ -1,6 +1,6 @@
 # Subsystem
 
-A subsystem is a modular part of an app responsible for providing a particular functionality to the kernel. 
+A subsystem is a modular part of an app responsible for providing a particular functionality to the kernel.
 
 ## `create(subsystemFn)`
 
@@ -9,7 +9,7 @@ Creates a subsystem using a subsystem generation function.
 ### Usage
 
 ```javascript
-import { Subsystem } from '@skele/core'
+import { Subsystem } from '@skele/classic'
 
 const navigationSubsystem = Subsystem.create(system => {
   return {
@@ -26,7 +26,7 @@ Creates a subsystem from a middleware.
 ### Usage
 
 ```javascript
-import { Kernel, Subsystem, defaultSubsystems } from '@skele/core'
+import { Kernel, Subsystem, defaultSubsystems } from '@skele/classic'
 import { tracking, logging } from './middleware'
 
 const initData = { kind: 'app' }
@@ -36,8 +36,5 @@ const middleware = [
   Subsystem.fromMiddleware(logging, 'logging'),
 ]
 
-Kernel.create(
-  [...defaultSubsystems, ...middleware],
-  initData
-)
+Kernel.create([...defaultSubsystems, ...middleware], initData)
 ```

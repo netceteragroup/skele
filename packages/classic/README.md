@@ -1,11 +1,11 @@
-# Skele Core
+# Skele (Classic)
 
 [![Build Status](https://img.shields.io/travis/netceteragroup/skele/master.svg?style=flat-square)](https://travis-ci.org/netceteragroup/skele)
 [![Coverage Status](https://img.shields.io/coveralls/netceteragroup/skele/master.svg?style=flat-square)](https://coveralls.io/github/netceteragroup/skele?branch=master)
 
 Skele is an architectural framework that assists building
 **data-driven** apps with **[React](https://facebook.github.io/react/)** or
- **[React Native](https://facebook.github.io/react-native/)**.
+**[React Native](https://facebook.github.io/react-native/)**.
 It is extremely well-suited for creating highly **dynamic UIs**,
 that are driven by back-end systems (like Content Management Systems).
 
@@ -24,14 +24,18 @@ The documentation of Skele's API is available [here](https://netcetera.gitbooks.
 
 [persistent-data-structures]: https://github.com/facebook/immutable-js/#immutable-collections-for-javascript
 
+### Note on Transitioning from Girders Elements
+
 ### Installation
 
 ```
-npm install --save @skele/core
+npm install --save @skele/classic
 ```
+
 or
+
 ```
-yarn add @skele/core
+yarn add @skele/classic
 ```
 
 Also, you will need to add `react`, `redux` and `react-dom` / `react-native`
@@ -61,12 +65,12 @@ import 'core-js/modules/es6.symbol'
 
 A Skele app, in rough terms, works by
 
-- mapping a well defined data structure (a single tree of polymorphic elements)
+* mapping a well defined data structure (a single tree of polymorphic elements)
   to an user interface
-- having a well defined way how to get data from the "outside world" into that tree
-- having a well defined way how to change that data structure based on user
+* having a well defined way how to get data from the "outside world" into that tree
+* having a well defined way how to change that data structure based on user
   interaction
-- having a way how to affect the outside world
+* having a way how to affect the outside world
 
 ![Overview Diagram](docs/illustrations/overview.png)
 
@@ -75,10 +79,10 @@ A Skele app, in rough terms, works by
 The app keeps a central **application state** (in a redux store) with the following
 characteristics:
 
-- it is a well defined **polymorphic tree**
-- each node in the tree is an **element**, essentially an object *tagged* by
+* it is a well defined **polymorphic tree**
+* each node in the tree is an **element**, essentially an object _tagged_ by
   a `kind` property
-- Each node / element contains all the essential information necessary to
+* Each node / element contains all the essential information necessary to
   construct a user interface.
 
 Example:
@@ -97,8 +101,8 @@ Example:
       {
         "kind": ["teaser", "small"],
         "imageUrl": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock.jpg",
-        "imageUrlSmall": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock-small.jpg"        
-        "title": "Another Sherlock Holmes Teaser"        
+        "imageUrlSmall": "http://spyhollywood.com/wp-content/uploads/2016/06/sherlock-small.jpg"
+        "title": "Another Sherlock Holmes Teaser"
       }
     ]
   }
@@ -111,10 +115,10 @@ Example:
 
 The `kind` property of an element:
 
-- serves as a **tag**; data objects of the same "type" are tagged with
+* serves as a **tag**; data objects of the same "type" are tagged with
   the same `kind`
-- determines which properties are inside that element
-- determines which (if any) sub-elements are there
+* determines which properties are inside that element
+* determines which (if any) sub-elements are there
 
 The `kind` can be a simple string. E.g.
 
@@ -132,7 +136,6 @@ kind `teaser` have the properties `imageUrl` and `title`.
 Element kind **specialization** is supported as well. Specialized kinds are
 represented using array notation:
 
-
 ```javascript
 {
   "kind": ["teaser", "small"],
@@ -143,12 +146,12 @@ represented using array notation:
 ```
 
 In the above example, the the element is of the kind `['teaser', 'small']`.
-This kind is *a specialization of* the kind `['teaser']`.
+This kind is _a specialization of_ the kind `['teaser']`.
 
 Note that the kinds `'teaser'` and `['teaser']` are **equivalent**. The array
-form is the *canonical representation*.
+form is the _canonical representation_.
 
-There is one rule that is followed when using *specializations*: **Elements of a
+There is one rule that is followed when using _specializations_: **Elements of a
 more specialized kind must contain all the properties that are required for the
 more general kind**.
 
@@ -158,7 +161,7 @@ provides the `imageUrl` property (required for `['teaser']`), but it adds an
 `imageUrlSmall` property as well.
 
 This is a requirement that enables **forward compatibility** of the data feeds
-/ APIs. As the backend can evolves, it sends *more specialized* forms of older
+/ APIs. As the backend can evolves, it sends _more specialized_ forms of older
 elements. The clients (usually mobile apps with an update process over which we
 have no precise control) with an older version of the app can still correctly
 interpret the newer data feeds.
@@ -171,10 +174,10 @@ below.
 The UI of an element can be any React Component that takes three
 props: `element`, `dispatch` and `uiFor`.
 
-- The `element` is an immutable.js structure representing the data model
+* The `element` is an immutable.js structure representing the data model
   (sub-tree) of the specific element in the application state
-- The `dispatch` is the standard redux dispatcher for dispatching actions
-- The `uiFor` property is a function that is used to render the UI of sub-elements.
+* The `dispatch` is the standard redux dispatcher for dispatching actions
+* The `uiFor` property is a function that is used to render the UI of sub-elements.
 
 We register the UI for an element by using:
 
@@ -184,16 +187,16 @@ Following the [example we used so far][application-state], we can define the UI
 for the element of kind `teaser` the following way:
 
 ```javascript
-ui.register('teaser', ({ element }) =>
+ui.register('teaser', ({ element }) => (
   <View>
-    <Image source={{uri: element.get('imageUrl')}} />
+    <Image source={{ uri: element.get('imageUrl') }} />
     <Text>{element.get('title')}</Text>
   </View>
-);
+))
 ```
 
-The code essentially states: *whenever an element of the kind `teaser` needs to
-be presented, use the following component to materialize the UI for it*.
+The code essentially states: _whenever an element of the kind `teaser` needs to
+be presented, use the following component to materialize the UI for it_.
 
 #### Rendering of sub - elements
 
@@ -204,26 +207,22 @@ one must take care to render its children properly.
 This is done via the `uiFor` property passed to the element's UI:
 
 ```javascript
-ui.register('__app', ({ element, uiFor }) =>
-  <div id="app">
-    {uiFor('entryPoint')}
-  </div>
-);
+ui.register('__app', ({ element, uiFor }) => (
+  <div id="app">{uiFor('entryPoint')}</div>
+))
 ```
 
 Here we are specifying the UI for [our top-level element][application-state]
 (root element). The `__app` has an `entryPoint` property which is an element of
 any kind. By invoking `uiFor('entryPoint')` we are asking Skele to
-produce the UI for the element under the property `entryPoint` for us.  
+produce the UI for the element under the property `entryPoint` for us.
 
 `uiFor` can be used to render a list of elements as well:
 
 ```javascript
-ui.register('vertical-container', ({ element, uiFor }) =>
-  <div class="vertical-container">
-    {uiFor('children')}
-  </div>
-);
+ui.register('vertical-container', ({ element, uiFor }) => (
+  <div class="vertical-container">{uiFor('children')}</div>
+))
 ```
 
 Here, we are registering the UI for the element of kind `vertical-container`
@@ -235,11 +234,9 @@ in this list, using the appropriate UI for each of those elements.
 `uiFor` can also be called with a a key-path:
 
 ```javascript
-ui.register('__app', ({ uiFor }) =>
-  <div class="app">
-    {uiFor(['entryPoint', 'children', 0])}
-  </div>
-);
+ui.register('__app', ({ uiFor }) => (
+  <div class="app">{uiFor(['entryPoint', 'children', 0])}</div>
+))
 ```
 
 Here, in the UI for `__app`, we are are asking Skele to render the
@@ -253,7 +250,7 @@ Whenever Skele encounters a request to present a UI for some element
 1. it will try to find the UI using the requested element first
 2. if it doesn't find an UI, it will try with **a more general kind**
 3. if it doesn't find a UI for it, it will try with **an even more general kind**
-4. and so on, until an UI is found or there are no *more general* kinds to be
+4. and so on, until an UI is found or there are no _more general_ kinds to be
    derived from the current one.
 
 Given the kind `['teaser', 'small', 'new']`, the following statement holds true:
@@ -271,14 +268,14 @@ So the resolution will
 3. if not found, it will look for an UI for `['teaser']`
 4. if not found, it will look for an UI for `[]` (the empty kind)
 
-
 #### Dispatching Actions
 
 An action is just a string identifying what needs to be performed on the state. When one triggers an action, one can also supply additional parameters (payload) to the action that will be provided later on to the update.
 
 The dispatch prop is used to dispatch an action. Actions can be
-- **local** - meaning that the action will be handled by an updater for the element from which it was dispatched
-- **global** - meaning that the action will be handled by an updater for the action that is either registered for the element from which the action was dispatched, or some of its parents
+
+* **local** - meaning that the action will be handled by an updater for the element from which it was dispatched
+* **global** - meaning that the action will be handled by an updater for the action that is either registered for the element from which the action was dispatched, or some of its parents
 
 Global actions are identified by starting dot in the action type (for now, might change in near future).
 
@@ -292,14 +289,19 @@ Here is an example:
 
 ```javascript
 update.register(['article'], elementRegistry => {
-  elementRegistry.register('TOGGLE_BOOKMARK', (element, action) => element.set('bookmarked', element.get('bookmarked')));
-  elementRegistry.register('.LOAD', (element, action) => element.set('data', action.payload.data));
+  elementRegistry.register('TOGGLE_BOOKMARK', (element, action) =>
+    element.set('bookmarked', element.get('bookmarked'))
+  )
+  elementRegistry.register('.LOAD', (element, action) =>
+    element.set('data', action.payload.data)
+  )
 })
 ```
 
 In this example, for the `article` **element** we register two **updates**:
-- a local update, in case `TOGGLE_BOOKMARK` is dispatch only from the `article` element, we change the `bookmarked` flag
-- a global update, in case `.LOAD` is dispatch from the `article` element or any of its children
+
+* a local update, in case `TOGGLE_BOOKMARK` is dispatch only from the `article` element, we change the `bookmarked` flag
+* a global update, in case `.LOAD` is dispatch from the `article` element or any of its children
 
 ### Read
 
