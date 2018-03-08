@@ -4,16 +4,13 @@
 
 ## Importing
 
-    import { ui } from '@skele/core';
+    import { ui } from '@skele/classic';
 
-    import skele from '@skele/core';
+    import skele from '@skele/classic';
     // what's inside
     skele.ui
     skele.read
     skele.update
-
-
-
 
 # Element UI
 
@@ -44,7 +41,6 @@ Any element can render a sub element by:
       )
     })
 
-
 A list of children can be rendered using:
 
     UI.register(['article'], ({ element, dispatch }) => {
@@ -71,12 +67,10 @@ It is not required that an update is registered for that specific action for the
       )
     })
 
-
 # Actions, Updates, Sagas
 
 An action is just a string identifying what needs to be performed on the state. When one triggers an action, one can
 also supply additional parameters (payload) to the action that will be provided later on to the update or saga.
-
 
 ## Updates
 
@@ -138,7 +132,6 @@ Updates are registered in a similar way ui is registered, by using the element k
         takeEvery('x', function* () { })
     }
 
-
 # Reads
 
 Reads are meant to standardize the way content is "read" into the application state and provide extension points for
@@ -149,7 +142,6 @@ A read is in essence a saga.
     reads.register(['scene'], ....)
 
     read.
-
 
 Invoking Reads:
 
@@ -209,4 +201,3 @@ Invoking Reads:
 # Configuration
 
 # Engine
-

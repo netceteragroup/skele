@@ -1,7 +1,8 @@
 {
   "name": "skele-container",
   "private": true,
-  "description": "Skele is an architectural framework that assists with building data-driven apps with React or React Native.",
+  "description":
+    "Skele is an architectural framework that assists with building data-driven apps with React or React Native.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/netceteragroup/skele.git"
@@ -19,19 +20,26 @@
     "coverage": "jest --coverage",
     "coverage-report": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint .",
-    "es5": "yarn run es5:core && yarn run es5:config && yarn run es5:components",
-    "es5:core": "babel -q packages/core/src --out-dir packages/core/dist/es5",
-    "es5:config": "babel -q packages/config/src --out-dir packages/config/dist/es5",
-    "es5:components": "babel -q packages/components/src --out-dir packages/components/dist/es5",
-    "clean": "yarn run clean:core && yarn run clean:config && yarn run clean:components",
-    "clean:core": "del-cli packages/core/dist",
+    "es5":
+      "yarn run es5:classic && yarn run es5:config && yarn run es5:components",
+    "es5:classic":
+      "babel -q packages/classic/src --out-dir packages/classic/dist/es5",
+    "es5:config":
+      "babel -q packages/config/src --out-dir packages/config/dist/es5",
+    "es5:components":
+      "babel -q packages/components/src --out-dir packages/components/dist/es5",
+    "clean":
+      "yarn run clean:classic && yarn run clean:config && yarn run clean:components",
+    "clean:classic": "del-cli packages/classic/dist",
     "clean:config": "del-cli packages/config/dist",
     "clean:components": "del-cli packages/components/dist",
     "build": "yarn run clean && yarn run test && yarn run lint && yarn run es5",
-    "release:test-token": "test -n \"$CONVENTIONAL_GITHUB_RELEASER_TOKEN\" || (echo 'Setup your github autho token first: https://github.com/conventional-changelog/conventional-github-releaser#cli' && exit 1)",
+    "release:test-token":
+      "test -n \"$CONVENTIONAL_GITHUB_RELEASER_TOKEN\" || (echo 'Setup your github autho token first: https://github.com/conventional-changelog/conventional-github-releaser#cli' && exit 1)",
     "release:publish": "lerna publish",
     "release:github": "conventional-github-releaser -p angular",
-    "release": "yarn run build && yarn run release:test-token && yarn run release:publish && yarn run release:github"
+    "release":
+      "yarn run build && yarn run release:test-token && yarn run release:publish && yarn run release:github"
   },
   "engines": {
     "node": ">= 7.4.0",
@@ -78,17 +86,13 @@
   },
   "jest": {
     "setupTestFrameworkScriptFile": "./scripts/test-setup.js",
-    "modulePathIgnorePatterns": [
-      "/dist/es5/"
-    ],
+    "modulePathIgnorePatterns": ["/dist/es5/"],
     "roots": [
-      "<rootDir>/packages/core",
+      "<rootDir>/packages/classic",
       "<rootDir>/packages/config",
       "<rootDir>/packages/components"
     ],
-    "testMatch": [
-      "**/__tests__/**/*.js"
-    ],
+    "testMatch": ["**/__tests__/**/*.js"],
     "collectCoverageFrom": [
       "**/*.js",
       "!**/__tests__/**",
@@ -97,7 +101,5 @@
       "!**/dist/es5/**"
     ]
   },
-  "workspaces": [
-    "packages/*"
-  ]
+  "workspaces": ["packages/*"]
 }

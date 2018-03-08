@@ -9,7 +9,7 @@ Registers an effect to a specific kind and action type.
 ### Usage
 
 ```javascript
-import { effect } from '@skele/core'
+import { effect } from '@skele/classic'
 
 effect.register(['scene', 'article'], '.setMarked', async (context, action) => {
   await sleep(50)
@@ -17,7 +17,7 @@ effect.register(['scene', 'article'], '.setMarked', async (context, action) => {
 })
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-``` 
+```
 
 ## `forKind(kind, registrationFn)`
 
@@ -26,7 +26,7 @@ Registers effects to a specific kind using a registration function.
 ### Usage
 
 ```javascript
-import { effect } from '@skele/core'
+import { effect } from '@skele/classic'
 import { setRead, setMarked } from './effects'
 
 effect.forKind(['scene', 'article'], effects => {

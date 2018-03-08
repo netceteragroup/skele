@@ -9,7 +9,7 @@ Registers a custom read to a specific URI or URI scheme.
 ### Usage
 
 ```javascript
-import { read } from '@skele/core'
+import { read } from '@skele/classic'
 
 import navigationRead from './reads/navigation'
 import articleRead from './reads/article'

@@ -9,7 +9,7 @@ Gets the metadata of an action.
 ### Usage
 
 ```javascript
-import { actions, propNames } from '@skele/core'
+import { actions, propNames } from '@skele/classic'
 
 const tsExtractorWithActionMeta = async (action, prevState, nextState) =>
   nextState
@@ -24,9 +24,13 @@ Returns the prop name of the action metadata.
 ### Usage
 
 ```javascript
-import { actions, propNames } from '@skele/core'
+import { actions, propNames } from '@skele/classic'
 
-const tsExtractorWithActionMetaProperty = async (action, prevState, nextState) =>
+const tsExtractorWithActionMetaProperty = async (
+  action,
+  prevState,
+  nextState
+) =>
   nextState
     .getIn(action[actions.actionMetaProperty].keyPath)
     .getIn([propNames.metadata, 'timestamp'])
@@ -39,11 +43,11 @@ Sets the action's metadata to reflect the element (cursor) at which the action w
 ### Usage
 
 ```javascript
-import { actions } from '@skele/core'
+import { actions } from '@skele/classic'
 
 const middleware = store => next => async action => {
   const result = next(action)
-  
+
   if (action.type === actions.types.read.apply) {
     store.dispatch(
       actions.atCursor(store.getState(), {
@@ -51,7 +55,7 @@ const middleware = store => next => async action => {
       })
     )
   }
-  
+
   return result
 }
 ```
@@ -63,7 +67,7 @@ Returns an action that refreshes the read.
 ```javascript
 import React from 'react'
 import { ScrollView, RefreshControl } from 'react-native'
-import { actions } from '@skele/core'
+import { actions } from '@skele/classic'
 
 export default class extends React.Component {
   render() {

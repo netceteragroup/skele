@@ -9,7 +9,7 @@ Registers a transformer to a specific kind.
 ### Usage
 
 ```javascript
-import { transform } from '@skele/core'
+import { transform } from '@skele/classic'
 
 transform.register('scene', element =>
   element.setIn(['metadata', 'title'], 'Home page')
