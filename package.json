@@ -94,7 +94,8 @@
       "<rootDir>/packages/classic",
       "<rootDir>/packages/config",
       "<rootDir>/packages/components",
-      "<rootDir>/packages/core"
+      "<rootDir>/packages/core",
+      "<rootDir>/packages/system"
     ],
     "testMatch": [
       "**/__tests__/**/*.js"
