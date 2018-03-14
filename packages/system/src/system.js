@@ -44,12 +44,12 @@ export function using(deps, def) {
 
 // todo: use Object.entries; contributions() flexible wrt. subsystem / subsystem instance
 
-const subsystemDef = ([name, def], deps = {}) =>
+const subsystemDef = ([name, def]) =>
   typeof def === 'function'
-    ? { type: 'sub', def, name, deps }
+    ? { type: 'sub', def, name, deps: {} }
     : def && def.type === 'sub'
       ? { ...def, name }
-      : { type: 'sub', def: () => def, name, deps }
+      : { type: 'sub', def: () => def, name, deps: {} }
 
 const instantiate = defs => {
   let instantiated = {}
@@ -131,19 +131,30 @@ const toposort = defs => {
   let visited = newSet()
   let defMap = toObj(defs)
 
-  const depsOf = node => objEntries(node.deps).map(en => en[1])
+  const depsOf = node => objEntries(node.deps)
 
-  const visit = (node, descendants) => {
+  const visit = (node, dependents) => {
+    if (dependents.indexOf(node) >= 0) {
+      throw new Error(
+        `Circular dependency (->: depends on): ${[...dependents, node]
+          .map(d => d.name)
+          .join(' -> ')}`
+      )
+    }
     if (containedInSet(node, visited)) return
-    if (descendants.indexOf(node) >= 0) throw new Error('circular dependency')
-
     visited = addToSet(node, visited)
 
-    depsOf(node).forEach(dep => {
+    depsOf(node).forEach(([internal, dep]) => {
       const nextNode = defMap[dep]
-      if (nextNode == null) throw new Error('Dependency does not exist')
+      if (nextNode == null) {
+        throw new Error(
+          `Unsatisfied dependency '${internal}' of subsystem '${
+            node.name
+          }'. Subsystem '${dep}' not found.`
+        )
+      }
 
-      visit(nextNode, [...descendants, node])
+      visit(nextNode, [...dependents, node])
     })
 
     sorted[cursor++] = node
