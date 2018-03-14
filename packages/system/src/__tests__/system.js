@@ -1,13 +1,14 @@
 'use strict'
 
-import System from '../system'
+import System, { using } from '../system'
 import Subsystem from '../subsystem'
 
 const sampleSubsystem = prop => Subsystem({ [prop]: true })
 
-const dependentSubsystem = (dep, prop) => Subsystem(deps => {
-  [prop]: deps[dep]
-})
+const dependentSubsystem = (dep, prop) =>
+  Subsystem(deps => ({
+    [prop]: deps[dep],
+  }))
 
 describe('System', () => {
   test('simple system, accewssing subsystems', () => {
@@ -54,5 +55,30 @@ describe('System', () => {
     expect(system.subsystems.sub1.prop1).toEqual(true)
     expect(system.subsystems.sub2.prop2).toEqual(true)
   })
-  
+
+  describe('dependencies', () => {
+    test('named dependency', () => {
+      const sub1 = sampleSubsystem('prop1')
+      const sub2 = dependentSubsystem('dep1', 'prop2')
+
+      const system = System({
+        sub2: using({ dep1: 'sub1' }, sub2),
+        sub1,
+      })
+
+      expect(system.subsystems.sub2.prop2.prop1).toEqual(true)
+    })
+
+    test('dependency name and subsytem name are the same', () => {
+      const sub1 = sampleSubsystem('prop1')
+      const sub2 = dependentSubsystem('sub1', 'prop2')
+
+      const system = System({
+        sub2: using(['sub1'], sub2),
+        sub1,
+      })
+
+      expect(system.subsystems.sub2.prop2.prop1).toEqual(true)
+    })
+  })
 })
