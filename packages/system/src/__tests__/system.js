@@ -20,8 +20,8 @@ describe('System', () => {
       sub2: sub2(),
     })
 
-    expect(system.subsystems.sub1.prop1).toEqual(true)
-    expect(system.subsystems.sub2.prop2).toEqual(true)
+    expect(system.sub1.prop1).toEqual(true)
+    expect(system.sub2.prop2).toEqual(true)
   })
 
   test('a subsystem can be a plain object', () => {
@@ -31,7 +31,7 @@ describe('System', () => {
       },
     })
 
-    expect(system.subsystems.sub.prop1).toEqual(true)
+    expect(system.sub.prop1).toEqual(true)
   })
 
   test('a subsystem can be a function returning an object', () => {
@@ -43,7 +43,7 @@ describe('System', () => {
       },
     })
 
-    expect(system.subsystems.sub.prop1).toEqual(true)
+    expect(system.sub.prop1).toEqual(true)
   })
 
   test('shorthand: since instantiating is actually "calling it":', () => {
@@ -52,8 +52,8 @@ describe('System', () => {
 
     const system = System({ sub1, sub2 })
 
-    expect(system.subsystems.sub1.prop1).toEqual(true)
-    expect(system.subsystems.sub2.prop2).toEqual(true)
+    expect(system.sub1.prop1).toEqual(true)
+    expect(system.sub2.prop2).toEqual(true)
   })
 
   describe('dependencies', () => {
@@ -66,7 +66,7 @@ describe('System', () => {
         sub1,
       })
 
-      expect(system.subsystems.sub2.prop2.prop1).toEqual(true)
+      expect(system.sub2.prop2.prop1).toEqual(true)
     })
 
     test('dependency name and subsystem name are the same', () => {
@@ -78,7 +78,7 @@ describe('System', () => {
         sub1,
       })
 
-      expect(system.subsystems.sub2.prop2.prop1).toEqual(true)
+      expect(system.sub2.prop2.prop1).toEqual(true)
     })
 
     test('throws in case of an unsatisfied dependency (we could relax this, I guess?)', () => {

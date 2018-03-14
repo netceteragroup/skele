@@ -52,7 +52,8 @@ const example = Subsystem({
 })
 
 const system = System({
-  hello: example(),
+  hello: example,
+  hello2: example(), // can also be instantiated cirectly
 })
 
 const hello = system.hello.helloWorld() // => 'hello world'
@@ -138,9 +139,10 @@ const example = Subsystem(({ config }) => ({
 
 const system = System({
   configuration: configuration(),
-  hello: example.using({ config: 'configuration' }),
-  //                     ^ name wihtin   ^ name within system
-  //                       subsystem
+  hello: using({ config: 'configuration' }, example),
+  //             ^ reads "configuration as config"
+  //               i.e, pass the "configuration" subsystem
+  //               named as 'config' when instantiating hello
 })
 
 // or, in case the name used inside the subsystem is the same
@@ -148,9 +150,18 @@ const system = System({
 
 const system2 = System({
   config: configuration(),
-  hello: example.using(['config']),
+  hello: using(['config'], example), // same as
+  hello2: using({ config }, example) // same as
+  hello3: using({ config: 'config' }, example)
 })
 ```
+
+The `using(depMapping)` method as a wrapper around a subsystem to map it's declared
+dependencies to other subsystems within the system.
+
+The mehod takes a map/object as a first argument, which indicates which declared depenency
+(the property name) should be satisfied with which subsystem (the property value) from
+within the system being defined.
 
 ## Extensions
 
@@ -227,7 +238,7 @@ The `router` subsystem acceptes _contributed extensions_ by declaring a `routes`
 To contribute routes (extensions) another subsystem does:
 
 ```javascript
-import { Subsystem } from '@skele/system'
+import { Subsystem, using, contributions } from '@skele/system'
 import { routesSlot } from './Router'
 
 const App = Subsystem(({ router }) => {})
@@ -253,11 +264,11 @@ import Router, { routesSlot } from './Router'
 import App from './App'
 
 export default System({
-  router: Router.using({ routes: System.contributions(routesSlot) }),
-  app: App.using(['router']),
+  router: using({ routes: contributions(routesSlot) }, Router),
+  app: using(['router'], App),
 })
 ```
 
-The `System.contributions(extensionSlot)` method will insert a special dependency
+The `contributions(extensionSlot)` method will insert a special dependency
 marker for the system that causes it to collect available extensions (by calling
 the `collect()` method on subsystems that contrbute and pass them on as a dependency.

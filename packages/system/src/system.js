@@ -8,18 +8,14 @@ export default function System(def) {
     'The system definition must be an object declaring the subsystems'
   )
 
-  const subsystems = flow(
+  return flow(
     def,
     objEntries,
     map(subsystemDef),
     toposort,
     instantiate,
-    toSubsystemInstances
+    toSystemObject
   )
-
-  return {
-    subsystems,
-  }
 }
 
 export function using(deps, def) {
@@ -86,14 +82,18 @@ const objEntries = obj => {
   return resArray
 }
 
-const toSubsystemInstances = defs => {
-  let result = {}
+const toSystemObject = defs => {
+  let system = {}
 
   defs.forEach(({ name, instance }) => {
-    result[name] = instance
+    Object.defineProperty(system, name, {
+      value: instance,
+      enumerable: true,
+      writeble: false,
+    })
   })
 
-  return result
+  return system
 }
 
 const toObj = entries => {
@@ -187,13 +187,5 @@ function containedInSet(v, set) {
     return set.indexOf(v) >= 0
   } else {
     return set.has(v)
-  }
-}
-
-function removeFromSet(v, set) {
-  if (typeof Set === 'undefined') {
-    return set.filter(val => val !== v)
-  } else {
-    return set.delete(v)
   }
 }
