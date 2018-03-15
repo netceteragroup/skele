@@ -1,15 +1,20 @@
 {
   "name": "@skele/system",
   "version": "1.0.0-alpha.27",
-  "description":
-    "A small framework managing the lifecycle and dependencies of software componenes (sub-systems)/",
+  "description": "A small framework managing the lifecycle and dependencies of software componenes (sub-systems)/",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/netceteragroup/skele.git"
   },
-  "keywords": ["react", "react-native", "redux", "redux-saga", "netcetera"],
+  "keywords": [
+    "react",
+    "react-native",
+    "redux",
+    "redux-saga",
+    "netcetera"
+  ],
   "author": "netcetera",
   "license": "MIT",
   "bugs": {
