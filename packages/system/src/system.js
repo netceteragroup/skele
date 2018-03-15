@@ -4,7 +4,7 @@ import invariant from 'invariant'
 
 export default function System(def) {
   invariant(
-    typeof def === 'object',
+    typeof def === 'object' || (Array.isArray(def) && conformEntries(def)),
     'The system definition must be an object declaring the subsystems'
   )
 
@@ -37,6 +37,8 @@ export function using(deps, def) {
       : deps,
   }
 }
+// an alias
+export const after = using
 
 // todo: use Object.entries; contributions() flexible wrt. subsystem / subsystem instance
 
@@ -74,6 +76,8 @@ const instantiate = defs => {
 // Utilities
 
 const objEntries = obj => {
+  if (Array.isArray(obj)) return obj
+
   const ownProps = Object.keys(obj)
   let i = ownProps.length
   const resArray = new Array(i)
@@ -94,6 +98,19 @@ const toSystemObject = defs => {
   })
 
   return system
+}
+
+const conformEntries = arr => {
+  console.log('arr', arr)
+  if (arr.length === 0) return true
+
+  arr.forEach(e => {
+    if (!Array.isArray(e)) return false
+    if (e.length !== 2) return false
+    if (typeof e[0] !== 'string') return false
+  })
+
+  return true
 }
 
 const toObj = entries => {

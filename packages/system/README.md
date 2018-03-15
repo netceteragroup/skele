@@ -272,3 +272,82 @@ export default System({
 The `contributions(extensionSlot)` method will insert a special dependency
 marker for the system that causes it to collect available extensions (by calling
 the `collect()` method on subsystems that contrbute and pass them on as a dependency.
+
+## Ordering of subsystems (and extensions)
+
+When a subsystem uses extensions, the order in which these extensions are delivered
+to a subsystem often becomes important. E.g. when multiple routes match a given,
+URL, which one is given precedence?
+
+The framework will pass on extensions to a subsystem **in the order in which it
+instantiated the subsystems**.
+
+When you are defining a System (using an object as specification), this order will be
+detrmined by the _enumeration order_ (`for .. in`) of the properties of the specification,
+minimally adjusted so that the dependencies of a subystem are instantiated before it itself
+is instantiated (topological sort).
+
+Even though the JS specification states that the `for...in` enumeration order is not defined
+for objects, In most JS environments, this enumeration orer will be the order in which the properties
+appear in the object literal, e.g. for
+
+```javascript
+const sys = System({
+  router: using({ x: 'x', routes: contributions(routesSlot) }, router),
+  approutes: approutes,
+  x: y,
+})
+```
+
+The enumeration order will be `[router, approutes, x]`, and consequently the ordering of the subsystems
+will be `[x, router, approutes]` (`x` goes in front of `router` because it is a dependency).
+
+If it is vital for your app to make sure this order is predictable accross JS envs, then you may also
+use the _array of touples_ form (same form as the result of `Object.entries()`) to specify
+the system:
+
+```javascript
+const sys = System([
+  ['router', using({ x: 'x', routes: contributions(routesSlot) }, router)],
+  ['approutes', approutes],
+  ['x', y],
+])
+```
+
+This way the subsystem instantiation order, and therefore the **extension order** will be stable in all
+environments.
+
+But ultimately, if you wish that an extension provided by subsystem `A` has more precedence (comes later in
+the extension order) than the extension provided by subsystem `B`, it is better **not to rely on the instantiation
+order at all**, but to make this ordering more explicit. You can do that by just introducing `B` as dependency
+of `A`, even though you aren't accessing this object:
+
+```javascript
+const sys = System({
+  router: using({ x: 'x', routes: contributions(routesSlot) }, router),
+  productRoutes: productroutes,
+  tenantRoutes: using(['productRoutes'], tenantRoutes),
+  x: y,
+})
+```
+
+By making `productRoutes` a dependency of `tenantRoutes` we make sure the in the order in which
+extensions are passed to the `router`, the tenant routes will always come after product routes.
+
+To make this intent more clear, we've made `after` an alias for `using`. So you would write:
+
+```javascript
+import { System, contributions, using, after } from '@skele/system'
+
+import router, { routesSlot } from './router'
+import productRoutes from './productRoutes'
+import tenantRoutes from './tenantRoutes'
+import y from './y'
+
+const sys = System({
+  router: using({ x: 'x', routes: contributions(routesSlot) }, router),
+  productRoutes: productroutes,
+  tenantRoutes: after(['productRoutes'], tenantRoutes),
+  x: y,
+})
+```
