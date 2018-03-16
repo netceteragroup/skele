@@ -25,7 +25,7 @@ Check out the API documentation [here](https://netcetera.gitbooks.io/skele/).
 
 ## Transitioning from versions prior to 1.0.0-alpha.27
 
-Please check this [manual](./packages/classc/docs/transitioning-from-girders-elements.md)
+Please check this [manual](./packages/classic/docs/transitioning-from-girders-elements.md)
 
 ## License
 
