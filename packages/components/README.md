@@ -42,7 +42,7 @@ const ViewportAwareImage = Viewport.Aware(Image);
 render() {
   return (
     <ViewportAwareImage
-      source={{uri: 'https://facebook.github.io/react-native/img/header_logo.png'}}
+      source={{ uri: 'https://facebook.github.io/react-native/img/header_logo.png' }}
       preTriggerRatio={0.5}
       onViewportEnter={() => console.log('Entered!')}
       onViewportLeave={() => console.log('Left!')} />
@@ -79,7 +79,7 @@ render() {
   return (
     <ViewportAwareImageWithPlaceholder
       // placeholder={Placeholder} // passing down a placeholder at render time
-      source={{uri: 'https://facebook.github.io/react-native/img/header_logo.png'}}
+      source={{ uri: 'https://facebook.github.io/react-native/img/header_logo.png' }}
       preTriggerRatio={0.5}
       style={{ width: 50, height: 50 }} />
   );
