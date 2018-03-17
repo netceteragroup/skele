@@ -54,24 +54,13 @@ render() {
 
 | Prop | Description | Default |
 |---|---|---|
+|**`preTriggerRatio`**| Determines pre-triggering of `inViewport`. Useful for rendering components beforehand to improve user experience. A ratio of `0.5` means that the effective viewport will be twice the size of the real viewport. | `0` |
+|**`onViewportEnter`**| Invoked when the component enters the viewport. | `null` |
+|**`onViewportLeave`**| Invoked when the component leaves the viewport. | `null` |
 
-|**`preTriggerRatio`**|
-Determines pre-triggering of `inViewport`.
-Useful for rendering components beforehand to improve user experience.
-A ratio of `0.5` means that the effective viewport will be twice the size of the real viewport.
-| `0` |
+### With Placeholder
 
-|**`onViewportEnter`**|
-Invoked when the component enters the viewport.
-| `null` |
-
-|**`onViewportLeave`**|
-Invoked when the component leaves the viewport.
-| `null` |
-
-### With Place Holder
-
-A higher-order component that can be used to display a place holder while the component is not in the viewport.
+A higher-order component that can be used to display a placeholder while the component is not in the viewport.
 This can improve user experience since it can serve as a mechanism for lazy loading.
 
 #### Usage
@@ -80,16 +69,16 @@ This can improve user experience since it can serve as a mechanism for lazy load
 import { Image, View } from 'react-native';
 import { Viewport } from '@skele/components';
 
-const PlaceHolder = () =>
+const Placeholder = () =>
   <View style={{ width: 50, height: 50, backgroundColor: 'darkgrey' }} />
 
 const ViewportAwareImageWithPlaceholder =
-  Viewport.Aware(Viewport.WithPlaceHolder(Image, PlaceHolder));
+  Viewport.Aware(Viewport.WithPlaceholder(Image, Placeholder));
 
 render() {
   return (
     <ViewportAwareImageWithPlaceholder
-      // placeHolder={Placeholder} // passing down a place holder at render time
+      // placeholder={Placeholder} // passing down a placeholder at render time
       source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
       preTriggerRatio={0.5}
       style={{ width: 50, height: 50 }} />
@@ -101,4 +90,4 @@ render() {
 
 | Prop | Description | Default |
 |---|---|---|
-|**`placeHolder`**| Useful for passing down a place holder at render time. | `null` |
+|**`placeholder`**| Useful for passing down a placeholder at render time. | `null` |
