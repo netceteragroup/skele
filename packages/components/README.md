@@ -6,7 +6,8 @@ Skele's `components` package is a library of custom components that aid in build
 
 ### Viewport Tracker
 
-Tracks the position and size of a `ScrollView` or `ListView` viewport. Communicates it to all viewport aware child components.
+Tracks the position and size of a `ScrollView`, `FlatList` or `SectionList` viewport.
+Communicates it to all viewport aware child components.
 
 #### Usage
 
@@ -16,7 +17,7 @@ import { Viewport } from '@skele/components';
 render() {
   return (
     <Viewport.Tracker>
-      <ScrollView>
+      <ScrollView scrollEventThrottle={16}>
         { this.props.children }
       </ScrollView>
     </Viewport.Tracker>
@@ -26,7 +27,10 @@ render() {
 
 ### Viewport Aware
 
-A higher-order component that processes the information communicated by the viewport tracker. Determines whether the wrapped component is in or outside the viewport. Updates the `inViewport` parameter of the wrapped component accordingly.
+A higher-order component that processes the information communicated by the viewport tracker.
+Determines whether the wrapped component is in or outside the viewport.
+Updates the `inViewport` parameter of the wrapped component accordingly.
+Invokes `onViewportEnter` and `onViewportLeave` when the component enters or leaves the viewport.
 
 #### Usage
 
@@ -39,7 +43,9 @@ render() {
   return (
     <ViewportAwareImage
       source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
-      preTriggerRatio={0.5} />
+      preTriggerRatio={0.5}
+      onViewportEnter={() => console.log('Entered!')}
+      onViewportLeave={() => console.log('Left!')} />
   );
 }
 ```
@@ -48,11 +54,25 @@ render() {
 
 | Prop | Description | Default |
 |---|---|---|
-|**`preTriggerRatio`**| Determines pre-triggering of `inViewport`. Useful for rendering components beforehand to improve user experience. A ratio of `0.5` means that the effective viewport will be twice the size of the real viewport. | `0` |
+
+|**`preTriggerRatio`**|
+Determines pre-triggering of `inViewport`.
+Useful for rendering components beforehand to improve user experience.
+A ratio of `0.5` means that the effective viewport will be twice the size of the real viewport.
+| `0` |
+
+|**`onViewportEnter`**|
+Invoked when the component enters the viewport.
+| `null` |
+
+|**`onViewportLeave`**|
+Invoked when the component leaves the viewport.
+| `null` |
 
 ### With Place Holder
 
-A higher-order component that can be used to display a place holder while the component is not in the viewport. This can improve user experience.
+A higher-order component that can be used to display a place holder while the component is not in the viewport.
+This can improve user experience since it can serve as a mechanism for lazy loading.
 
 #### Usage
 
@@ -60,13 +80,16 @@ A higher-order component that can be used to display a place holder while the co
 import { Image, View } from 'react-native';
 import { Viewport } from '@skele/components';
 
-const PlaceHolder = () => <View style={{ width: 50, height: 50, backgroundColor: 'darkgrey' }} />
+const PlaceHolder = () =>
+  <View style={{ width: 50, height: 50, backgroundColor: 'darkgrey' }} />
 
-const ViewportAwareImageWithPlaceholder = Viewport.Aware(Viewport.WithPlaceHolder(Image, PlaceHolder));
+const ViewportAwareImageWithPlaceholder =
+  Viewport.Aware(Viewport.WithPlaceHolder(Image, PlaceHolder));
 
 render() {
   return (
     <ViewportAwareImageWithPlaceholder
+      // placeHolder={Placeholder} // passing down a place holder at render time
       source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
       preTriggerRatio={0.5}
       style={{ width: 50, height: 50 }} />
