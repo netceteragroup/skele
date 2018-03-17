@@ -32,45 +32,57 @@ export default WrappedComponent => {
 
     _onViewportChange = info => {
       this._lastInfo = info
-      if (!this.nodeHandle) {
-        return
-      }
+      if (!this.nodeHandle) return
       if (
         info.shouldMeasureLayout ||
         this.state.componentOffset == null ||
         this.state.componentHeight == null
       ) {
-        this._isMounted &&
-          UIManager.measureLayout(
-            this.nodeHandle,
-            info.parentHandle,
-            () => {},
-            (offsetX, offsetY, width, height) => {
-              this._isMounted &&
-                this.setState({
-                  componentOffset: offsetY,
-                  componentHeight: height,
-                  inViewport: Utils.isInViewport(
-                    info.viewportOffset,
-                    info.viewportHeight,
-                    offsetY,
-                    height,
-                    this.props.preTriggerRatio
-                  ),
-                })
-            }
-          )
+        if (!this._isMounted) return
+        UIManager.measureLayout(
+          this.nodeHandle,
+          info.parentHandle,
+          () => {},
+          (offsetX, offsetY, width, height) => {
+            if (!this._isMounted) return
+            const inViewport = Utils.isInViewport(
+              info.viewportOffset,
+              info.viewportHeight,
+              offsetY,
+              height,
+              this.props.preTriggerRatio
+            )
+            this._checkViewportEnterOrLeave(inViewport)
+            this.setState({
+              componentOffset: offsetY,
+              componentHeight: height,
+              inViewport,
+            })
+          }
+        )
       } else {
-        this.setState({
-          inViewport: Utils.isInViewport(
-            info.viewportOffset,
-            info.viewportHeight,
-            this.state.componentOffset,
-            this.state.componentHeight,
-            this.props.preTriggerRatio
-          ),
-        })
+        const inViewport = Utils.isInViewport(
+          info.viewportOffset,
+          info.viewportHeight,
+          this.state.componentOffset,
+          this.state.componentHeight,
+          this.props.preTriggerRatio
+        )
+        if (this._checkViewportEnterOrLeave(inViewport)) {
+          this.setState({ inViewport })
+        }
       }
+    }
+
+    _checkViewportEnterOrLeave = inViewport => {
+      if (!this.state.inViewport && inViewport) {
+        this.props.onViewportEnter && this.props.onViewportEnter()
+        return true
+      } else if (this.state.inViewport && !inViewport) {
+        this.props.onViewportLeave && this.props.onViewportLeave()
+        return true
+      }
+      return false
     }
 
     render() {
@@ -85,6 +97,8 @@ export default WrappedComponent => {
 
     static propTypes = {
       preTriggerRatio: PropTypes.number,
+      onViewportEnter: PropTypes.func,
+      onViewportLeave: PropTypes.func,
     }
 
     static contextTypes = {
