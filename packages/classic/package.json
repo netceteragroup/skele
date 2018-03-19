@@ -1,6 +1,6 @@
 {
   "name": "@skele/classic",
-  "version": "1.0.0-alpha.27",
+  "version": "1.0.0-alpha.28",
   "description": "Skele is an architectural framework that assists with building data-driven apps with React or React Native.",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
