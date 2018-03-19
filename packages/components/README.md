@@ -31,7 +31,7 @@ A higher-order component that processes the information communicated by the view
 Determines whether the wrapped component is in or outside the viewport.
 Updates the `inViewport` property of the wrapped component accordingly.
 Invokes `onViewportEnter` and `onViewportLeave` when the component enters or leaves the viewport.
-Note that handling updates of `inViewport` is the preferred way for reacting to visibility changes.
+Note that handling updates of `inViewport` is the preferred way of reacting to visibility changes.
 
 #### Usage
 
