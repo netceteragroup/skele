@@ -2,13 +2,13 @@
 
 import ViewportTracker from './viewport/tracker'
 import ViewportAware from './viewport/aware'
-import WithPlaceHolder from './viewport/withPlaceHolder'
+import WithPlaceholder from './viewport/withPlaceholder'
 import WithEvents from './shared/WithEvents'
 
 const Viewport = {
   Tracker: ViewportTracker,
   Aware: ViewportAware,
-  WithPlaceHolder: WithPlaceHolder,
+  WithPlaceholder: WithPlaceholder,
 }
 
 const Mixins = {
