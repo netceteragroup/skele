@@ -12,7 +12,7 @@ Communicates it to all viewport aware child components.
 #### Usage
 
 ```javascript
-import { Viewport } from '@skele/components';
+import { Viewport } from '@skele/components'
 
 render() {
   return (
@@ -21,7 +21,7 @@ render() {
         { this.props.children }
       </ScrollView>
     </Viewport.Tracker>
-  );
+  )
 }
 ```
 
@@ -29,15 +29,16 @@ render() {
 
 A higher-order component that processes the information communicated by the viewport tracker.
 Determines whether the wrapped component is in or outside the viewport.
-Updates the `inViewport` parameter of the wrapped component accordingly.
+Updates the `inViewport` property of the wrapped component accordingly.
 Invokes `onViewportEnter` and `onViewportLeave` when the component enters or leaves the viewport.
+Note that handling updates of `inViewport` is the preferred way for reacting to visibility changes.
 
 #### Usage
 
 ```javascript
-import { Image } from 'react-native';
-import { Viewport } from '@skele/components';
-const ViewportAwareImage = Viewport.Aware(Image);
+import { Image } from 'react-native'
+import { Viewport } from '@skele/components'
+const ViewportAwareImage = Viewport.Aware(Image)
 
 render() {
   return (
@@ -46,7 +47,7 @@ render() {
       preTriggerRatio={0.5}
       onViewportEnter={() => console.log('Entered!')}
       onViewportLeave={() => console.log('Left!')} />
-  );
+  )
 }
 ```
 
@@ -66,23 +67,25 @@ This can improve user experience since it can serve as a mechanism for lazy load
 #### Usage
 
 ```javascript
-import { Image, View } from 'react-native';
-import { Viewport } from '@skele/components';
+import { Image, View } from 'react-native'
+import { Viewport } from '@skele/components'
 
 const Placeholder = () =>
   <View style={{ width: 50, height: 50, backgroundColor: 'darkgrey' }} />
 
-const ViewportAwareImageWithPlaceholder =
-  Viewport.Aware(Viewport.WithPlaceholder(Image, Placeholder));
+const VAImgWithPlaceholder =
+  Viewport.Aware(
+    Viewport.WithPlaceholder(Image, Placeholder)
+  )
 
 render() {
   return (
-    <ViewportAwareImageWithPlaceholder
+    <VAImgWithPlaceholder
       // placeholder={Placeholder} // passing down a placeholder at render time
       source={{ uri: 'https://facebook.github.io/react-native/img/header_logo.png' }}
       preTriggerRatio={0.5}
       style={{ width: 50, height: 50 }} />
-  );
+  )
 }
 ```
 
