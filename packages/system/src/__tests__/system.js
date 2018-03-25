@@ -1,7 +1,8 @@
 'use strict'
 
-import System, { using, after } from '../system'
+import System, { using, after, contributions } from '../system'
 import Subsystem from '../subsystem'
+import ExtensionSlot from '../extensions'
 
 const sampleSubsystem = prop => Subsystem({ [prop]: true })
 
@@ -112,6 +113,45 @@ describe('System', () => {
     })
   })
 
+  describe('contributions', () => {
+    const numbersSlot = ExtensionSlot(() => {
+      let numbers = []
+      return {
+        add(n) {
+          numbers.push(n)
+        },
+        collect() {
+          return { numbers }
+        },
+      }
+    })
+
+    const numberCollector = Subsystem(({ numbers }) => ({
+      collected: numbers.map(e => e.numbers).reduce((a, v) => a.concat(v), []),
+    }))
+    const sub1 = Subsystem({})
+    const sub2 = Subsystem({})
+    const sub3 = Subsystem(() => {})
+
+    numbersSlot(sub1).add(1)
+    numbersSlot(sub1).add(3)
+
+    numbersSlot(sub3).add(10)
+
+    test('collects contributions from all contributing systems', () => {
+      const system = System({
+        numberCollector: using(
+          { numbers: contributions(numbersSlot) },
+          numberCollector
+        ),
+        sub1: using(['sub3'], sub1),
+        sub3: using(['numberCollector'], sub3),
+        sub2: using(['sub1'], sub2),
+      })
+
+      expect(system.numberCollector.collected).toEqual([10, 1, 3])
+    })
+  })
   describe('ordering', () => {
     test('a system can be sepcified using a list of tuples', () => {
       const sub1 = sampleSubsystem('prop1')

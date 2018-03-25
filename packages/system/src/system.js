@@ -2,6 +2,9 @@
 
 import invariant from 'invariant'
 
+import * as ext from './extensions'
+import * as u from './util'
+
 export default function System(def) {
   invariant(
     typeof def === 'object' || (Array.isArray(def) && conformEntries(def)),
@@ -37,6 +40,20 @@ export function using(deps, def) {
       : deps,
   }
 }
+
+export function contributions(slot) {
+  const id = ext.idOf(slot)
+
+  invariant(
+    id != null,
+    'You must provide an extension slot for which the contributions ought to be collected'
+  )
+
+  return {
+    type: 'contrib',
+    slot,
+  }
+}
 // an alias
 export const after = using
 
@@ -56,7 +73,21 @@ const instantiate = defs => {
     let deps = { ...def.deps }
 
     for (const name in deps) {
-      deps[name] = instantiated[deps[name]]
+      const depDef = deps[name]
+
+      let depValue
+      if (depDef.type && depDef.type === 'contrib') {
+        depValue = flow(
+          defs,
+          map(u.partial(u.prop, 'def')),
+          map(u.partial(ext.collect, depDef.slot)),
+          u.partial(u.reject, u.isNil)
+        )
+      } else {
+        depValue = instantiated[deps[name]]
+      }
+
+      deps[name] = depValue
     }
 
     return deps
@@ -162,16 +193,19 @@ const toposort = defs => {
     visited = addToSet(node, visited)
 
     depsOf(node).forEach(([internal, dep]) => {
-      const nextNode = defMap[dep]
-      if (nextNode == null) {
-        throw new Error(
-          `Unsatisfied dependency '${internal}' of subsystem '${
-            node.name
-          }'. Subsystem '${dep}' not found.`
-        )
-      }
+      if (dep.type == null) {
+        // special dependencies have a type property, ignore them
+        const nextNode = defMap[dep]
+        if (nextNode == null) {
+          throw new Error(
+            `Unsatisfied dependency '${internal}' of subsystem '${
+              node.name
+            }'. Subsystem '${dep}' not found.`
+          )
+        }
 
-      visit(nextNode, [...dependents, node])
+        visit(nextNode, [...dependents, node])
+      }
     })
 
     sorted[cursor++] = node
