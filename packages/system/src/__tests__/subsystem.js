@@ -1,6 +1,11 @@
 'use strict'
 
-import Subsystem, { start, stop } from '../subsystem'
+import Subsystem, {
+  start,
+  stop,
+  subsystemMeta,
+  updateSubsystemMeta,
+} from '../subsystem'
 
 describe('Subsystem', () => {
   describe('defining subsystems', () => {
@@ -92,6 +97,24 @@ describe('Subsystem', () => {
       const inst = def({ dependency: 'World' })
 
       expect(inst.hello()).toEqual('Hello World')
+    })
+  })
+
+  describe('metadata', () => {
+    test('edge cases', () => {
+      expect(subsystemMeta(null)).toEqual({})
+      expect(subsystemMeta(undefined)).toEqual({})
+      expect(subsystemMeta([])).toEqual({})
+      expect(subsystemMeta({})).toEqual({})
+    })
+
+    test('reading and writing', () => {
+      const s = Subsystem({})
+
+      updateSubsystemMeta(m => ({ ...m, instance: true }), s)
+      expect(subsystemMeta(s)).toEqual({
+        instance: true,
+      })
     })
   })
 })

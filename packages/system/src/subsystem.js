@@ -2,8 +2,7 @@
 
 import invariant from 'invariant'
 
-const subsystemMeta = '@@skele/system.internal.subsystemMeta'
-const instanceMeta = '@@skele/system.internal.subsystemInstanceMeta'
+const metaProp = '@@skele/system.internal.subsystemMeta'
 
 export default function Subsystem(definition) {
   invariant(
@@ -16,26 +15,36 @@ export default function Subsystem(definition) {
     if (typeof definition === 'object') {
       instance = {
         ...definition,
-        [instanceMeta]: {},
+        [metaProp]: { instance: true },
       }
     } else {
       instance = {
         ...definition(deps),
-        [instanceMeta]: {},
+        [metaProp]: { ...subsystemMeta(definition), instance: true },
       }
     }
 
     return instance
   }
 
-  subsystem[subsystemMeta] = {}
+  subsystem[metaProp] = {}
 
+  return subsystem
+}
+
+export const subsystemMeta = subsystem =>
+  (subsystem != null && subsystem[metaProp]) || {}
+
+export const isInstance = subsystem => subsystemMeta(subsystem).instance
+
+export const updateSubsystemMeta = (update, subsystem) => {
+  subsystem[metaProp] = update(subsystemMeta(subsystem))
   return subsystem
 }
 
 const callIfExists = method => subsystemInstance => {
   invariant(
-    subsystemInstance != null && subsystemInstance[instanceMeta] != null,
+    isInstance(subsystemInstance),
     'You must provide an instantiated subsystem'
   )
 
