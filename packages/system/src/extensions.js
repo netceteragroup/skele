@@ -1,7 +1,7 @@
 'use strict'
 
 import invariant from 'invariant'
-import { subsystemMeta, updateSubsystemMeta } from './subsystem'
+import { unitMeta, updateUnitMeta } from './unit'
 import uuid from 'uuid'
 import * as u from './util'
 
@@ -15,10 +15,10 @@ export default function ExtensionSlot(def) {
 
   const id = uuid()
 
-  const slot = function extensionSlot(subsystem) {
-    invariant(subsystem != null, 'You must provide a subsystem')
+  const slot = function extensionSlot(unit) {
+    invariant(unit != null, 'You must provide a unit')
 
-    let ext = extensionOf(slot, subsystem)
+    let ext = extensionOf(slot, unit)
 
     if (ext == null) {
       ext = def()
@@ -33,7 +33,7 @@ export default function ExtensionSlot(def) {
         'the ExtensionSlot fn return value must have a `collect()` method'
       )
 
-      setExtension(slot, ext, subsystem)
+      setExtension(slot, ext, unit)
     }
 
     return ext
@@ -44,26 +44,26 @@ export default function ExtensionSlot(def) {
   return slot
 }
 
-export const extensionOf = (slot, subsystem) => {
+export const extensionOf = (slot, unit) => {
   invariant(slot[idProp] != null, 'You must provide an extension slot')
 
-  return extensionsOf(subsystem)[slot[idProp]]
+  return extensionsOf(unit)[slot[idProp]]
 }
 
 export const idOf = ext => ext[idProp]
 
-export const collect = (slot, subsystem) => {
-  const ext = extensionOf(slot, subsystem)
+export const collect = (slot, unit) => {
+  const ext = extensionOf(slot, unit)
   return ext != null ? { ...ext.collect(), [idProp]: slot[idProp] } : undefined
 }
 
-const extensionsOf = subsystem => subsystemMeta(subsystem).extensions || {}
+const extensionsOf = unit => unitMeta(unit).extensions || {}
 
 const updateExtensions = (update, ss) =>
-  updateSubsystemMeta(
+  updateUnitMeta(
     u.partial(u.update, 'extensions', exts => update(exts || {})),
     ss
   )
 
-const setExtension = (slot, ext, subsystem) =>
-  updateExtensions(u.partial(u.assoc, slot[idProp], ext), subsystem)
+const setExtension = (slot, ext, unit) =>
+  updateExtensions(u.partial(u.assoc, slot[idProp], ext), unit)

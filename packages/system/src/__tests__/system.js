@@ -1,114 +1,114 @@
 'use strict'
 
 import System, { using, after, contributions } from '../system'
-import Subsystem from '../subsystem'
+import Unit from '../unit'
 import ExtensionSlot from '../extensions'
 
-const sampleSubsystem = prop => Subsystem({ [prop]: true })
+const sampleUnit = prop => Unit({ [prop]: true })
 
-const dependentSubsystem = (dep, prop) =>
-  Subsystem(deps => ({
+const dependentUnit = (dep, prop) =>
+  Unit(deps => ({
     [prop]: deps[dep],
   }))
 
 describe('System', () => {
-  test('simple system, accewssing subsystems', () => {
-    const sub1 = sampleSubsystem('prop1')
-    const sub2 = sampleSubsystem('prop2')
+  test('simple system, accewssing units', () => {
+    const unit1 = sampleUnit('prop1')
+    const unit2 = sampleUnit('prop2')
 
     const system = System({
-      sub1: sub1(),
-      sub2: sub2(),
+      unit1: unit1(),
+      unit2: unit2(),
     })
 
-    expect(system.sub1.prop1).toEqual(true)
-    expect(system.sub2.prop2).toEqual(true)
+    expect(system.unit1.prop1).toEqual(true)
+    expect(system.unit2.prop2).toEqual(true)
   })
 
-  test('a subsystem can be a plain object', () => {
+  test('a unit can be a plain object', () => {
     const system = System({
-      sub: {
+      unit: {
         prop1: true,
       },
     })
 
-    expect(system.sub.prop1).toEqual(true)
+    expect(system.unit.prop1).toEqual(true)
   })
 
-  test('a subsystem can be a function returning an object', () => {
+  test('a unit can be a function returning an object', () => {
     const system = System({
-      sub() {
+      unit() {
         return {
           prop1: true,
         }
       },
     })
 
-    expect(system.sub.prop1).toEqual(true)
+    expect(system.unit.prop1).toEqual(true)
   })
 
   test('shorthand: since instantiating is actually "calling it":', () => {
-    const sub1 = sampleSubsystem('prop1')
-    const sub2 = sampleSubsystem('prop2')
+    const unit1 = sampleUnit('prop1')
+    const unit2 = sampleUnit('prop2')
 
-    const system = System({ sub1, sub2 })
+    const system = System({ unit1, unit2 })
 
-    expect(system.sub1.prop1).toEqual(true)
-    expect(system.sub2.prop2).toEqual(true)
+    expect(system.unit1.prop1).toEqual(true)
+    expect(system.unit2.prop2).toEqual(true)
   })
 
   describe('dependencies', () => {
     test('named dependency', () => {
-      const sub1 = sampleSubsystem('prop1')
-      const sub2 = dependentSubsystem('dep1', 'prop2')
+      const unit1 = sampleUnit('prop1')
+      const unit2 = dependentUnit('dep1', 'prop2')
 
       const system = System({
-        sub2: using({ dep1: 'sub1' }, sub2),
-        sub1,
+        unit2: using({ dep1: 'unit1' }, unit2),
+        unit1,
       })
 
-      expect(system.sub2.prop2.prop1).toEqual(true)
+      expect(system.unit2.prop2.prop1).toEqual(true)
     })
 
-    test('dependency name and subsystem name are the same', () => {
-      const sub1 = sampleSubsystem('prop1')
-      const sub2 = dependentSubsystem('sub1', 'prop2')
+    test('dependency name and unit name are the same', () => {
+      const unit1 = sampleUnit('prop1')
+      const unit2 = dependentUnit('unit1', 'prop2')
 
       const system = System({
-        sub2: using(['sub1'], sub2),
-        sub1,
+        unit2: using(['unit1'], unit2),
+        unit1,
       })
 
-      expect(system.sub2.prop2.prop1).toEqual(true)
+      expect(system.unit2.prop2.prop1).toEqual(true)
     })
 
     test('throws in case of an unsatisfied dependency (we could relax this, I guess?)', () => {
-      const sub = dependentSubsystem('sub1', 'prop2')
+      const unit = dependentUnit('unit1', 'prop2')
 
       expect(() => {
         System({
-          sub: using(['sub1'], sub),
+          unit: using(['unit1'], unit),
         })
       }).toThrow(
-        "Unsatisfied dependency 'sub1' of subsystem 'sub'. Subsystem 'sub1' not found."
+        "Unsatisfied dependency 'unit1' of unit 'unit'. Unit 'unit1' not found."
       )
     })
 
     test('circular dependencies are not allwed', () => {
-      const sub1 = dependentSubsystem('dep', 'prop1')
-      const sub2 = dependentSubsystem('sub1', 'prop2')
-      const sub3 = dependentSubsystem('sub2', 'prop3')
-      const sub4 = dependentSubsystem('sub1', 'prop4')
+      const unit1 = dependentUnit('dep', 'prop1')
+      const unit2 = dependentUnit('unit1', 'prop2')
+      const unit3 = dependentUnit('unit2', 'prop3')
+      const unit4 = dependentUnit('unit1', 'prop4')
 
       expect(() => {
         System({
-          sub1: using({ dep: 'sub3' }, sub1),
-          sub2: using(['sub1'], sub2),
-          sub3: using(['sub2'], sub3),
-          sub4: using(['sub1'], sub4),
+          unit1: using({ dep: 'unit3' }, unit1),
+          unit2: using(['unit1'], unit2),
+          unit3: using(['unit2'], unit3),
+          unit4: using(['unit1'], unit4),
         })
       }).toThrow(
-        'Circular dependency (->: depends on): sub1 -> sub3 -> sub2 -> sub1'
+        'Circular dependency (->: depends on): unit1 -> unit3 -> unit2 -> unit1'
       )
     })
   })
@@ -126,17 +126,17 @@ describe('System', () => {
       }
     })
 
-    const numberCollector = Subsystem(({ numbers }) => ({
+    const numberCollector = Unit(({ numbers }) => ({
       collected: numbers.map(e => e.numbers).reduce((a, v) => a.concat(v), []),
     }))
-    const sub1 = Subsystem({})
-    const sub2 = Subsystem({})
-    const sub3 = Subsystem(() => {})
+    const unit1 = Unit({})
+    const unit2 = Unit({})
+    const unit3 = Unit(() => {})
 
-    numbersSlot(sub1).add(1)
-    numbersSlot(sub1).add(3)
+    numbersSlot(unit1).add(1)
+    numbersSlot(unit1).add(3)
 
-    numbersSlot(sub3).add(10)
+    numbersSlot(unit3).add(10)
 
     test('collects contributions from all contributing systems', () => {
       const system = System({
@@ -144,9 +144,9 @@ describe('System', () => {
           { numbers: contributions(numbersSlot) },
           numberCollector
         ),
-        sub1: using(['sub3'], sub1),
-        sub3: using(['numberCollector'], sub3),
-        sub2: using(['sub1'], sub2),
+        unit1: using(['unit3'], unit1),
+        unit3: using(['numberCollector'], unit3),
+        unit2: using(['unit1'], unit2),
       })
 
       expect(system.numberCollector.collected).toEqual([10, 1, 3])
@@ -154,26 +154,26 @@ describe('System', () => {
   })
   describe('ordering', () => {
     test('a system can be sepcified using a list of tuples', () => {
-      const sub1 = sampleSubsystem('prop1')
-      const sub2 = dependentSubsystem('dep1', 'prop2')
+      const unit1 = sampleUnit('prop1')
+      const unit2 = dependentUnit('dep1', 'prop2')
 
       const system = System([
-        ['sub2', using({ dep1: 'sub1' }, sub2)],
-        ['sub1', sub1],
+        ['unit2', using({ dep1: 'unit1' }, unit2)],
+        ['unit1', unit1],
       ])
 
-      expect(system.sub2.prop2.prop1).toEqual(true)
+      expect(system.unit2.prop2.prop1).toEqual(true)
     })
 
     test('`after` can be used instead of `using` to signify ordering importance', () => {
-      const sub1 = sampleSubsystem('prop1')
-      const sub2 = dependentSubsystem('sub1', 'prop2')
+      const unit1 = sampleUnit('prop1')
+      const unit2 = dependentUnit('unit1', 'prop2')
 
       const system = System({
-        sub2: after(['sub1'], sub2),
-        sub1,
+        unit2: after(['unit1'], unit2),
+        unit1,
       })
-      expect(system.sub2.prop2.prop1).toEqual(true)
+      expect(system.unit2.prop2.prop1).toEqual(true)
     })
   })
 })

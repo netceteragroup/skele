@@ -8,13 +8,13 @@ import * as u from './util'
 export default function System(def) {
   invariant(
     typeof def === 'object' || (Array.isArray(def) && conformEntries(def)),
-    'The system definition must be an object declaring the subsystems'
+    'The system definition must be an object declaring the units'
   )
 
   return flow(
     def,
     objEntries,
-    map(subsystemDef),
+    map(unitDef),
     toposort,
     instantiate,
     toSystemObject
@@ -29,11 +29,11 @@ export function using(deps, def) {
 
   invariant(
     typeof def === 'function',
-    'The subsystem aregument (def) must be a function'
+    'The unit aregument (def) must be a function'
   )
 
   return {
-    type: 'sub',
+    type: 'unit',
     def,
     deps: Array.isArray(deps)
       ? flow(deps, map(d => [d, d]), entriesToObj)
@@ -57,14 +57,14 @@ export function contributions(slot) {
 // an alias
 export const after = using
 
-// todo: use Object.entries; contributions() flexible wrt. subsystem / subsystem instance
+// todo: use Object.entries; contributions() flexible wrt. unit / unit instance
 
-const subsystemDef = ([name, def]) =>
+const unitDef = ([name, def]) =>
   typeof def === 'function'
-    ? { type: 'sub', def, name, deps: {} }
-    : def && def.type === 'sub'
+    ? { type: 'unit', def, name, deps: {} }
+    : def && def.type === 'unit'
       ? { ...def, name }
-      : { type: 'sub', def: () => def, name, deps: {} }
+      : { type: 'unit', def: () => def, name, deps: {} }
 
 const instantiate = defs => {
   let instantiated = {}
@@ -198,9 +198,9 @@ const toposort = defs => {
         const nextNode = defMap[dep]
         if (nextNode == null) {
           throw new Error(
-            `Unsatisfied dependency '${internal}' of subsystem '${
+            `Unsatisfied dependency '${internal}' of unit '${
               node.name
-            }'. Subsystem '${dep}' not found.`
+            }'. Unit '${dep}' not found.`
           )
         }
 

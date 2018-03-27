@@ -35,14 +35,14 @@ describe('Extensions', () => {
         expect(extension.collect()).toEqual({ numbers: [3] })
       })
 
-      test('at most one extension per subsystem', () => {
-        const subsystem = {}
-        const subsystem2 = function() {}
+      test('at most one extension per unit', () => {
+        const unit = {}
+        const unit2 = function() {}
         const slot = ExtensionSlot(() => ({ collect() {} }))
 
-        const extension = slot(subsystem)
-        const extension2 = slot(subsystem)
-        const extenison3 = slot(subsystem2)
+        const extension = slot(unit)
+        const extension2 = slot(unit)
+        const extenison3 = slot(unit2)
 
         expect(extension).toBe(extension2)
         expect(extension).not.toBe(extenison3)

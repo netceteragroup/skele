@@ -1,16 +1,11 @@
 'use strict'
 
-import Subsystem, {
-  start,
-  stop,
-  subsystemMeta,
-  updateSubsystemMeta,
-} from '../subsystem'
+import Unit, { start, stop, unitMeta, updateUnitMeta } from '../unit'
 
-describe('Subsystem', () => {
-  describe('defining subsystems', () => {
+describe('Unit', () => {
+  describe('defining units', () => {
     test('Using an object definition', () => {
-      const def = Subsystem({
+      const def = Unit({
         hello: 'world',
       })
 
@@ -20,7 +15,7 @@ describe('Subsystem', () => {
     })
 
     test('Using function definition', () => {
-      const def = Subsystem(() => ({
+      const def = Unit(() => ({
         hello: 'world',
       }))
 
@@ -31,7 +26,7 @@ describe('Subsystem', () => {
 
   describe('lifecycle', () => {
     test('starting', () => {
-      const def = Subsystem({
+      const def = Unit({
         start: jest.fn(),
       })
 
@@ -42,7 +37,7 @@ describe('Subsystem', () => {
     })
 
     test('start method optional', () => {
-      const def = Subsystem({
+      const def = Unit({
         hello: jest.fn(),
       })
 
@@ -53,7 +48,7 @@ describe('Subsystem', () => {
     })
 
     test('stopping', () => {
-      const def = Subsystem({
+      const def = Unit({
         start: jest.fn(),
       })
 
@@ -64,7 +59,7 @@ describe('Subsystem', () => {
     })
 
     test('stop method optional', () => {
-      const def = Subsystem({
+      const def = Unit({
         hello: jest.fn(),
       })
 
@@ -76,8 +71,8 @@ describe('Subsystem', () => {
   })
 
   describe('dependencies', () => {
-    test('dependecies with non/fn subsystem are ignore', () => {
-      const def = Subsystem({
+    test('dependecies with non/fn unit are ignore', () => {
+      const def = Unit({
         hello: 'world',
       })
 
@@ -90,7 +85,7 @@ describe('Subsystem', () => {
     })
 
     test('are passed in as named props of the first argument', () => {
-      const def = Subsystem(({ dependency }) => ({
+      const def = Unit(({ dependency }) => ({
         hello: () => `Hello ${dependency}`,
       }))
 
@@ -102,17 +97,17 @@ describe('Subsystem', () => {
 
   describe('metadata', () => {
     test('edge cases', () => {
-      expect(subsystemMeta(null)).toEqual({})
-      expect(subsystemMeta(undefined)).toEqual({})
-      expect(subsystemMeta([])).toEqual({})
-      expect(subsystemMeta({})).toEqual({})
+      expect(unitMeta(null)).toEqual({})
+      expect(unitMeta(undefined)).toEqual({})
+      expect(unitMeta([])).toEqual({})
+      expect(unitMeta({})).toEqual({})
     })
 
     test('reading and writing', () => {
-      const s = Subsystem({})
+      const s = Unit({})
 
-      updateSubsystemMeta(m => ({ ...m, instance: true }), s)
-      expect(subsystemMeta(s)).toEqual({
+      updateUnitMeta(m => ({ ...m, instance: true }), s)
+      expect(unitMeta(s)).toEqual({
         instance: true,
       })
     })
