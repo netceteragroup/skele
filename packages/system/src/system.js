@@ -4,21 +4,31 @@ import invariant from 'invariant'
 
 import * as ext from './extensions'
 import * as u from './util'
+import { updateUnitMeta, unitMeta } from './unit'
 
 export default function System(def) {
-  invariant(
-    typeof def === 'object' || (Array.isArray(def) && conformEntries(def)),
-    'The system definition must be an object declaring the units'
-  )
+  if (unitMeta(def).subsystem != null) return def()
 
-  return flow(
-    def,
-    objEntries,
-    map(unitDef),
-    toposort,
-    instantiate,
-    toSystemObject
-  )
+  return Subsystem(def)()
+}
+
+export function Subsystem(def) {
+  u.conformSubsystemDef(def)
+
+  const subsystem = function(deps = {}) {
+    return flow(
+      typeof def === 'function' ? def(deps) : def,
+      objEntries,
+      map(unitDef),
+      toposort,
+      instantiate,
+      toSystemObject
+    )
+  }
+
+  updateUnitMeta(meta => (meta.subsystem = true), subsystem)
+
+  return subsystem
 }
 
 export function using(deps, def) {
@@ -69,7 +79,15 @@ const unitDef = ([name, def]) =>
 const instantiate = defs => {
   let instantiated = {}
 
-  let collectDeps = def => {
+  const collectContibs = depDef =>
+    flow(
+      defs,
+      map(u.partial(u.prop, 'def')),
+      map(u.partial(ext.collect, depDef.slot)),
+      u.partial(u.reject, u.isNil)
+    )
+
+  const collectDeps = def => {
     let deps = { ...def.deps }
 
     for (const name in deps) {
@@ -77,14 +95,13 @@ const instantiate = defs => {
 
       let depValue
       if (depDef.type && depDef.type === 'contrib') {
-        depValue = flow(
-          defs,
-          map(u.partial(u.prop, 'def')),
-          map(u.partial(ext.collect, depDef.slot)),
-          u.partial(u.reject, u.isNil)
-        )
-      } else {
+        depValue = collectContibs(depDef)
+      } else if (typeof depDef === 'string') {
         depValue = instantiated[deps[name]]
+      } else if (Array.isArray(depDef)) {
+        depValue = u.path(depDef, instantiated)
+      } else {
+        depValue = depDef
       }
 
       deps[name] = depValue
@@ -131,19 +148,6 @@ const toSystemObject = defs => {
   return system
 }
 
-const conformEntries = arr => {
-  console.log('arr', arr)
-  if (arr.length === 0) return true
-
-  arr.forEach(e => {
-    if (!Array.isArray(e)) return false
-    if (e.length !== 2) return false
-    if (typeof e[0] !== 'string') return false
-  })
-
-  return true
-}
-
 const toObj = entries => {
   let result = {}
   entries.forEach(en => {
@@ -176,7 +180,7 @@ const map = f => col => col.map(f)
 const toposort = defs => {
   let sorted = new Array(defs.length)
   let cursor = 0
-  let visited = newSet()
+  let visited = u.newSet()
   let defMap = toObj(defs)
 
   const depsOf = node => objEntries(node.deps)
@@ -189,23 +193,30 @@ const toposort = defs => {
           .join(' -> ')}`
       )
     }
-    if (containedInSet(node, visited)) return
-    visited = addToSet(node, visited)
+    if (u.containedInSet(node, visited)) return
+    visited = u.addToSet(node, visited)
 
     depsOf(node).forEach(([internal, dep]) => {
-      if (dep.type == null) {
-        // special dependencies have a type property, ignore them
-        const nextNode = defMap[dep]
-        if (nextNode == null) {
-          throw new Error(
-            `Unsatisfied dependency '${internal}' of unit '${
-              node.name
-            }'. Unit '${dep}' not found.`
-          )
-        }
+      let nextNode
+      let skip = true
 
-        visit(nextNode, [...dependents, node])
+      if (typeof dep == 'string') {
+        nextNode = defMap[dep]
+        skip = false
+      } else if (Array.isArray(dep)) {
+        nextNode = defMap[dep[0]]
+        skip = false
       }
+
+      if (!skip && nextNode == null) {
+        throw new Error(
+          `Unsatisfied dependency '${internal}' of unit '${
+            node.name
+          }'. Unit '${dep}' not found.`
+        )
+      }
+
+      if (!skip) visit(nextNode, [...dependents, node])
     })
 
     sorted[cursor++] = node
@@ -214,29 +225,4 @@ const toposort = defs => {
   defs.forEach(dep => visit(dep, []))
 
   return sorted
-}
-
-function newSet() {
-  if (typeof Set === 'undefined') {
-    return []
-  } else {
-    return new Set()
-  }
-}
-
-function addToSet(v, set) {
-  if (typeof Set === 'undefined') {
-    set.push(v)
-    return set
-  } else {
-    return set.add(v)
-  }
-}
-
-function containedInSet(v, set) {
-  if (typeof Set === 'undefined') {
-    return set.indexOf(v) >= 0
-  } else {
-    return set.has(v)
-  }
 }

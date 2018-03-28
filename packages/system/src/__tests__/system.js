@@ -1,6 +1,6 @@
 'use strict'
 
-import System, { using, after, contributions } from '../system'
+import System, { Subsystem, using, after, contributions } from '../system'
 import Unit from '../unit'
 import ExtensionSlot from '../extensions'
 
@@ -174,6 +174,91 @@ describe('System', () => {
         unit1,
       })
       expect(system.unit2.prop2.prop1).toEqual(true)
+    })
+  })
+})
+
+describe('Subsystem', () => {
+  test('Subsystems are systems that can be used as units within onther systems or subsystems (composition)', () => {
+    const sub1 = Subsystem({
+      u1: sampleUnit('prop1'),
+    })
+
+    const sub2 = Subsystem(() => ({
+      u3: sampleUnit('prop3'),
+      s1: sub1,
+    }))
+
+    const sys = System({
+      sub2: sampleUnit('prop2'),
+      s1: sub1,
+      s2: sub2,
+    })
+
+    const sys2 = System({
+      s1: sub1(),
+      s2: sub2(),
+    })
+
+    expect(sys.s1.u1.prop1).toEqual(true)
+    expect(sys.s2.u3.prop3).toEqual(true)
+    expect(sys.s2.s1.u1.prop1).toEqual(true)
+    expect(sys.s1).not.toBe(sys.s2.s1)
+
+    expect(sys2.s1.u1.prop1).toEqual(true)
+    expect(sys2.s2.u3.prop3).toEqual(true)
+  })
+
+  test('Subsystems can also be used as standalone systems', () => {
+    const def = {
+      u1: sampleUnit('prop1'),
+    }
+
+    expect(Subsystem(def)()).toEqual(System(def))
+    expect(System(Subsystem(def))).toEqual(System(def))
+  })
+
+  describe('dependencies', () => {
+    const unit = dependentUnit('inj', 'inj')
+    const simple = sampleUnit('sampleProp')
+
+    const subsystem = Subsystem(({ dependency }) => ({
+      imported: dependency,
+      unit: using({ inj: dependency }, unit),
+      simple,
+    }))
+
+    test('Subsystems can be used as a dependency (like a unit)', () => {
+      const sys = subsystem({ dependency: 22 })
+
+      expect(sys.imported).toEqual(22)
+      expect(sys.unit.inj).toEqual(22)
+    })
+
+    test('using() can be used on subsystems (like units)', () => {
+      const unit2 = sampleUnit('xy')
+
+      const sys = System({
+        sub1: using({ dependency: 'unit2' }, subsystem),
+        unit2,
+      })
+
+      expect(sys.sub1.imported.xy).toBe(true)
+      expect(sys.sub1.unit.inj.xy).toBe(true)
+    })
+
+    test('a unit from within a Subsystem can be used as a dependency in the outer system', () => {
+      const unit2 = dependentUnit('inj', 'inj')
+
+      const sys = System({
+        unit2: using({ inj: ['subsystem', 'simple'] }, unit2),
+        subsystem: using({ dependency: 'dummy' }, subsystem),
+        dummy: {},
+      })
+
+      console.log(sys)
+
+      expect(sys.unit2.inj.sampleProp).toBe(true)
     })
   })
 })

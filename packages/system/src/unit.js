@@ -1,14 +1,12 @@
 'use strict'
 
 import invariant from 'invariant'
+import * as u from './util'
 
 const metaProp = '@@skele/system.internal.unitMeta'
 
 export default function Unit(definition) {
-  invariant(
-    typeof definition === 'object' || typeof definition === 'function',
-    'You must provide an object or a function as the unit definition'
-  )
+  u.conformUnitDef(definition)
 
   const unit = function(deps = {}) {
     let instance
