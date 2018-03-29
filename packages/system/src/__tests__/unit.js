@@ -47,18 +47,23 @@ describe('Unit', () => {
       }).not.toThrow()
     })
 
-    test('stopping', () => {
+    test('starting (and stopping)', () => {
       const def = Unit({
         start: jest.fn(),
+        stop: jest.fn(),
       })
 
       const inst = def()
       start(inst)
 
       expect(inst.start).toHaveBeenCalled()
+
+      stop(inst)
+
+      expect(inst.stop).toHaveBeenCalled()
     })
 
-    test('stop method optional', () => {
+    test('start/stop method optional', () => {
       const def = Unit({
         hello: jest.fn(),
       })
@@ -66,6 +71,10 @@ describe('Unit', () => {
       const inst = def()
       expect(() => {
         start(inst)
+      }).not.toThrow()
+
+      expect(() => {
+        stop(inst)
       }).not.toThrow()
     })
   })
