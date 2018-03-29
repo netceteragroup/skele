@@ -51,12 +51,7 @@ const example = Unit({
   },
 })
 
-const system = System({
-  hello: example,
-  hello2: example(), // can also be instantiated cirectly
-})
-
-const hello = system.hello.helloWorld() // => 'hello world'
+const hello = example().helloWorld() // => 'hello world'
 ```
 
 A Unit can also be defined using a funciton, in which case
@@ -81,13 +76,109 @@ const example = Unit(() => {
 })
 ```
 
-## Lifecycle
-
-A Unit can optionally define a `start()` and `stop()` methods that will be invoked
-upon system startup.
+To work with a unit, one needs an instance of it. To acquire an instance,
+one just invokes the unit.
 
 ```javascript
-import { Unit } from '@skele/system'
+const inst = example()
+
+inst.hello() // returns 'hello world'
+```
+
+## Systems
+
+A system is simply a composition of a number of named Units (more precisely,
+a composition of a number of named _instances_ of Units).
+
+To define a system, we provide a map in which each property is the name of the
+_member_ of the system and the value is a reference to a Unit.
+
+```javascript
+const hello = Unit({
+  /* ... from previous examlle */
+})
+const example = Unit({
+  /* also */
+})
+
+const system = System({
+  hello,
+  hello2: example(), // can also be instantiated directly
+})
+
+system.hello.helloWorld()
+system.hello2.hello()
+```
+
+As shown, alternatively an already instantiated unit can also be used as a value
+in the map. In fact, any object can be used.
+
+Systems can also be defined using a function that returns the system map:
+
+```javascript
+const system = System(() => ({
+  hello,
+  hello2: example(),
+})
+```
+
+## Subsystems
+
+**Subsystems** are systems that can be used in all ways a **Unit** can be used.
+With this, we can achieve _comosability of systems_.
+
+```javascript
+import { System, Subsystem } from '@skele/system'
+
+const hello = Unit({
+  /* ... from previous examlle */
+})
+const example = Unit({
+  /* also */
+})
+
+// the subsystem is defined just like a system
+const sub = Subsystem({
+  hello,
+  example,
+})
+
+const sys = System({
+  sub, // the subsystem is used like a unit
+})
+
+sys.sub.hello.helloWorld()
+```
+
+A **subsystem** is a **unit** that is defined in terms of its constituent **units**.
+You can use a Subsystem everywhere and in the same way you use a unit, but you
+_define_ it like you define a system.
+
+The following expression
+
+```javascript
+System({
+  /* definition */
+})
+```
+
+is the equivalent of
+
+```javascript
+Subsystem({
+  /* definition */
+})()
+```
+
+I.e. `System` is a just convinience method that gives you an _instantiated_ subsystem.
+
+## Lifecycle
+
+A Unit can optionally can define a `start()` and a`stop()` method. The encompasing
+system/subsystem will invoke them upon startup/shutdown.
+
+```javascript
+import { Unit, System } from '@skele/system'
 
 const example = Unit(() => {
   var foo = 1
@@ -111,6 +202,18 @@ const example = Unit(() => {
     stop,
   }
 })
+```
+
+Systems and subsystems also define `start` and `stop` methods. They start/stop all
+member units.
+
+```javascript
+const sys = System({
+  example, // as defined above
+})
+
+sys.start() // invokes start() on all units
+sys.stop() // same
 ```
 
 ## Dependencies
@@ -138,30 +241,80 @@ const example = Unit(({ config }) => ({
 // to setup the system
 
 const system = System({
-  configuration: configuration(),
+  configuration: configuration,
   hello: using({ config: 'configuration' }, example),
   //             ^ reads "configuration as config"
   //               i.e, pass the "configuration" Unit
-  //               named as 'config' when instantiating hello
+  //               named as 'config' to hello()
 })
 
 // or, in case the name used inside the Unit is the same
 // as the name used in the system
 
 const system2 = System({
-  config: configuration(),
+  config: configuration,
   hello: using(['config'], example), // same as
-  hello2: using({ config }, example) // same as
-  hello3: using({ config: 'config' }, example)
+  hello3: using({ config: 'config' }, example),
 })
 ```
 
-The `using(depMapping)` method as a wrapper around a Unit to map it's declared
-dependencies to other Units within the system.
+The `using(depMapping, unit)` method is used to realize the Unit's _declared dependencies_
+using other Units within the system (by referring to them by name).
 
-The mehod takes a map/object as a first argument, which indicates which declared depenency
-(the property name) should be satisfied with which Unit (the property value) from
-within the system being defined.
+The mehod takes an object as a first argument, which indicates which declared depenency
+(the property name) should be satisfied with which Unit (a string referring to the other unit by name) from within the system being defined.
+
+### Dependencies and Subsystems
+
+Units can depend on subsystems, just like they can depend on other units.
+
+```javascript
+const hello = Unit(({ dependency }) => {})
+const sub = Subsystem({
+  /* ... */
+})
+
+const sys = System({
+  sub,
+  hello: using({ dependency: 'sub' }, hello),
+})
+```
+
+Units can also depend on a unit within a subsystem. To achieve that,
+use an array (a path)) as the Unit name of the dependency mapping:
+
+```javascript
+const hello = Unit(({ dependency }) => {})
+const sub = Subsystem({
+  nested: Unit({}),
+})
+
+const sys = System({
+  sub,
+  // here we refer to the `nested` unit within `sub` as the dependency
+  // specfication
+  hello: using({ dependency: ['sub', 'nested'] }, hello),
+})
+```
+
+This path can be of arbitrary length, therefore units deep inside a subsystem
+can be referred to.
+
+Subsystems themselves can also have dependencies (just like Units).
+
+```javascript
+const hello = Unit({})
+const another = Unit({ anotherDep } => ({}))
+
+// here we use the function form to declare a subsystem that
+// requires some dependencies
+const sub = Subsystem(( { dependency }) => ({
+  // we can use the dependency as a unit within
+  someUnit: dependency,
+  // we can also 'inject it in another unit
+  anotherUnit: using({ anotherDep: dependency }, another)
+})
+```
 
 ## Extensions
 
