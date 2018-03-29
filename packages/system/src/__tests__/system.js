@@ -12,7 +12,7 @@ const dependentUnit = (dep, prop) =>
   }))
 
 describe('System', () => {
-  test('simple system, accewssing units', () => {
+  test('simple system, accessing units', () => {
     const unit1 = sampleUnit('prop1')
     const unit2 = sampleUnit('prop2')
 

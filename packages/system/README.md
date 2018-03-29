@@ -26,7 +26,7 @@ An **extension slot** is a formal declaration of a behavior, related to a _Unit_
 can be extended (by means of addition or override/replacement) by **dependent Units**.
 
 Lastly, an **extension** is the addition / override that a a **dependent Unit**
-contributes to another. The phrasef _Unit A contributes an extension
+contributes to another. The phrase _Unit A contributes an extension
 to Unit B_ is also used to describe relationship.
 
 The framework is inspired by <https://github.com/stuartsierra/component> with the addition
@@ -319,7 +319,7 @@ const sub = Subsystem(( { dependency }) => ({
 ## Extensions
 
 The framework provides an **extension mechanism** through which dependant Units can
-extend the behaviour base Units in a sort of a inversion of control pattern.
+extend the behaviour base Units in a sort of an inversion of control pattern.
 
 To use the feature, the base Unit must declare an **extension slot**, i.e. to
 define a way how dependant Units are able to provide additional functionality.
@@ -372,20 +372,20 @@ export default Router
 ```
 
 The extension slot definition takes a function that produces a new **extension** for that
-slo, everytime it is called (it will be called for every Unit that wants to provide
+slot, everytime it is called (it will be called for every Unit that wants to provide
 extensions to that slot).
 
 The **extension** itself, is an object that is required to respond to the a no-arg `collect()` method.
 The method should return the extension data that would be fed in the unit that delcared it. The
 returned value has to be an JS Object.
 
-That extension instan ce should also provide a mini-dsl used to define an extension. In this case,
+That extension instance should also provide a mini-dsl used to define an extension. In this case,
 that's the `define` method, which is used to define a route.
 
 The Unit that declares the **extension slot** receives all the _contributed extensions_ via
 the dependency mechanism.
 
-In the example above, the `routes` onject is an _extension slot_ defined by the `router` Unit.
+In the example above, the `routes` object is an _extension slot_ defined by the `router` Unit.
 The `router` Unit acceptes _contributed extensions_ by declaring a `routes` dependency.
 
 To contribute routes (extensions) another Unit does:
@@ -441,7 +441,7 @@ minimally adjusted so that the dependencies of a Unit are instantiated before it
 is instantiated (topological sort).
 
 Even though the JS specification states that the `for...in` enumeration order is not defined
-for objects, In most JS environments, this enumeration orer will be the order in which the properties
+for objects, In most JS environments, this enumeration order will be the order in which the properties
 appear in the object literal, e.g. for
 
 ```javascript
