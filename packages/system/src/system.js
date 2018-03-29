@@ -4,7 +4,7 @@ import invariant from 'invariant'
 
 import * as ext from './extensions'
 import * as u from './util'
-import { updateUnitMeta, unitMeta } from './unit'
+import { updateUnitMeta, unitMeta, start, stop } from './unit'
 
 export default function System(def) {
   if (unitMeta(def).subsystem != null) return def()
@@ -144,6 +144,23 @@ const toSystemObject = defs => {
       writeble: false,
     })
   })
+
+  const perform = fn => () => defs.forEach(({ instance }) => fn(instance))
+
+  const defMethodPerforming = (name, fn) => {
+    try {
+      Object.defineProperty(system, name, {
+        value: perform(fn),
+        enumerable: false,
+        writeble: false,
+      })
+    } catch (e) {
+      throw new Error(`You can't have a part of the system called \`${name}\``)
+    }
+  }
+
+  defMethodPerforming('start', start)
+  defMethodPerforming('stop', stop)
 
   return system
 }

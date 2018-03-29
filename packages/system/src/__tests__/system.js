@@ -152,6 +152,34 @@ describe('System', () => {
       expect(system.numberCollector.collected).toEqual([10, 1, 3])
     })
   })
+
+  test('starting and stopping a system, starts all units inside', () => {
+    const sys = System({
+      withStart: Unit({
+        start: jest.fn(),
+      }),
+
+      withStop: Unit({
+        stop: jest.fn(0),
+      }),
+
+      withNothing: Unit({}),
+    })
+
+    sys.start()
+
+    expect(sys.withStart.start).toHaveBeenCalled()
+    expect(sys.withStop.stop).not.toHaveBeenCalled()
+
+    sys.withStart.start.mockClear()
+    sys.withStop.stop.mockClear()
+
+    sys.stop()
+
+    expect(sys.withStart.start).not.toHaveBeenCalled()
+    expect(sys.withStop.stop).toHaveBeenCalled()
+  })
+
   describe('ordering', () => {
     test('a system can be sepcified using a list of tuples', () => {
       const unit1 = sampleUnit('prop1')
@@ -256,9 +284,21 @@ describe('Subsystem', () => {
         dummy: {},
       })
 
-      console.log(sys)
-
       expect(sys.unit2.inj.sampleProp).toBe(true)
     })
+  })
+
+  test('systems and subsystems cannot have members with names `start` and `stop`', () => {
+    expect(() => {
+      System({
+        start: Unit({}),
+      })
+    }).toThrowError("You can't have a part of the system called `start`")
+
+    expect(() => {
+      System({
+        stop: Unit({}),
+      })
+    }).toThrowError(/You can't have a part of the system called `stop`/)
   })
 })

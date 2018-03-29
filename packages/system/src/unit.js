@@ -47,7 +47,7 @@ const callIfExists = method => unitInstance => {
     `The unit instance ${method} property must be a function`
   )
 
-  if (typeof unitInstance.start === 'function') {
+  if (typeof unitInstance[method] === 'function') {
     unitInstance[method]()
   }
 
