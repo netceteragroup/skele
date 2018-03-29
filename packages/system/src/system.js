@@ -200,7 +200,7 @@ const toposort = defs => {
       let nextNode
       let skip = true
 
-      if (typeof dep == 'string') {
+      if (typeof dep === 'string') {
         nextNode = defMap[dep]
         skip = false
       } else if (Array.isArray(dep)) {
