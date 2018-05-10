@@ -426,6 +426,19 @@ The `contributions(extensionSlot)` method will insert a special dependency
 marker for the system that causes it to collect available extensions (by calling
 the `collect()` method on Units that contrbute and pass them on as a dependency.
 
+### Extensions and subsystems
+
+When nesting Subsystems, the follwing rules apply:
+
+* The extensions defined in the surounding subsystem will propageate into the encapsulated one.
+  In other words units in the outer subsystem can contribute to units in the encapsulated one.
+* The extensions defined in the encapsulated subsystem _will not_ propagate to the outer one
+  In other words, including a subsystem doesn't into another doesn't risk unwanted
+  altering of the behavior of the the outer one.
+* Subsystems that wish to explicitly "export" contributions to surrounding subsystems should
+  * either define them on the subsystem object
+  * or use the `exportExtensions` feature
+
 ## Ordering of Units (and extensions)
 
 When a Unit uses extensions, the order in which these extensions are delivered

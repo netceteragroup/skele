@@ -50,11 +50,40 @@ export const extensionOf = (slot, unit) => {
   return extensionsOf(unit)[slot[idProp]]
 }
 
+export const exportExtensions = (slot, target, [...units]) => {
+  console.log('units', units)
+  const ext = extensionOf(slot, target)
+
+  invariant(ext == null, 'Extension for slot ' + slot + ' already exists')
+
+  setExtension(
+    slot,
+    {
+      export() {
+        return u.flow(
+          units,
+
+          u.map(u.partial(collect, slot)),
+          u.flatten
+        )
+      },
+    },
+    target
+  )
+}
+
 export const idOf = ext => ext[idProp]
 
 export const collect = (slot, unit) => {
   const ext = extensionOf(slot, unit)
-  return ext != null ? { ...ext.collect(), [idProp]: slot[idProp] } : undefined
+  if (ext != null) {
+    if (ext.collect != null) {
+      return [{ ...ext.collect(), [idProp]: slot[idProp] }]
+    } else if (ext.export != null) {
+      return ext.export()
+    }
+  }
+  return []
 }
 
 const extensionsOf = unit => unitMeta(unit).extensions || {}

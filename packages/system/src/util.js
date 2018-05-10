@@ -18,6 +18,7 @@ export const path = (path, obj) => {
   return c
 }
 
+export const map = f => coll => coll.map(f)
 export const assoc = (p, value, obj) => ({ ...obj, [p]: value })
 export const update = (p, fn, obj) => assoc(p, fn(prop(p, obj)), obj)
 
@@ -28,6 +29,29 @@ export const flatten = coll =>
 export const isNil = value => value == null
 
 export const identity = x => x
+
+export const pipe = (...fs) => x => fs.reduce((r, f) => f(r), x)
+
+export const flow = (value, ...fns) => {
+  let v = value
+  fns.forEach(f => {
+    v = f(v)
+  })
+  return v
+}
+
+export const splitWhen = (pred, list) => {
+  var idx = 0
+  var len = list.length
+  var prefix = []
+
+  while (idx < len && !pred(list[idx])) {
+    prefix.push(list[idx])
+    idx += 1
+  }
+
+  return [prefix, Array.prototype.slice.call(list, idx)]
+}
 
 export const conformUnitDef = definition => {
   invariant(

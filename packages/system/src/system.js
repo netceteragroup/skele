@@ -6,6 +6,9 @@ import * as ext from './extensions'
 import * as u from './util'
 import { updateUnitMeta, unitMeta, start, stop } from './unit'
 
+const surroundingContributionsProp =
+  '@@skele/system.internal.surroundingContributions'
+
 export default function System(def) {
   if (unitMeta(def).subsystem != null) return def()
 
@@ -16,12 +19,12 @@ export function Subsystem(def) {
   u.conformSubsystemDef(def)
 
   const subsystem = function(deps = {}) {
-    return flow(
+    return u.flow(
       typeof def === 'function' ? def(deps) : def,
       objEntries,
       map(unitDef),
       toposort,
-      instantiate,
+      instantiate(surroundingContributions(deps)),
       toSystemObject
     )
   }
@@ -46,10 +49,13 @@ export function using(deps, def) {
     type: 'unit',
     def,
     deps: Array.isArray(deps)
-      ? flow(deps, map(d => [d, d]), entriesToObj)
+      ? u.flow(deps, map(d => [d, d]), entriesToObj)
       : deps,
   }
 }
+
+// an alias
+export const after = using
 
 export function contributions(slot) {
   const id = ext.idOf(slot)
@@ -64,10 +70,9 @@ export function contributions(slot) {
     slot,
   }
 }
-// an alias
-export const after = using
 
-// todo: use Object.entries; contributions() flexible wrt. unit / unit instance
+const surroundingContributions = deps =>
+  deps[surroundingContributionsProp] || (() => [[], []])
 
 const unitDef = ([name, def]) =>
   typeof def === 'function'
@@ -76,16 +81,27 @@ const unitDef = ([name, def]) =>
       ? { ...def, name }
       : { type: 'unit', def: () => def, name, deps: {} }
 
-const instantiate = defs => {
-  let instantiated = {}
+const collectContibs = (contribDef, surrounding, unitDefs) => {
+  const [before, after] = surrounding(contribDef)
 
-  const collectContibs = depDef =>
-    flow(
-      defs,
+  // const collect = (slot, def) =>
+  //   unitMeta(unit).subsystem ?
+
+  return [
+    ...before,
+    ...u.flow(
+      unitDefs,
       map(u.partial(u.prop, 'def')),
-      map(u.partial(ext.collect, depDef.slot)),
-      u.partial(u.reject, u.isNil)
-    )
+      map(u.partial(ext.collect, contribDef.slot)),
+      flatten
+      // u.partial(u.reject, u.isNil)
+    ),
+    ...after,
+  ]
+}
+
+const instantiate = surrounding => defs => {
+  let instantiated = {}
 
   const collectDeps = def => {
     let deps = { ...def.deps }
@@ -95,7 +111,7 @@ const instantiate = defs => {
 
       let depValue
       if (depDef.type && depDef.type === 'contrib') {
-        depValue = collectContibs(depDef)
+        depValue = collectContibs(depDef, surrounding, defs)
       } else if (typeof depDef === 'string') {
         depValue = instantiated[deps[name]]
       } else if (Array.isArray(depDef)) {
@@ -106,6 +122,12 @@ const instantiate = defs => {
 
       deps[name] = depValue
     }
+
+    const [before, after] = u.splitWhen(d => d === def, defs)
+    deps[surroundingContributionsProp] = contribDef => [
+      collectContibs(contribDef, surrounding, before),
+      collectContibs(contribDef, surrounding, after.slice(1)),
+    ]
 
     return deps
   }
@@ -184,15 +206,8 @@ const entriesToObj = entries => {
   return result
 }
 
-const flow = (value, ...fns) => {
-  let v = value
-  fns.forEach(f => {
-    v = f(v)
-  })
-  return v
-}
-
 const map = f => col => col.map(f)
+const flatten = col => col.reduce((acc, val) => acc.concat(val), [])
 
 const toposort = defs => {
   let sorted = new Array(defs.length)

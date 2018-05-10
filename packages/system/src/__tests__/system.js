@@ -2,7 +2,7 @@
 
 import System, { Subsystem, using, after, contributions } from '../system'
 import Unit from '../unit'
-import ExtensionSlot from '../extensions'
+import ExtensionSlot, { exportExtensions } from '../extensions'
 
 const sampleUnit = prop => Unit({ [prop]: true })
 
@@ -138,7 +138,7 @@ describe('System', () => {
 
     numbersSlot(unit3).add(10)
 
-    test('collects contributions from all contributing systems', () => {
+    test('collects contributions from all contributing units', () => {
       const system = System({
         numberCollector: using(
           { numbers: contributions(numbersSlot) },
@@ -285,6 +285,139 @@ describe('Subsystem', () => {
       })
 
       expect(sys.unit2.inj.sampleProp).toBe(true)
+    })
+  })
+
+  describe('contributions', () => {
+    const numbersSlot = ExtensionSlot(() => {
+      let numbers = []
+      return {
+        add(n) {
+          numbers.push(n)
+        },
+        collect() {
+          return { numbers }
+        },
+      }
+    })
+
+    const numberCollector = Unit(({ numbers }) => ({
+      collected: numbers.map(e => e.numbers).reduce((a, v) => a.concat(v), []),
+    }))
+
+    test('contributions from the outer system are available in the subsystem', () => {
+      const u1 = Unit({})
+      numbersSlot(u1).add(10)
+
+      const u2 = Unit({})
+      numbersSlot(u2).add(20)
+
+      const u3 = Unit({})
+      numbersSlot(u3).add(30)
+
+      const sub = Subsystem(() => ({
+        u3,
+        collector: using(
+          { numbers: contributions(numbersSlot) },
+          numberCollector
+        ),
+      }))
+
+      const sys = System({
+        u1,
+        sub: after(['u1'], sub),
+        u2: after(['sub'], u2),
+      })
+
+      expect(sys.sub.collector.collected).toEqual([10, 30, 20])
+    })
+
+    test('contributions from within the subsystem are private to the subsystem', () => {
+      const u1 = Unit({})
+      numbersSlot(u1).add(10)
+
+      const u2 = Unit({})
+      numbersSlot(u2).add(20)
+
+      const u3 = Unit({})
+      numbersSlot(u3).add(30)
+
+      const sub = Subsystem(() => ({
+        u2,
+        u3: after(['u2'], u3),
+      }))
+
+      const sys = System({
+        u1: after(['sub'], u1),
+        sub,
+        collector: using(
+          { numbers: contributions(numbersSlot) },
+          numberCollector
+        ),
+      })
+
+      expect(sys.collector.collected).toEqual([10])
+    })
+
+    test('To expose contributions from a subsysystem, declare them on the subsystem', () => {
+      const u1 = Unit({})
+      numbersSlot(u1).add(10)
+
+      const u2 = Unit({})
+      numbersSlot(u2).add(20)
+
+      const u3 = Unit({})
+      numbersSlot(u3).add(30)
+
+      const sub = Subsystem(() => ({
+        u2,
+        u3: after(['u2'], u3),
+      }))
+
+      numbersSlot(sub).add(300)
+
+      const sys = System({
+        u1: after(['sub'], u1),
+        sub,
+        collector: using(
+          { numbers: contributions(numbersSlot) },
+          numberCollector
+        ),
+      })
+
+      expect(sys.collector.collected).toEqual([300, 10])
+    })
+
+    test('A subsystem can "export" extensions from constituent units', () => {
+      const u1 = Unit({})
+      numbersSlot(u1).add(10)
+
+      const u2 = Unit({})
+      numbersSlot(u2).add(20)
+
+      const u3 = Unit({})
+      numbersSlot(u3).add(30)
+
+      const u4 = Unit({})
+      numbersSlot(u4).add(40)
+
+      const sub = Subsystem(() => ({
+        u2,
+        u3: after(['u2'], u3),
+      }))
+
+      exportExtensions(numbersSlot, sub, [u2, u3])
+
+      const sys = System({
+        u1: after(['sub'], u1),
+        sub,
+        collector: using(
+          { numbers: contributions(numbersSlot) },
+          numberCollector
+        ),
+      })
+
+      expect(sys.collector.collected).toEqual([20, 30, 10])
     })
   })
 

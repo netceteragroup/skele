@@ -99,9 +99,9 @@ describe('Extensions', () => {
         expect(() => collect('something', ss)).toThrow()
         expect(() => collect([], ss)).toThrow()
 
-        expect(collect(slot, null)).toBeUndefined()
-        expect(collect(slot, undefined)).toBeUndefined()
-        expect(collect(slot, ss)).toBeUndefined()
+        expect(collect(slot, null)).toEqual([])
+        expect(collect(slot, undefined)).toEqual([])
+        expect(collect(slot, ss)).toEqual([])
       })
 
       test('collectted values', () => {
@@ -112,8 +112,8 @@ describe('Extensions', () => {
         ext.add(3)
         ext.add(4)
 
-        expect(collect(slot, ss)).toMatchObject({ numbers: [3, 4] })
-        expect(idOf(collect(slot, ss))).toEqual(expect.any(String))
+        expect(collect(slot, ss)[0]).toMatchObject({ numbers: [3, 4] })
+        expect(idOf(collect(slot, ss)[0])).toEqual(expect.any(String))
       })
     })
   })
