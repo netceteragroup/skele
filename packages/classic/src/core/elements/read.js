@@ -7,13 +7,8 @@ import { read as readAction } from '../../read/actions'
 export default class Read extends React.Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-    kind: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.arrayOf(PropTypes.string),
-    ]).isRequired,
     uri: PropTypes.string.isRequired,
-    revalidate: PropTypes.bool,
-    readMeta: PropTypes.object,
+    opts: PropTypes.object.isRequired,
   }
 
   constructor(props) {
@@ -21,8 +16,8 @@ export default class Read extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch, uri, revalidate, readMeta } = this.props
-    dispatch(readAction(uri, { revalidate, readMeta }))
+    const { dispatch, uri, opts } = this.props
+    dispatch(readAction(uri, opts))
   }
 
   render() {
