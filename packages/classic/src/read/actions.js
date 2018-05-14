@@ -35,9 +35,21 @@ export function read(uri, opts = {}) {
   }
 }
 
-export function readRefresh(uri = undefined) {
+export function readRefresh(uri = undefined, opts = undefined) {
+  const defaults = {
+    revalidate: true,
+  }
+
+  let options = {}
+  if (opts != null) {
+    options = {
+      ...defaults,
+      ...opts,
+    }
+  }
   return {
     type: types.readRefresh,
+    ...options,
     uri,
   }
 }

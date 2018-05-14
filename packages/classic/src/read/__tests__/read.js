@@ -221,7 +221,7 @@ describe('Refreshing', () => {
     kernel.dispatch(
       action.atCursor(
         content,
-        readActions.readRefresh('https://netcetera.com/x.json')
+        readActions.readRefresh('https://netcetera.com/x.json', { foo: 'bar' })
       )
     )
 
@@ -231,7 +231,10 @@ describe('Refreshing', () => {
     expect(content.get('title')).toEqual('Scene Title X')
 
     expect(refresher.mock.calls[0][0]).toEqual('https://netcetera.com/x.json')
-    expect(refresher.mock.calls[0][1]).toMatchObject({ revalidate: true })
+    expect(refresher.mock.calls[0][1]).toMatchObject({
+      revalidate: true,
+      foo: 'bar',
+    })
 
     kernel.dispatch(
       action.atCursor(

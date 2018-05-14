@@ -247,10 +247,11 @@ export async function readRefresh(context, action) {
   const element = context.query()
   const readId = uuid()
 
-  let readAction = element.getIn([propNames.metadata, 'request']).toJS()
-
-  if (readAction == null && action.uri != null) {
+  let readAction
+  if (action.uri != null) {
     readAction = action
+  } else {
+    readAction = element.getIn([propNames.metadata, 'request']).toJS()
   }
 
   invariant(
@@ -259,9 +260,6 @@ export async function readRefresh(context, action) {
   )
 
   readAction.revalidate = flow(action, R.prop('revalidate'), R.defaultTo(true))
-  if (action.uri != null) {
-    readAction.uri = action.uri
-  }
 
   context.dispatch({
     ...action,
