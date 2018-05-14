@@ -224,8 +224,8 @@ describe('http', () => {
       })
     })
 
-    describe('options/head', async () => {
-      for (const m of ['options', 'head']) {
+    describe('options/head/delete', async () => {
+      for (const m of ['options', 'head', 'delete']) {
         fetch.resetMocks()
         fetch.mockResponseOnce(JSON.stringify({ data: '12345' }))
 

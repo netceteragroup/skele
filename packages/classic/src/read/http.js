@@ -55,6 +55,13 @@ export function options(uri, opts) {
   })
 }
 
+export function del(uri, opts) {
+  return execute(uri, {
+    ...opts,
+    method: 'DELETE',
+  })
+}
+
 export function head(uri, opts) {
   return execute(uri, {
     ...opts,
