@@ -18,7 +18,7 @@ import * as data from '../../data'
 import * as readActions from '../actions'
 import * as propNames from '../../propNames'
 
-describe('Read Subsytem', () => {
+describe('Read Subsystem', () => {
   const app = Subsystem.create(() => ({
     name: 'app',
   }))
@@ -70,6 +70,9 @@ describe('Read Subsytem', () => {
     content = kernel.query(['content'])
     expect(data.isExactlyOfKind('scene', content)).toBeTruthy()
     expect(content.get('title')).toEqual('Scene Title')
+    expect(content.getIn([propNames.metadata, 'request']).toJS()).toEqual(
+      readAction
+    )
   })
 
   it('handles failures', async () => {
@@ -126,7 +129,10 @@ describe('Read function', () => {
     kernel.dispatch(
       action.atCursor(
         content,
-        readActions.read(content.get('uri'), { revalidate: true })
+        readActions.read(content.get('uri'), {
+          revalidate: true,
+          alpha: 'beta',
+        })
       )
     )
 
@@ -136,6 +142,7 @@ describe('Read function', () => {
       'https://netcetera.com/test.json',
       {
         revalidate: true,
+        alpha: 'beta',
       },
       expect.any(Object)
     )
@@ -292,6 +299,13 @@ describe('Performing reads manually', async () => {
   expect(result.value.getIn([propNames.metadata, 'uri'])).toEqual(
     'https://netcetera.com/test.json'
   )
+  expect(
+    result.value.getIn([propNames.metadata, 'request']).toJS()
+  ).toMatchObject({
+    revalidate: true,
+    a: 1,
+    uri: 'https://netcetera.com/test.json',
+  })
 })
 
 function sleep(ms) {
