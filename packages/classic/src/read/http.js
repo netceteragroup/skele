@@ -39,22 +39,63 @@ export function execute(url, options) {
 export function post(url, json, options) {
   const opts = {
     ...options,
+    ...jsonBody(json, options),
     method: 'POST',
+  }
+  return execute(url, opts)
+}
+
+export const get = execute
+export const httpRead = get
+
+export function options(uri, opts) {
+  return execute(uri, {
+    ...opts,
+    method: 'OPTIONS',
+  })
+}
+
+export function del(uri, opts) {
+  return execute(uri, {
+    ...opts,
+    method: 'DELETE',
+  })
+}
+
+export function head(uri, opts) {
+  return execute(uri, {
+    ...opts,
+    method: 'HEAD',
+  })
+}
+
+export function put(uri, json, options) {
+  const opts = {
+    ...options,
+    ...jsonBody(json, options),
+    method: 'PUT',
+  }
+  return execute(uri, opts)
+}
+
+export function patch(uri, json, options) {
+  const opts = {
+    ...options,
+    ...jsonBody(json, options),
+    method: 'PATCH',
+  }
+  return execute(uri, opts)
+}
+
+function jsonBody(json, options) {
+  return {
     body: JSON.stringify(json),
     headers: {
       ...R.defaultTo({}, R.prop('headers', options)),
       'Content-Type': 'application/json',
     },
   }
-  return execute(url, {
-    ...opts,
-    method: 'POST',
-  })
 }
-
-export const get = execute
-export const httpRead = get
-
 function processFetchResponse(resp) {
   if (resp.ok) {
     return resp
