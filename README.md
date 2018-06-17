@@ -31,6 +31,10 @@ Please check this [manual](./packages/classic/docs/transitioning-from-girders-el
 
 Skele (скеле) means scaffolding in Macedonian. It is also a stem of skeleton (скелет in Macedonian). It symbolizes that the framework is a construction on which apps rely to stay upright and function.
 
+## Credits
+
+Thanks to [Viktorija Bachvarova](https://www.behance.net/viktorijabachvarova) for designing the logo.
+
 ## License
 
 [MIT](./LICENSE) &copy; [Netcetera](https://www.netcetera.com)
