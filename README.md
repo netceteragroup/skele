@@ -27,6 +27,10 @@ Check out the API documentation [here](https://netcetera.gitbooks.io/skele/).
 
 Please check this [manual](./packages/classic/docs/transitioning-from-girders-elements.md)
 
+## What does "Skele" mean?
+
+Skele (Скеле) means scaffolding in Macedonian. It is also a stem of skeleton (скелет in Macedonian). It symbolizes that the framework is a construction on which our apps rely to stay upright and function.
+
 ## License
 
 [MIT](./LICENSE) &copy; [Netcetera](https://www.netcetera.com)
