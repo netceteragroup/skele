@@ -29,7 +29,7 @@ Please check this [manual](./packages/classic/docs/transitioning-from-girders-el
 
 ## What does "Skele" mean?
 
-Skele (Скеле) means scaffolding in Macedonian. It is also a stem of skeleton (скелет in Macedonian). It symbolizes that the framework is a construction on which our apps rely to stay upright and function.
+Skele (скеле) means scaffolding in Macedonian. It is also a stem of skeleton (скелет in Macedonian). It symbolizes that the framework is a construction on which apps rely to stay upright and function.
 
 ## License
 
