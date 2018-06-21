@@ -30,10 +30,11 @@ export default class ViewportTracker extends WithEvents(
     this._onViewportChange()
   }
 
-  _onContentSizeChange = event => {
+  _onContentSizeChange = (contentWidth, contentHeight) => {
     const childOnContentSizeChange = React.Children.only(this.props.children)
       .props.onContentSizeChange
-    childOnContentSizeChange && childOnContentSizeChange(event)
+    childOnContentSizeChange &&
+      childOnContentSizeChange(contentWidth, contentHeight)
     this._onViewportChange()
   }
 
