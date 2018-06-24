@@ -12,7 +12,7 @@ describe('ViewportTracker', () => {
     </ViewportTracker>
   ).instance()
 
-  it('sends viewportevents on layout and scrolkl events', () => {
+  it('sends viewportevents on layout and scroll events', () => {
     const cb = jest.fn()
 
     instance.addViewportListener(cb)
