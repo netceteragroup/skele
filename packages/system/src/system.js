@@ -29,7 +29,7 @@ export function Subsystem(def) {
     )
   }
 
-  updateUnitMeta(meta => (meta.subsystem = true), subsystem)
+  updateUnitMeta(u.partial(u.assoc('subsystem', true)), subsystem)
 
   return subsystem
 }
