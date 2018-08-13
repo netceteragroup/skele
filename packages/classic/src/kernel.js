@@ -21,7 +21,7 @@ import * as SubSystem from './subsystem'
 
 class Kernel {
   constructor(subsystems, init, config) {
-    this._config = config
+    this._config = config || {}
     this._init = Cursor.from(I.fromJS(init || {}))
 
     // booting
@@ -54,15 +54,19 @@ class Kernel {
     const middleware = getMiddleware(this.subsystemSequence)
     const reducer = buildReducer(this.subsystemSequence)
 
-    if (R.isEmpty(middleware)) {
-      this._store = createStore(reducer, this._init)
-    } else {
-      this._store = createStore(
-        reducer,
-        this._init,
-        applyMiddleware(...middleware)
+    const subtreeRerender = isSubtreeRerenderEnabled(config)
+
+    let enhancer = R.identity
+
+    if (subtreeRerender) enhancer = withSubtreeSubscriptions(this._subsystems)
+    if (!R.isEmpty(middleware)) {
+      enhancer = R.compose(
+        applyMiddleware(...middleware),
+        enhancer
       )
     }
+
+    this._store = createStore(reducer, this._init, enhancer)
 
     // 5. start the subsystems
     for (const s of this.subsystemSequence) {
@@ -71,8 +75,8 @@ class Kernel {
   }
 
   // subscribes to updates from the store
-  subscribe(listener) {
-    return this._store.subscribe(listener)
+  subscribe(listener, ...args) {
+    return this._store.subscribe(listener, ...args)
   }
   // dispatch an elements action
   dispatch(action) {
@@ -146,20 +150,86 @@ class Kernel {
   }
 }
 
+const withSubtreeSubscriptions = subsystems => createStore => (
+  reducer,
+  preloadedState,
+  enhancer
+) => {
+  const store = createStore(reducer, preloadedState, enhancer)
+
+  let keypathToListeners = I.Map()
+
+  const subscribe = (listener, keyPath) => {
+    if (keyPath == null) return store.subscribe(listener)
+
+    const iKeyPath = I.List(keyPath)
+
+    let listeners = keypathToListeners.get(iKeyPath)
+    if (listeners == null) {
+      listeners = listener
+    } else if (I.List.isList(listeners)) {
+      listeners = listeners.push(listener)
+    } else {
+      listeners = I.List.of(listener)
+    }
+
+    keypathToListeners = keypathToListeners.set(iKeyPath, listeners)
+
+    return function unsubscribe() {
+      keypathToListeners = keypathToListeners.update(
+        iKeyPath,
+        ls => (ls != null ? ls.filterNot(l => l === listener) : I.List())
+      )
+    }
+  }
+
+  store.subscribe(() => {
+    // an ugly hack to obtain the affected key path in a performant way
+    let currentKeypath = subsystems.update
+      ? subsystems.update.lastAffectedKeyPath()
+      : null
+    if (currentKeypath) currentKeypath = I.List(currentKeypath)
+
+    const listeners = keypathToListeners.get(currentKeypath)
+
+    if (listeners != null) {
+      const kp = currentKeypath.toArray()
+
+      if (I.List.isList(listeners)) {
+        listeners.forEach(l => l(kp))
+      } else {
+        listeners(kp)
+      }
+    }
+  })
+
+  return {
+    ...store,
+    subscribe,
+  }
+}
+
 function buildReducer(subsystems) {
-  const reducers = R.pipe(R.map(SubSystem.reducer), R.reject(R.isNil))(
-    subsystems
-  )
+  const reducers = R.pipe(
+    R.map(SubSystem.reducer),
+    R.reject(R.isNil)
+  )(subsystems)
 
   return (state, action) => R.reduce((s, r) => r(s, action), state, reducers)
 }
 
-const getMiddleware = R.pipe(R.map(SubSystem.middleware), R.reject(R.isNil))
+const getMiddleware = R.pipe(
+  R.map(SubSystem.middleware),
+  R.reject(R.isNil)
+)
 
 const getChildPostions = R.either(
   R.path(['data', 'defaultChildPositions']),
   R.path(['transform', 'childrenElements'])
 )
+
+const isSubtreeRerenderEnabled = R.path(['optimizations', 'subtreeRerender'])
+export { isSubtreeRerenderEnabled }
 
 export function create(subsystems, init, config) {
   return new Kernel(subsystems, init, config)
