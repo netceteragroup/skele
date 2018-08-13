@@ -9,6 +9,8 @@ import * as Kernel from '../../kernel'
 import { ActionRegistry } from '../../registry'
 
 import { flow } from '../../data'
+import { metadata } from '../../propNames'
+
 import updateSubS from '..'
 
 const registryAttribute = '@@skele/_updateRegistry'
@@ -105,8 +107,36 @@ describe('updates API', function() {
     const kernel = Kernel.create([updateSubS, app], {}, {})
     const reducer = kernel.subsystems.update.reducer
 
-    expect(flow(reducer(root, localUpdate), el3, bookmark)).toBe(true)
-    expect(flow(reducer(root, globalUpdate), el1, globalBookmark)).toBe(true)
-    expect(flow(reducer(root, bubblingUpdate), el2, globalBookmark)).toBe(true)
+    expect(
+      flow(
+        reducer(root, localUpdate),
+        el3,
+        bookmark
+      )
+    ).toBe(true)
+    expect(kernel.subsystems.update.lastAffectedKeyPath()).toEqual([
+      'element1',
+      'element2',
+      'element3',
+    ])
+
+    expect(
+      flow(
+        reducer(root, globalUpdate),
+        el1,
+        globalBookmark
+      )
+    ).toBe(true)
+    expect(
+      flow(
+        reducer(root, bubblingUpdate),
+        el2,
+        globalBookmark
+      )
+    ).toBe(true)
+    expect(kernel.subsystems.update.lastAffectedKeyPath()).toEqual([
+      'element1',
+      'element2',
+    ])
   })
 })

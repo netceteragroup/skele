@@ -66,11 +66,14 @@ Subsystem.extend(() => {
 export default Subsystem.create(system => {
   const config = {
     registry: getCombinedRegistry(system.subsystemSequence),
+    lastAffectedKeyPath: null,
   }
   return {
     name: 'update',
 
     reducer: impl.reducer(config),
+
+    lastAffectedKeyPath: () => config.lastAffectedKeyPath,
   }
 })
 

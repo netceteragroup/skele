@@ -7,6 +7,7 @@ import { warning } from '../impl/log'
 
 import * as data from '../data'
 import * as actions from '../action'
+
 import { findParentEntry } from '../impl/cursor'
 
 import { ActionRegistry } from '../registry'
@@ -31,6 +32,9 @@ export const reducer = R.curry((config, cursor, action) => {
   const type = action.type
   const { registry } = config
 
+  let result = cursor
+  let affectedKeyPath
+
   // handle global updates
   if (type.startsWith('.')) {
     const keyFn = el => ActionRegistry.keyFor(data.kindOf(el), type)
@@ -38,28 +42,39 @@ export const reducer = R.curry((config, cursor, action) => {
     const entry = findParentEntry(registry, keyFn, cursor.getIn(fromPath))
     if (entry != null) {
       const { element, entry: update } = entry
-      return cursor.setIn(element._keyPath, update(element.deref(), action))
-    }
-    return cursor
-  }
 
-  // handle local updates
-  const update = registry.get(ActionRegistry.keyFromAction(action))
-  const element = cursor.getIn(fromPath)
-  if (element) {
-    if (update) {
-      return cursor.setIn(fromPath, update(element.deref(), action))
-    } else {
-      return cursor
+      result = cursor.setIn(element._keyPath, update(element.deref(), action))
+      affectedKeyPath = element._keyPath
     }
   } else {
-    warning(
-      'Unable to perform local update, element has changed in meantime...'
-    )
-    return cursor
+    // handle local updates
+    const key = ActionRegistry.keyFromAction(action)
+    const update = registry.get(key)
+    const element = cursor.getIn(fromPath)
+    if (element) {
+      if (update) {
+        result = cursor.setIn(fromPath, update(element.deref(), action))
+        affectedKeyPath = element._keyPath
+      }
+    } else {
+      warning(
+        'Unable to perform local update, element has changed in meantime...'
+      )
+    }
   }
 
-  return cursor
+  // a bit of an ugly hack to remember the which key path was affected
+  // with the last update
+  if (affectedKeyPath != null) {
+    config.lastAffectedKeyPath = affectedKeyPath
+  } else {
+    confgi.lastAffectedKeyPath = null
+  }
+
+  return result
 })
 
-const isApplicable = R.pipe(actions.actionMeta, R.complement(R.isNil))
+const isApplicable = R.pipe(
+  actions.actionMeta,
+  R.complement(R.isNil)
+)
