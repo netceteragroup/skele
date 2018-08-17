@@ -2,8 +2,7 @@
 
 import * as R from 'ramda'
 import { memoize } from '../impl/util'
-import * as data from '../data'
-import * as zip from '../zip'
+import { data, zip } from '@skele/core'
 
 export function enricher(config) {
   const { registry, elementZipper } = config

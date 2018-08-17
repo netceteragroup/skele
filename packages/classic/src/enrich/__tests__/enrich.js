@@ -4,7 +4,7 @@ import { fromJS, List } from 'immutable'
 import * as Subsystem from '../../subsystem'
 import * as Kernel from '../../kernel'
 import * as propNames from '../../propNames'
-import * as data from '../../data'
+import { data } from '@skele/core'
 
 import enrichSubsystem from '..'
 

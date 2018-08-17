@@ -4,7 +4,7 @@ import * as R from 'ramda'
 import { List, Seq } from 'immutable'
 import Cursor from 'immutable/contrib/cursor'
 
-import * as data from '../data'
+import { data } from '@skele/core'
 
 export const findParentEntry = R.curry((registry, keyfn, cursor) =>
   data.flow(

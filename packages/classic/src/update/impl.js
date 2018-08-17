@@ -5,11 +5,12 @@ import * as R from 'ramda'
 import invariant from 'invariant'
 import { warning } from '../impl/log'
 
-import * as data from '../data'
+import { data } from '@skele/core'
 import * as actions from '../action'
 import { findParentEntry } from '../impl/cursor'
 
 import { ActionRegistry } from '../registry'
+
 /**
  * Main application reducer.
  *

@@ -1,7 +1,7 @@
 'use strict'
 
 import * as R from 'ramda'
-import { kindOf } from './data'
+import { data } from '@skele/core'
 
 export const actionMetaProperty = '@@skele/actionMeta'
 
@@ -16,7 +16,7 @@ export const actionMeta = R.prop(actionMetaProperty)
  */
 export const atCursor = R.curry((cursor, action) => {
   const keyPath = cursor._keyPath
-  const kind = kindOf(cursor)
+  const kind = data.kindOf(cursor)
 
   return { ...action, [actionMetaProperty]: { keyPath, kind } }
 })

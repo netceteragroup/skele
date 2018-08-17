@@ -3,12 +3,14 @@
 import * as R from 'ramda'
 import invariant from 'invariant'
 
-import { isElementRef } from '../data'
+import { data, registry } from '@skele/core'
 
 import * as SubSystem from '../subsystem'
-import { MultivalueRegistry, chainMultivalueRegistries } from '../registry'
 
 import * as impl from './impl'
+
+const { isElementRef } = data
+const { MultivalueRegistry, chainMultivalueRegistries } = registry
 
 const registryAttribute = '@@skele/_transformRegistry'
 

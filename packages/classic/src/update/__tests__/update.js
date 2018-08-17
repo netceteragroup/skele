@@ -2,16 +2,17 @@
 
 import { fromJS } from 'immutable'
 import Cursor from 'immutable/contrib/cursor'
-
+import { data } from '@skele/core'
 import * as actions from '../../action'
+import { ActionRegistry } from '../../registry'
 import * as Subsystem from '../../subsystem'
 import * as Kernel from '../../kernel'
-import { ActionRegistry } from '../../registry'
 
-import { flow } from '../../data'
 import updateSubS from '..'
 
 const registryAttribute = '@@skele/_updateRegistry'
+
+const { flow } = data
 
 describe('updates API', function() {
   const app = Subsystem.create(() => ({
@@ -37,27 +38,25 @@ describe('updates API', function() {
       updates.register(action2.type, () => {})
     })
 
-    const registry = app.update[registryAttribute]
+    const reg = app.update[registryAttribute]
 
     expect(
-      registry.get(
-        ActionRegistry.keyFor(['article', 'specific'], 'TOGGLE_BOOKMARK')
-      )
+      reg.get(ActionRegistry.keyFor(['article', 'specific'], 'TOGGLE_BOOKMARK'))
     ).toEqual(expect.anything())
 
-    expect(registry.get(ActionRegistry.keyFor(['article'], '.LOAD'))).toEqual(
+    expect(reg.get(ActionRegistry.keyFor(['article'], '.LOAD'))).toEqual(
       expect.anything()
     )
     expect(
-      registry.get(ActionRegistry.keyFor(['article', 'specific'], '.LOAD'))
+      reg.get(ActionRegistry.keyFor(['article', 'specific'], '.LOAD'))
     ).toEqual(expect.anything())
 
-    expect(
-      registry.get(ActionRegistry.keyFor(['article'], 'unknown'))
-    ).not.toEqual(expect.anything())
-    expect(
-      registry.get(ActionRegistry.keyFor(['unknown'], '.LOAD'))
-    ).not.toEqual(expect.anything())
+    expect(reg.get(ActionRegistry.keyFor(['article'], 'unknown'))).not.toEqual(
+      expect.anything()
+    )
+    expect(reg.get(ActionRegistry.keyFor(['unknown'], '.LOAD'))).not.toEqual(
+      expect.anything()
+    )
   })
 
   it('reduces the app state according to registrations', function() {

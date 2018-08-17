@@ -5,7 +5,7 @@ import I from 'immutable'
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import * as data from '../data'
+import { data } from '@skele/core'
 
 export default R.curry((kind, Component, runtime) => {
   const { uiFor: globalUIFor, system } = runtime

@@ -2,7 +2,7 @@
 
 import * as R from 'ramda'
 import I from 'immutable'
-import * as zip from '../zip'
+import { zip } from '@skele/core'
 
 export async function runEnhancers(el, context, enhancers) {
   return Promise.all(

@@ -2,9 +2,10 @@
 
 import { List } from 'immutable'
 
-import { Registry, MultivalueRegistry } from '../registry'
+import { data, registry } from '@skele/core'
 import * as actions from '../action'
-import * as data from '../data'
+
+const { Registry, MultivalueRegistry } = registry
 
 export const keyFor = (kind, action) => List.of(data.canonical(kind), action)
 

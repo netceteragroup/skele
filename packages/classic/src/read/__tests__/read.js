@@ -13,7 +13,7 @@ import read from '..'
 import * as http from '../http'
 
 import * as action from '../../action'
-import * as data from '../../data'
+import { data } from '@skele/core'
 
 import * as readActions from '../actions'
 import * as propNames from '../../propNames'

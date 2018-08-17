@@ -4,15 +4,17 @@ import * as R from 'ramda'
 import { List } from 'immutable'
 import invariant from 'invariant'
 
-import { isElementRef } from '../data'
+import { data, registry } from '@skele/core'
 
 import * as SubSystem from '../subsystem'
-import { MultivalueRegistry, chainMultivalueRegistries } from '../registry'
 
 import * as impl from './impl'
 
 const readDependentRegistryAttribute = '@@skele/_readDependentEnhanceRegistry'
 const readIndependentListAttribute = '@@skele/_readIndependentEnhanceList'
+
+const { MultivalueRegistry, chainMultivalueRegistries } = registry
+const { isElementRef } = data
 
 SubSystem.extend(() => {
   const readDependentRegistry = new MultivalueRegistry()
