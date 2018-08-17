@@ -2,3 +2,4 @@ node_modules/
 dist/
 coverage/
 packages/classic/src/vendor
+packages/core/src/vendor

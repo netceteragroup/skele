@@ -1,0 +1,27 @@
+{
+  "name": "@skele/core",
+  "version": "1.0.0-alpha.31",
+  "description":
+    "Core package of the Skele framework. Element definitions, registrations and traversal.",
+  "react-native": "src/index.js",
+  "main": "dist/es5/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netceteragroup/skele.git"
+  },
+  "keywords": ["react", "react-native", "redux", "netcetera"],
+  "author": "netcetera",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/netceteragroup/skele/issues"
+  },
+  "homepage": "https://github.com/netceteragroup/skele#readme",
+  "dependencies": {
+    "immutable": "^3.8.1",
+    "invariant": "^2.2.2",
+    "ramda": "^0.25.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
