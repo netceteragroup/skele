@@ -6,9 +6,8 @@ import { fromJS } from 'immutable'
 
 import uuid from 'uuid'
 
-import { data } from '@skele/core'
+import { data, log } from '@skele/core'
 
-import { info, error } from '../impl/log'
 import { time, timeSync } from '../impl/util'
 
 import * as readActions from './actions'
@@ -16,6 +15,7 @@ import * as propNames from '../propNames'
 import { isOK, isResponse } from './http'
 
 const { canonical, flow, kindOf } = data
+const { info, error } = log
 
 export const fallback = '@@skele/defaultRead'
 

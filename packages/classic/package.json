@@ -9,7 +9,7 @@
     "type": "git",
     "url": "git+https://github.com/netceteragroup/skele.git"
   },
-  "keywords": ["react", "react-native", "redux", "redux-saga", "netcetera"],
+  "keywords": ["react", "react-native", "redux", "netcetera"],
   "author": "netcetera",
   "license": "MIT",
   "bugs": {

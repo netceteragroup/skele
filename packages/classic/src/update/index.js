@@ -2,9 +2,8 @@
 
 import * as R from 'ramda'
 import invariant from 'invariant'
-import deprecated from '../impl/deprecated'
 
-import { data, registry } from '@skele/core'
+import { data, registry, log } from '@skele/core'
 import { ActionRegistry } from '../registry'
 import * as Subsystem from '../subsystem'
 
@@ -13,6 +12,7 @@ import * as impl from './impl'
 const registryAttribute = '@@skele/_updateRegistry'
 
 const { chainRegistries } = registry
+const { deprecated } = log
 
 Subsystem.extend(() => {
   const reg = new ActionRegistry()

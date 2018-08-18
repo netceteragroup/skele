@@ -2,7 +2,7 @@
 
 import * as R from 'ramda'
 import invariant from 'invariant'
-import deprecated from '../impl/deprecated'
+import deprecated from '../log/deprecated'
 import { List, Seq, is, Iterable } from 'immutable'
 
 /**
