@@ -28,8 +28,7 @@
       "babel -q packages/config/src --out-dir packages/config/dist/es5",
     "es5:components":
       "babel -q packages/components/src --out-dir packages/components/dist/es5",
-    "es5:core":
-      "babel -q packages/core/src --out-dir packages/core/dist/es5",
+    "es5:core": "babel -q packages/core/src --out-dir packages/core/dist/es5",
     "clean":
       "yarn run clean:classic && yarn run clean:config && yarn run clean:components && yarn run clean:core",
     "clean:classic": "del-cli packages/classic/dist",
@@ -102,7 +101,8 @@
       "!**/__tests__/**",
       "!**/node_modules/**",
       "!**/vendor/**",
-      "!**/dist/es5/**"
+      "!**/dist/es5/**",
+      "!packages/core/src/log/**"
     ]
   },
   "workspaces": ["packages/*"]

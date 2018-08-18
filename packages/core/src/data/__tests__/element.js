@@ -8,6 +8,7 @@ import {
   ancestorKinds,
   canonical,
   isElement,
+  isElementRef,
   childrenProperty,
   childPositions,
   pathsToChildElements,
@@ -40,6 +41,22 @@ describe('element', function() {
 
     expect(isElement(noKind)).toEqual(false)
     expect(isElement(aList)).toEqual(false)
+  })
+
+  it('tests if an object-kind is a proper ref for an element', () => {
+    // not proper kinds
+    expect(isElementRef(undefined)).toEqual(false)
+    expect(isElementRef(null)).toEqual(false)
+    expect(isElementRef([null])).toEqual(false)
+    expect(isElementRef(['test', null])).toEqual(false)
+    expect(isElementRef(['test', {}])).toEqual(false)
+    expect(isElementRef(['test', []])).toEqual(false)
+
+    // proper kinds
+    expect(isElementRef([])).toEqual(true)
+    expect(isElementRef('test')).toEqual(true)
+    expect(isElementRef(['test'])).toEqual(true)
+    expect(isElementRef(['test', 'test2'])).toEqual(true)
   })
 
   it('properly checks for element kinds', function() {
