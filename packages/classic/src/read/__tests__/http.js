@@ -104,8 +104,152 @@ describe('http', () => {
     })
   })
 
-  describe('execute', () => {
+  describe('HTTP methods', () => {
+    beforeEach(() => {
+      fetch.resetMocks()
+      fetch.mockResponseOnce(JSON.stringify({ data: '12345' }))
+    })
+
+    describe('execute/get', () => {
+      test('just an uri', async () => {
+        await http.execute('http://example.com')
+
+        expect(fetch).toHaveBeenCalledWith(
+          'http://example.com',
+          expect.objectContaining({
+            method: 'GET',
+          })
+        )
+      })
+
+      test('specifying a method', async () => {
+        await http.execute('http://example.com', { method: 'HEAD' })
+
+        expect(fetch).toHaveBeenCalledWith(
+          'http://example.com',
+          expect.objectContaining({
+            method: 'HEAD',
+          })
+        )
+      })
+
+      test('extra headers', async () => {
+        await http.execute('http://example.com', {
+          headers: { 'Cache-Control': 'max-age=200' },
+        })
+
+        expect(fetch).toHaveBeenCalledWith(
+          'http://example.com',
+          expect.objectContaining({
+            method: 'GET',
+          })
+        )
+
+        expect(fetch.mock.calls[0][1].headers.get('Cache-Control')).toEqual(
+          'max-age=200'
+        )
+      })
+
+      test('revalidate option', async () => {
+        await http.execute('http://example.com', {
+          revalidate: true,
+          headers: { Agent: 'x' },
+        })
+
+        expect(fetch).toHaveBeenCalledWith(
+          'http://example.com',
+          expect.objectContaining({
+            method: 'GET',
+          })
+        )
+
+        const headers = fetch.mock.calls[0][1].headers
+
+        expect(headers.get('Cache-Control')).toEqual('max-age=0')
+        expect(headers.get('Agent')).toEqual('x')
+      })
+
+      test('OK response', async () => {
+        const response = await http.execute('http://example.com')
+
+        expect(http.isResponse(response)).toBeTruthy()
+        expect(http.isOK(response)).toBeTruthy()
+        expect(response.value.toJS()).toEqual({ data: '12345' })
+      })
+
+      test('Failed response', async () => {
+        fetch.resetMocks()
+        fetch.mockResponseOnce(JSON.stringify({}), { status: 404 })
+
+        const response = await http.execute('http://example.com')
+
+        expect(http.isResponse(response)).toBeTruthy()
+        expect(http.isOK(response)).not.toBeTruthy()
+        expect(response.meta).toMatchObject({
+          status: 404,
+          message: 'Not Found',
+        })
+      })
+    })
+
+    describe('post/put/patch', () => {
+      test('post', async () => {
+        for (const m of ['post', 'put', 'patch']) {
+          fetch.resetMocks()
+          fetch.mockResponseOnce(JSON.stringify({ data: '12345' }))
+
+          // eslint-disable-next-line import/namespace
+          await http[m].call(
+            http,
+            'http://example.com',
+            { test: 1 },
+            {
+              headers: { Agent: 'x' },
+              foo: 'bar',
+            }
+          )
+
+          expect(fetch).toHaveBeenCalledWith(
+            'http://example.com',
+            expect.objectContaining({
+              method: m.toUpperCase(),
+              foo: 'bar',
+              body: JSON.stringify({ test: 1 }),
+            })
+          )
+
+          const headers = fetch.mock.calls[0][1].headers
+          expect(headers.get('Agent')).toEqual('x')
+        }
+      })
+    })
+
+    describe('options/head/delete', async () => {
+      for (const m of ['options', 'head', 'delete']) {
+        fetch.resetMocks()
+        fetch.mockResponseOnce(JSON.stringify({ data: '12345' }))
+
+        // eslint-disable-next-line import/namespace
+        await http[m].call(http, 'http://example.com', {
+          headers: { Agent: 'x' },
+          foo: 'bar',
+        })
+
+        expect(fetch).toHaveBeenCalledWith(
+          'http://example.com',
+          expect.objectContaining({
+            method: m.toUpperCase(),
+            foo: 'bar',
+          })
+        )
+
+        const headers = fetch.mock.calls[0][1].headers
+        expect(headers.get('Agent')).toEqual('x')
+      }
+    })
+
     test('faild http call returns 998 as status code', async () => {
+      fetch.resetMocks()
       fetch.mockReject()
 
       const response = await http.get('http://example.com')

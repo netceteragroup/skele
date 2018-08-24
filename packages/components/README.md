@@ -61,7 +61,7 @@ render() {
 
 ### With Placeholder
 
-A higher-order component that can be used to display a placeholder while the component is not in the viewport.
+A higher-order component that can be used to display a placeholder while the wrapped component is not in the viewport.
 This can improve user experience since it can serve as a mechanism for lazy loading.
 
 #### Usage
@@ -84,6 +84,7 @@ render() {
       // placeholder={Placeholder} // passing down a placeholder at render time
       source={{ uri: 'https://facebook.github.io/react-native/img/header_logo.png' }}
       preTriggerRatio={0.5}
+      retainOnceInViewport={true}
       style={{ width: 50, height: 50 }} />
   )
 }
@@ -94,3 +95,4 @@ render() {
 | Prop | Description | Default |
 |---|---|---|
 |**`placeholder`**| Useful for passing down a placeholder at render time. | `null` |
+|**`retainOnceInViewport`**| Whether to keep the wrapped component displayed once it enters the viewport. | `false` |
