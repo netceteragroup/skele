@@ -12,7 +12,11 @@ const areImm = (...vals) => R.all(isImm)(vals)
 const isFalsy = R.anyPass([R.isNil, R.and(R.is(Boolean), R.equals(false))])
 const isTrue = R.allPass([R.is(Boolean), R.equals(true)])
 const isLocation = loc =>
-  loc.meta && loc.meta.isBranch && loc.meta.getChildren && loc.meta.makeItem
+  loc &&
+  loc.meta &&
+  loc.meta.isBranch &&
+  loc.meta.getChildren &&
+  loc.meta.makeItem
 export const isLocationArray = obj =>
   R.is(Array)(obj) && R.not(R.isEmpty(obj)) && R.all(isLocation)(obj)
 
@@ -76,8 +80,8 @@ export const children = (...keys) => loc => {
 // ofKind :: String -> Location -> Boolean
 export const ofKind = kind => loc => isOfKind(kind, loc.value())
 
-// ancestors :: Location -> [Location]
-export const ancestors = loc => {
+// ancestors :: () -> Location -> [Location]
+export const ancestors = () => loc => {
   const result = []
   let currentLoc = loc
   while (currentLoc.canGoUp()) {
@@ -89,8 +93,8 @@ export const ancestors = loc => {
   return result
 }
 
-// descendants :: Location -> [Location]
-export const descendants = loc => _descendants(loc)
+// descendants :: () -> Location -> [Location]
+export const descendants = () => loc => _descendants(loc)
 
 const _descendants = (loc, collector = []) => {
   if (loc.canGoDown()) {
@@ -125,14 +129,10 @@ export const propEq = (key, value) => loc => {
 export const select = (...predicates) => location => {
   let result = [location]
   for (let pred of predicates) {
-    if (R.isNil(pred)) {
-      return result
-    }
-
     if (R.is(String)(pred)) {
-      result = result.map(loc => child(pred, loc)).filter(l => !!l)
+      result = result.map(loc => child(pred)(loc)).filter(l => !!l)
     } else if (isStringArray(pred)) {
-      result = result.filter(loc => ofKind(pred, loc))
+      result = result.filter(loc => isOfKind(pred, loc.value()))
     } else if (R.is(Function)(pred)) {
       result = R.flatten(
         result
@@ -142,18 +142,14 @@ export const select = (...predicates) => location => {
               return res
             } else if (isTrue(res)) {
               return loc
-            } else if (isFalsy(res)) {
-              return null
             } else {
-              console.warn('Unknown processing result in select', result)
               return null
             }
           })
           .filter(l => !!l)
       )
     } else {
-      console.warn('Unknown predicate', pred)
-      return result
+      return []
     }
   }
   return result

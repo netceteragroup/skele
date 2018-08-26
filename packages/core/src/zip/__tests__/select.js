@@ -45,7 +45,7 @@ const data = {
       ],
       deeplink: {
         kind: ['link'],
-        link: 'https://www.goodreads.com',
+        title: 'goodreads',
       },
     },
   ],
@@ -147,9 +147,7 @@ describe('zip.select', () => {
         loc => isOfKind('link', loc.value()),
         mensahChildren
       )
-      expect(deeplinkLoc.value().get('link')).toEqual(
-        'https://www.goodreads.com'
-      )
+      expect(deeplinkLoc.value().get('title')).toEqual('goodreads')
 
       const robotLoc = R.find(
         loc =>
@@ -159,17 +157,17 @@ describe('zip.select', () => {
       )
       expect(robotLoc.value().get('title')).toEqual('robot')
 
-      const robotAncestors = ancestors(robotLoc)
+      const robotAncestors = ancestors()(robotLoc)
       expect(robotAncestors.length).toEqual(2)
       expect(robotAncestors[0].value().get('title')).toEqual('Dr Mensah')
       expect(robotAncestors[1].value().get('title')).toEqual('App')
 
-      const deeplinkAncestors = ancestors(deeplinkLoc)
+      const deeplinkAncestors = ancestors()(deeplinkLoc)
       expect(deeplinkAncestors.length).toEqual(2)
       expect(deeplinkAncestors[0].value().get('title')).toEqual('Dr Mensah')
       expect(deeplinkAncestors[1].value().get('title')).toEqual('App')
 
-      const settingsAncestors = ancestors(settings)
+      const settingsAncestors = ancestors()(settings)
       expect(settingsAncestors.length).toEqual(1)
       expect(settingsAncestors[0].value().get('title')).toEqual('App')
     })
@@ -178,22 +176,20 @@ describe('zip.select', () => {
       const root = zipper(I.fromJS(data))
 
       const settings = child('settings')(root)
-      expect(descendants(settings).length).toEqual(0)
+      expect(descendants()(settings).length).toEqual(0)
 
       const tabs = children('tabs')(root)
-      const mensahDescendants = descendants(tabs[1])
+      const mensahDescendants = descendants()(tabs[1])
       expect(mensahDescendants.length).toEqual(3)
       expect(mensahDescendants[0].value().get('title')).toEqual('human')
       expect(mensahDescendants[1].value().get('title')).toEqual('robot')
-      expect(mensahDescendants[2].value().get('link')).toEqual(
-        'https://www.goodreads.com'
-      )
+      expect(mensahDescendants[2].value().get('title')).toEqual('goodreads')
 
-      const all = descendants(root)
+      const all = descendants()(root)
       expect(all.length).toEqual(6)
       expect(all[0].value().get('title')).toEqual('human')
       expect(all[1].value().get('title')).toEqual('robot')
-      expect(all[2].value().get('link')).toEqual('https://www.goodreads.com')
+      expect(all[2].value().get('title')).toEqual('goodreads')
       expect(all[3].value().get('title')).toEqual('Dr Mensah')
       expect(all[4].value().get('title')).toEqual('Murder Bot')
       expect(all[5].value().get('title')).toEqual('Martha Wells')
@@ -207,12 +203,28 @@ describe('zip.select', () => {
       expect(select()(root)[0].value()).toEqualI(root.value())
     })
 
-    it('should give proper result for specific predicate types', () => {
+    it('should give proper result for combinations of predicates', () => {
       expect(
-        select(descendants, propEq('link', 'https://www.goodreads.com'))(root)
-          .length
+        select(descendants(), propEq('title', 'goodreads'))(root).length
       ).toEqual(1)
-      expect(select(descendants, ofKind('element'))(root).length).toEqual(2)
+      expect(select(descendants(), ofKind('element'))(root).length).toEqual(2)
+      expect(
+        select(descendants(), ofKind('tab'), propEq('title', 'Murder Bot'))(
+          root
+        ).length
+      ).toEqual(1)
+      expect(select(descendants(), ['link'])(root).length).toEqual(1)
+      expect(select(descendants(), ['tab'])(root).length).toEqual(2)
+      expect(select(descendants(), ['tab'], 'deeplink')(root).length).toEqual(1)
+    })
+
+    it('should hanlde gracefully in case unknown predicate creaps in', () => {
+      expect(
+        select(descendants(), loc => ({
+          loc,
+        }))(root).length
+      ).toEqual(0)
+      expect(select(descendants(), { prop: 'test' })(root).length).toEqual(0)
     })
   })
 })
