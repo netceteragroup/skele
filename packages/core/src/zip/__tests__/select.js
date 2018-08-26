@@ -115,6 +115,14 @@ describe('zip.select', () => {
       expect(kids[0].value().get('title')).toEqual('Murder Bot')
       expect(kids[1].value().get('title')).toEqual('Dr Mensah')
       expect(kids[2].value().get('title')).toEqual('Martha Wells')
+
+      const extendedData = I.fromJS(data)
+        .updateIn([childrenProperty], children => children.push('world'))
+        .set('world', I.List.of(I.fromJS({ kind: ['world'], title: 'Alien' })))
+
+      const newKidsOnTheBlock = children()(zipper(extendedData))
+      expect(newKidsOnTheBlock.length).toEqual(4)
+      expect(newKidsOnTheBlock[3].value().get('title')).toEqual('Alien')
     })
 
     it('propEq', () => {
