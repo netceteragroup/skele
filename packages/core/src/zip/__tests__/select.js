@@ -8,12 +8,14 @@ import { childrenProperty, isElement, isOfKind } from '../../data'
 
 import {
   isStringArray,
+  isLocationArray,
   child,
   ancestors,
   descendants,
   children,
   propEq,
   select,
+  ofKind,
 } from '../select'
 
 const zipper = data => elementZipper({})(data)
@@ -65,6 +67,24 @@ describe('zip.select', () => {
       expect(isStringArray([])).toEqual(true)
       expect(isStringArray(null)).toEqual(false)
       expect(isStringArray(undefined)).toEqual(false)
+    })
+    it('isLocationArray', () => {
+      expect(isLocationArray()).toEqual(false)
+      expect(isLocationArray(null)).toEqual(false)
+      expect(isLocationArray(undefined)).toEqual(false)
+      expect(isLocationArray([])).toEqual(false)
+      expect(isLocationArray(['test'])).toEqual(false)
+      expect(isLocationArray([zipper(I.fromJS(data))])).toEqual(true)
+      expect(
+        isLocationArray([zipper(I.fromJS(data)), zipper(I.fromJS(data))])
+      ).toEqual(true)
+      expect(
+        isLocationArray([
+          zipper(I.fromJS(data)),
+          'Not a Zipper',
+          zipper(I.fromJS(data)),
+        ])
+      ).toEqual(false)
     })
   })
 
@@ -181,5 +201,18 @@ describe('zip.select', () => {
   })
   describe('select', () => {
     const root = zipper(I.fromJS(data))
+
+    it('should return array with given location for no predicates', () => {
+      expect(select()(root).length).toEqual(1)
+      expect(select()(root)[0].value()).toEqualI(root.value())
+    })
+
+    it('should give proper result for specific predicate types', () => {
+      expect(
+        select(descendants, propEq('link', 'https://www.goodreads.com'))(root)
+          .length
+      ).toEqual(1)
+      expect(select(descendants, ofKind('element'))(root).length).toEqual(2)
+    })
   })
 })

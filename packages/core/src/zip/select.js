@@ -11,8 +11,10 @@ const isImm = I.Iterable.isIterable
 const areImm = (...vals) => R.all(isImm)(vals)
 const isFalsy = R.anyPass([R.isNil, R.and(R.is(Boolean), R.equals(false))])
 const isTrue = R.allPass([R.is(Boolean), R.equals(true)])
-const isLocation = null
-const isLocationArray = R.all(isLocation)
+const isLocation = loc =>
+  loc.meta && loc.meta.isBranch && loc.meta.getChildren && loc.meta.makeItem
+export const isLocationArray = obj =>
+  R.is(Array)(obj) && R.not(R.isEmpty(obj)) && R.all(isLocation)(obj)
 
 // child :: String -> Location -> Location
 export const child = key => loc => {
@@ -88,17 +90,19 @@ export const ancestors = loc => {
 }
 
 // descendants :: Location -> [Location]
-export const descendants = (loc, collector = []) => {
+export const descendants = loc => _descendants(loc)
+
+const _descendants = (loc, collector = []) => {
   if (loc.canGoDown()) {
     const current = loc.down()
-    descendants(current, collector)
+    _descendants(current, collector)
     if (!isOfKind('@@skele/child-collection', current.value())) {
       collector.push(current)
     }
   }
   if (loc.canGoRight()) {
     const current = loc.right()
-    descendants(current, collector)
+    _descendants(current, collector)
     if (!isOfKind('@@skele/child-collection', current.value())) {
       collector.push(current)
     }
@@ -120,36 +124,36 @@ export const propEq = (key, value) => loc => {
 // select :: [Predicate] -> Location -> [Location]
 export const select = (...predicates) => location => {
   let result = [location]
-  for (const pred of predicates) {
-    if (R.empty(pred)) {
+  for (let pred of predicates) {
+    if (R.isNil(pred)) {
       return result
     }
 
-    let newResult = null
     if (R.is(String)(pred)) {
-      newResult = result.map(loc => child(key, loc)).filter(l => !!l)
+      result = result.map(loc => child(pred, loc)).filter(l => !!l)
     } else if (isStringArray(pred)) {
-      newResult = result.filter(loc => ofKind(pred, loc))
+      result = result.filter(loc => ofKind(pred, loc))
     } else if (R.is(Function)(pred)) {
-      newResult = pred(...result)
+      result = R.flatten(
+        result
+          .map(loc => {
+            const res = pred(loc)
+            if (isLocationArray(res) || isLocation(res)) {
+              return res
+            } else if (isTrue(res)) {
+              return loc
+            } else if (isFalsy(res)) {
+              return null
+            } else {
+              console.warn('Unknown processing result in select', result)
+              return null
+            }
+          })
+          .filter(l => !!l)
+      )
     } else {
       console.warn('Unknown predicate', pred)
       return result
-    }
-
-    if (isLocationArray(newResult)) {
-      result = newResult
-    } else if (isLocation(newResult)) {
-      result = [newResult]
-    } else if (isTrue(newResult)) {
-      // pass to the next predicate
-    } else if (isFalsy(newResult)) {
-      result = null
-      break
-    } else {
-      console.warn('Unknown processing result in select', result)
-      result = null
-      break
     }
   }
   return result

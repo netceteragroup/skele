@@ -5,3 +5,11 @@ export * from './reduce'
 export * from './edit'
 export * from './walk'
 export * from './impl'
+export {
+  child,
+  ancestors,
+  descendants,
+  // children,
+  propEq,
+  select,
+} from './select'
