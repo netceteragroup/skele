@@ -9,7 +9,6 @@ export const isStringArray = obj =>
   R.is(Array)(obj) && (R.all(R.is(String))(obj) || obj.length === 0)
 const isImm = I.Iterable.isIterable
 const areImm = (...vals) => R.all(isImm)(vals)
-const isFalsy = R.anyPass([R.isNil, R.and(R.is(Boolean), R.equals(false))])
 const isTrue = R.allPass([R.is(Boolean), R.equals(true)])
 const isLocation = loc =>
   loc &&
