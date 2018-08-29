@@ -1,6 +1,6 @@
 {
   "name": "@skele/config",
-  "version": "1.0.0-alpha.30",
+  "version": "1.0.0-alpha.31",
   "description": "Skele package that provides the posibility to define a custom configuration",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
