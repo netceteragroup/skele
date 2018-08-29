@@ -81,7 +81,7 @@ export function fail(element, action) {
   )
 }
 
-export async function performRead(context, readParams) {
+export async function performRead(context, action) {
   const {
     registry,
     enrichment,
@@ -91,7 +91,8 @@ export async function performRead(context, readParams) {
 
   const kernel = context
 
-  const { uri, opts } = readParams
+  const { uri, ...opts } = R.omit(['type', propNames.actionMeta], action)
+
   const reader = registry.get(uri) || registry.get(fallback)
 
   if (reader != null) {
@@ -126,7 +127,9 @@ export async function performRead(context, readParams) {
     }
     if (isOK(readResponse)) {
       const readValue = fromJS(readResponse.value).merge({
-        [propNames.metadata]: fromJS(readResponse.meta || defaultMeta(uri)),
+        [propNames.metadata]: fromJS(
+          readResponse.meta || defaultMeta(uri)
+        ).merge({ request: R.omit([propNames.actionMeta], action) }),
       })
 
       enhanceContext = {
@@ -181,7 +184,7 @@ export async function performRead(context, readParams) {
         url: uri,
         uri,
         status: 999,
-        message: `There's no reader defined for ${pattern}. Did you forget to register a fallback reader?`,
+        message: `There's no reader defined for ${uri}. Did you forget to register a fallback reader?`,
       },
     }
   }
@@ -205,10 +208,7 @@ export async function read(context, action) {
     const readResponse = await time(
       `TIME-performRead-(${action.uri})`,
       performRead
-    )(context, {
-      uri: action.uri,
-      opts: R.pick(['revalidate'], action),
-    })
+    )(context, action)
 
     if (isOK(readResponse)) {
       dispatch({
@@ -245,13 +245,21 @@ export async function read(context, action) {
 export async function readRefresh(context, action) {
   const { dispatch } = context
   const element = context.query()
-  const uri = action.uri || element.getIn([propNames.metadata, 'uri'])
   const readId = uuid()
 
+  let readAction
+  if (action.uri != null) {
+    readAction = action
+  } else {
+    readAction = element.getIn([propNames.metadata, 'request']).toJS()
+  }
+
   invariant(
-    uri != null,
-    'The element you are refreshing must have been loaded via a read'
+    readAction != null,
+    'The element you are refreshing must have been loaded via a read, or you must provide an uri yourself.'
   )
+
+  readAction.revalidate = flow(action, R.prop('revalidate'), R.defaultTo(true))
 
   context.dispatch({
     ...action,
@@ -260,10 +268,7 @@ export async function readRefresh(context, action) {
   })
 
   try {
-    const response = await performRead(context, {
-      uri: uri,
-      opts: { ...{ revalidate: true }, ...R.pick(['revalidate'], action) },
-    })
+    const response = await performRead(context, readAction)
 
     if (isOK(response)) {
       dispatch({
@@ -274,7 +279,7 @@ export async function readRefresh(context, action) {
         readValue: response.value,
       })
     } else {
-      info(`Unsuccessful refreshing (read) ${uri} `, response)
+      info(`Unsuccessful refreshing (read) ${readAction.uri} `, response)
 
       dispatch({
         ...action,
@@ -284,7 +289,7 @@ export async function readRefresh(context, action) {
       })
     }
   } catch (e) {
-    error(`Error while refreshing (read) ${uri} `, e)
+    error(`Error while refreshing (read) ${readAction.uri} `, e)
 
     dispatch({
       ...action,
