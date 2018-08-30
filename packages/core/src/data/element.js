@@ -1,19 +1,9 @@
-/* @flow */
 'use strict'
 
 import * as R from 'ramda'
 import invariant from 'invariant'
-import deprecated from '../impl/deprecated'
-import {
-  List,
-  Seq,
-  is,
-  Iterable,
-  KeyedIterable,
-  IndexedIterable,
-} from 'immutable'
-
-import type { ElementRef, ElementRefCanonical } from './types'
+import deprecated from '../log/deprecated'
+import { List, Seq, is, Iterable } from 'immutable'
 
 /**
  * Checks if a given object is of the provided kind.
@@ -22,10 +12,7 @@ import type { ElementRef, ElementRefCanonical } from './types'
  * @param element the element
  * @returns {*}
  */
-export const isOfKind = R.curry(function isOfKind(
-  kind: ElementRef,
-  element: ?KeyedIterable
-): boolean {
+export const isOfKind = R.curry(function isOfKind(kind, element) {
   if (element == null) {
     return false
   }
@@ -42,7 +29,7 @@ export const isOfKind = R.curry(function isOfKind(
   return is(elementKindNormalized.take(normalized.count()), normalized)
 })
 
-export function isElementRef(obj: any): boolean {
+export function isElementRef(obj) {
   const isString = o => typeof o === 'string'
 
   if (isString(obj)) return true
@@ -60,10 +47,7 @@ export function isElementRef(obj: any): boolean {
  * @param element tne element
  * @returns {*}
  */
-export const isExactlyOfKind = R.curry(function isExactlyOfKind(
-  kind: ElementRef,
-  element: ?KeyedIterable
-): boolean {
+export const isExactlyOfKind = R.curry(function isExactlyOfKind(kind, element) {
   if (element == null || kindOf(element) == null) {
     return false
   }
@@ -80,8 +64,8 @@ export const isExactlyOfKind = R.curry(function isExactlyOfKind(
  * @param element any object, potentially an element
  * @returns the kind of that element or null (which means the provided object is not an element
  */
-export function kindOf(element: KeyedIterable): ?ElementRefCanonical {
-  const kind: ?ElementRef = element.get('kind')
+export function kindOf(element) {
+  const kind = element.get('kind')
 
   if (kind != null) {
     return canonical(kind)
@@ -93,7 +77,7 @@ export function kindOf(element: KeyedIterable): ?ElementRefCanonical {
 /**
  * Returns true if object provided is an element
  */
-export function isElement(obj: any): boolean {
+export function isElement(obj) {
   return Iterable.isIterable(obj) && kindOf(obj) != null
 }
 
@@ -109,9 +93,7 @@ export function isElement(obj: any): boolean {
  * @param ref the kind
  * @returns {*}
  */
-export function ancestorKinds(
-  ref: ElementRef
-): IndexedIterable<ElementRefCanonical> {
+export function ancestorKinds(ref) {
   const cRef = canonical(ref)
 
   invariant(cRef != null, 'you must provide a valid element reference')
@@ -136,11 +118,11 @@ export function ancestorKinds(
  * @param ref an element reference
  * @returns the canonical version for the reference kind
  */
-export function canonical(ref: ElementRef): ?List<string> {
+export function canonical(ref) {
   return normalize(ref)
 }
 
-function normalize(kind): ?List<string> {
+function normalize(kind) {
   if (typeof kind === 'string') {
     return normalize([kind])
   }

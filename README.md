@@ -18,6 +18,7 @@ The repository is a monorepo that is composed of several NPM packages.
 | [Classic](/packages/classic)       | The library as a (still) monolithic package.      |
 | [Config](/packages/config)         | Library for setting up layered app configuration. |
 | [Components](/packages/components) | Collection of helpful custom components.          |
+| [Core](/packages/core)             | Essential building blocks of the framework.       |
 
 ## Documentation
 

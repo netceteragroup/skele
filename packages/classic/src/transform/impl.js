@@ -1,11 +1,13 @@
 'use strict'
 
 import * as R from 'ramda'
-import { kindOf } from '../data/element'
+
+import { data, zip } from '@skele/core'
+
 import { memoize } from '../impl/util'
 
-import { postWalk, root, value } from '../zip'
-import { flow } from '../data'
+const { postWalk, root, value } = zip
+const { flow, kindOf } = data
 
 export function transformer(registry, elementZipper) {
   const elementTransformer = memoize(kind =>

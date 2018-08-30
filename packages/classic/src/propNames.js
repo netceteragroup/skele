@@ -1,7 +1,10 @@
 'use strict'
 
+import { propNames } from '@skele/core'
+
 export { actionMetaProperty as actionMeta } from './action'
 export { fallback as readFallback } from './read'
 
-export { childrenProperty as children } from './data'
-export const metadata = '@@skele/metadata'
+const { children, metadata } = propNames
+export { children }
+export { metadata }

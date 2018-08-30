@@ -6,12 +6,15 @@ import React from 'react'
 import { Iterable, List, fromJS } from 'immutable'
 import Cursor from 'immutable/contrib/cursor'
 
-import { kindOf, isOfKind } from '../../data'
+import { data } from '@skele/core'
+
 import { isSubclassOf } from '../../impl/classes'
 
 import * as Subsystem from '../../subsystem'
 import * as Kernel from '../../kernel'
 import uiSubsystem from '..'
+
+const { kindOf, isOfKind } = data
 
 const app = Subsystem.create(() => ({
   name: 'app',

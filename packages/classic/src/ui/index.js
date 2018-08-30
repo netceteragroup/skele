@@ -6,12 +6,13 @@ import React from 'react'
 
 import invariant from 'invariant'
 
-import { warning } from '../impl/log'
-import { Registry, chainRegistries } from '../registry'
+import { registry, data, log } from '@skele/core'
 import ElementView from './ElementView'
-import * as data from '../data'
 import { memoize } from '../impl/util'
 import { isSubclassOf } from '../impl/classes'
+
+const { Registry, chainRegistries } = registry
+const { warning } = log
 
 const registryAttribute = '@@skele/_uiRegistry'
 

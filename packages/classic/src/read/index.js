@@ -11,7 +11,7 @@ import '../enrich'
 import '../enhance'
 import '../transform'
 
-import { PatternRegistry, chainRegistries } from '../registry'
+import { registry } from '@skele/core'
 
 import * as impl from './impl'
 import * as http from './http'
@@ -19,6 +19,8 @@ import * as readActions from './actions'
 
 const registryAttribute = '@@skele/_readRegistry'
 const fallback = impl.fallback
+
+const { PatternRegistry, chainRegistries } = registry
 
 /**
  * Extension point for defining reads

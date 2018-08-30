@@ -3,11 +3,14 @@
 import * as R from 'ramda'
 import invariant from 'invariant'
 
-import { chainRegistries, ActionRegistry } from '../registry'
-import * as data from '../data'
+import { data, registry } from '@skele/core'
+import { ActionRegistry } from '../registry'
+
 import * as Subsystem from '../subsystem'
 
 import * as impl from './impl'
+
+const { chainRegistries } = registry
 
 const effectsRegistryAttribute = '@@skele/_effectsRegistry'
 const sideEffectsRegistryAttribute = '@@skele/_sideEffectsRegistry'

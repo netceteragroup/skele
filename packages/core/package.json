@@ -1,8 +1,8 @@
 {
-  "name": "@skele/classic",
+  "name": "@skele/core",
   "version": "1.0.0-alpha.31",
   "description":
-    "Skele is an architectural framework that assists with building data-driven apps with React or React Native.",
+    "Core package of the Skele framework. Element definitions, registrations and traversal.",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
   "repository": {
@@ -15,18 +15,11 @@
   "bugs": {
     "url": "https://github.com/netceteragroup/skele/issues"
   },
-  "homepage": "https://netcetera.gitbooks.io/skele/",
+  "homepage": "https://github.com/netceteragroup/skele#readme",
   "dependencies": {
-    "@skele/core": "^1.0.0-alpha.31",
     "immutable": "^3.8.1",
     "invariant": "^2.2.2",
-    "ramda": "^0.25.0",
-    "uuid": "^3.2.1"
-  },
-  "peerDependencies": {
-    "prop-types": "15.x || 16.x",
-    "react": "15.x || 16.x",
-    "redux": "3.x"
+    "ramda": "^0.25.0"
   },
   "publishConfig": {
     "access": "public"

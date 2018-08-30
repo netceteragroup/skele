@@ -4,9 +4,8 @@ import I from 'immutable'
 import Cursor from 'immutable/contrib/cursor'
 import * as R from 'ramda'
 
-import * as zip from './zip'
+import { data, zip } from '@skele/core'
 import * as actions from './action'
-import * as data from './data'
 
 import { createStore, applyMiddleware } from 'redux'
 

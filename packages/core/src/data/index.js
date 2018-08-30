@@ -1,10 +1,8 @@
 'use strict'
 
 import * as R from 'ramda'
-import * as element from './element'
-export * from './element'
 
-export { element } // deprecated use
+export * from './element'
 
 /**
  * Like R.pipe, but the composition is immediately executed using the first arg.

@@ -4,9 +4,10 @@ import { mount } from 'enzyme'
 
 import React from 'react'
 import { fromJS } from 'immutable'
-import { ui, enrich, enhance, transform, read, data, Engine, http } from '..'
+import { ui, enrich, enhance, transform, read, Engine, http } from '..'
 import * as propNames from '../propNames'
-const { isOfKind } = data.element
+import { data } from '@skele/core'
+const { isOfKind } = data
 
 describe("Reads using core subsystem's Read element", () => {
   const appState = {

@@ -4,13 +4,14 @@ import * as R from 'ramda'
 
 import * as actions from '../action'
 import { types as actionTypes } from './actions'
-import * as data from '../data'
-import { ActionRegistry } from '../registry'
+import { data, log } from '@skele/core'
 
 import { findParentEntry } from '../impl/cursor'
-import { error } from '../impl/log'
+
+import { ActionRegistry } from '../registry'
 
 const updateStateAction = '@@skele/_effects.updateState'
+const { error } = log
 
 export const middleware = R.curry((config, store, next, action) => {
   const { kernel, effectsRegistry } = config

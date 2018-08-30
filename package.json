@@ -21,18 +21,20 @@
     "coverage-report": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint .",
     "es5":
-      "yarn run es5:classic && yarn run es5:config && yarn run es5:components",
+      "yarn run es5:classic && yarn run es5:config && yarn run es5:components && yarn run es5:core",
     "es5:classic":
       "babel -q packages/classic/src --out-dir packages/classic/dist/es5",
     "es5:config":
       "babel -q packages/config/src --out-dir packages/config/dist/es5",
     "es5:components":
       "babel -q packages/components/src --out-dir packages/components/dist/es5",
+    "es5:core": "babel -q packages/core/src --out-dir packages/core/dist/es5",
     "clean":
-      "yarn run clean:classic && yarn run clean:config && yarn run clean:components",
+      "yarn run clean:classic && yarn run clean:config && yarn run clean:components && yarn run clean:core",
     "clean:classic": "del-cli packages/classic/dist",
     "clean:config": "del-cli packages/config/dist",
     "clean:components": "del-cli packages/components/dist",
+    "clean:core": "del-cli packages/core/dist",
     "build": "yarn run clean && yarn run test && yarn run lint && yarn run es5",
     "release:test-token":
       "test -n \"$CONVENTIONAL_GITHUB_RELEASER_TOKEN\" || (echo 'Setup your github autho token first: https://github.com/conventional-changelog/conventional-github-releaser#cli' && exit 1)",
@@ -90,7 +92,8 @@
     "roots": [
       "<rootDir>/packages/classic",
       "<rootDir>/packages/config",
-      "<rootDir>/packages/components"
+      "<rootDir>/packages/components",
+      "<rootDir>/packages/core"
     ],
     "testMatch": ["**/__tests__/**/*.js"],
     "collectCoverageFrom": [
@@ -98,7 +101,8 @@
       "!**/__tests__/**",
       "!**/node_modules/**",
       "!**/vendor/**",
-      "!**/dist/es5/**"
+      "!**/dist/es5/**",
+      "!packages/core/src/log/**"
     ]
   },
   "workspaces": ["packages/*"]

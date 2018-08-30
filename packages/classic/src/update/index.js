@@ -2,18 +2,20 @@
 
 import * as R from 'ramda'
 import invariant from 'invariant'
-import deprecated from '../impl/deprecated'
 
-import { chainRegistries, ActionRegistry } from '../registry'
-import * as data from '../data'
+import { data, registry, log } from '@skele/core'
+import { ActionRegistry } from '../registry'
 import * as Subsystem from '../subsystem'
 
 import * as impl from './impl'
 
 const registryAttribute = '@@skele/_updateRegistry'
 
+const { chainRegistries } = registry
+const { deprecated } = log
+
 Subsystem.extend(() => {
-  const registry = new ActionRegistry()
+  const reg = new ActionRegistry()
 
   const _register = R.curry((kind, action, update) => {
     invariant(
@@ -27,7 +29,7 @@ Subsystem.extend(() => {
     )
     invariant(typeof update === 'function', 'the update must be a function')
 
-    registry.register(ActionRegistry.keyFor(kind, action), update)
+    reg.register(ActionRegistry.keyFor(kind, action), update)
   })
 
   const forKind = R.curry((kind, registrations) => {
@@ -46,7 +48,7 @@ Subsystem.extend(() => {
 
   return {
     update: {
-      [registryAttribute]: registry,
+      [registryAttribute]: reg,
 
       forKind,
 
