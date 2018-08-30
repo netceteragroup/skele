@@ -1,6 +1,6 @@
 'use strict'
 
-import { data, log, registry, zip } from '../'
+import { data, log, registry, zip, propNames } from '../'
 
 const anyFunction = expect.any(Function)
 const anyString = expect.any(String)
@@ -69,4 +69,9 @@ test('core.log interface', () => {
   expect(log.info).toEqual(anyFunction)
   expect(log.warning).toEqual(anyFunction)
   expect(log.error).toEqual(anyFunction)
+})
+
+test('core.propNames interface', () => {
+  expect(propNames.metadata).toEqual('@@skele/metadata')
+  expect(propNames.children).toEqual('@@skele/children')
 })
