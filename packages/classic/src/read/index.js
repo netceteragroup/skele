@@ -88,7 +88,7 @@ const read = SubSystem.create((system, instantiatedSubsystems) => {
      *
      * @returns Promise<ReadResponse> the read response
      */
-    perform: (uri, opts = {}) => impl.performRead(system, { uri, opts }),
+    perform: (uri, opts = {}) => impl.performRead(system, { ...opts, uri }),
   }
 })
 
