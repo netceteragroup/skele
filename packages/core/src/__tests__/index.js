@@ -87,6 +87,15 @@ test('core.zip interface', () => {
   expect(zip.replace).toEqual(anyFunction)
   expect(zip.edit).toEqual(anyFunction)
   expect(zip.getChildren).toEqual(anyFunction)
+
+  // select?
+  expect(zip.child).toEqual(anyFunction)
+  expect(zip.ancestors).toEqual(anyFunction)
+  expect(zip.descendants).toEqual(anyFunction)
+  expect(zip.children).toEqual(anyFunction)
+  expect(zip.childrenFor).toEqual(anyFunction)
+  expect(zip.propEq).toEqual(anyFunction)
+  expect(zip.select).toEqual(anyFunction)
 })
 
 test('core.log interface', () => {
