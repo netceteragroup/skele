@@ -10,6 +10,7 @@ export {
   ancestors,
   descendants,
   // children,
+  childrenFor,
   propEq,
   select,
 } from './select'
