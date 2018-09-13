@@ -3,6 +3,8 @@
 import { mount } from 'enzyme'
 
 import * as R from 'ramda'
+import I from 'immutable'
+
 import React from 'react'
 
 import * as Subsystem from '../../subsystem'
@@ -11,7 +13,7 @@ import * as Kernel from '../../kernel'
 import { EntryPoint, Engine } from '..'
 
 import { defaultSubsystems } from '../../core'
-import { ui, update } from '../..'
+import { ui, update, propNames } from '../..'
 
 describe('Engine: wiring everything together', () => {
   describe('EntryPoint', () => {
@@ -35,22 +37,20 @@ describe('Engine: wiring everything together', () => {
     app.update.register('c1', 'capitalize', capitalize)
 
     let kernel
-    beforeEach(
-      () =>
-        (kernel = Kernel.create([...defaultSubsystems, app], {
-          kind: 'nav',
-          scenes: [
-            {
-              kind: 'c1',
-              text: 'Scene 1',
-            },
-            {
-              kind: 'c2',
-              text: 'Scene 2',
-            },
-          ],
-        }))
-    )
+    beforeEach(() =>
+      (kernel = Kernel.create([...defaultSubsystems, app], {
+        kind: 'nav',
+        scenes: [
+          {
+            kind: 'c1',
+            text: 'Scene 1',
+          },
+          {
+            kind: 'c2',
+            text: 'Scene 2',
+          },
+        ],
+      })))
 
     test('multiple entrypoints can be linked with a single kernel inst.', () => {
       const ep1 = mount(<EntryPoint kernel={kernel} keyPath={['scenes', 0]} />)
@@ -114,6 +114,122 @@ describe('Engine: wiring everything together', () => {
     })
   })
 
+  describe('Subtree rerender optimization', () => {
+    const app = Subsystem.create(() => ({
+      name: 'app',
+    }))
+
+    const data = {
+      kind: 'container',
+      [propNames.children]: 'items',
+      name: 'A',
+
+      items: [
+        {
+          kind: 'container',
+          name: 'B',
+          [propNames.children]: 'items',
+
+          items: [
+            {
+              kind: 'item',
+              data: 'a',
+            },
+          ],
+        },
+        {
+          kind: 'container',
+          name: 'C',
+          items: [],
+        },
+        {
+          kind: 'item',
+          data: 'b',
+        },
+      ],
+    }
+
+    const renderItem = jest.fn()
+    renderItem.mockImplementation(({ element }) => (
+      <div className="item" id={element.get('data')}>
+        Element {element.get('data')}
+      </div>
+    ))
+
+    const renderContainer = jest.fn()
+    renderContainer.mockImplementation(({ element, uiFor }) => (
+      <ul className="container" id={element.get('name')}>
+        <li>Name: {element.get('name')}</li>
+        {I.Range(0, element.get('items').count()).map(i => (
+          <li key={i}>{uiFor(['items', i])}</li>
+        ))}
+      </ul>
+    ))
+
+    afterEach(() => {
+      renderItem.mockClear()
+      renderContainer.mockClear()
+    })
+
+    app.ui.register('container', renderContainer)
+    app.ui.register('item', renderItem)
+
+    const addFoo = x => x.set('foo', 'bar')
+
+    app.update.register('item', 'addFoo', addFoo)
+    app.update.register('container', 'addFoo', addFoo)
+
+    // tests
+
+    test('by default, the app re-renders from the top when a child changes', () => {
+      const kernel = Kernel.create([...defaultSubsystems, app], data)
+
+      const e = mount(<EntryPoint kernel={kernel} keyPath={[]} />)
+
+      expect(renderContainer).toHaveBeenCalledTimes(3)
+      expect(renderItem).toHaveBeenCalledTimes(2)
+
+      renderItem.mockClear()
+      renderContainer.mockClear()
+
+      kernel.focusOn(['items', 0, 'items', 0]).dispatch({ type: 'addFoo' })
+
+      // two containers and the item re-rendered in the hierarchy
+
+      expect(renderContainer).toHaveBeenCalledTimes(2)
+      expect(renderItem).toHaveBeenCalledTimes(1)
+    })
+
+    test('when the optimization is turned on, only the affected sub-tree is rendered', () => {
+      const kernel = Kernel.create([...defaultSubsystems, app], data, {
+        optimizations: {
+          subtreeRerender: true, // <---- the optimization flag!
+        },
+      })
+
+      const e = mount(<EntryPoint kernel={kernel} keyPath={[]} />)
+
+      expect(renderContainer).toHaveBeenCalledTimes(3)
+      expect(renderItem).toHaveBeenCalledTimes(2)
+
+      renderItem.mockClear()
+      renderContainer.mockClear()
+
+      kernel.focusOn(['items', 0, 'items', 0]).dispatch({ type: 'addFoo' })
+
+      // two containers and the item re-rendered in the hierarchy
+
+      expect(renderContainer).toHaveBeenCalledTimes(0)
+      expect(renderItem).toHaveBeenCalledTimes(1)
+    })
+
+    test('EntryPoint re-renders when ancestor changes')
+
+    test('ElementView changes impl. when element kind changes')
+
+    test('ElementView rerenders when hinted sub-element is hit')
+  })
+
   describe('Engine', () => {
     afterEach(() => {
       ui.reset()
@@ -140,8 +256,7 @@ describe('Engine: wiring everything together', () => {
       const e = mount(<Engine initState={{ kind: 's1', text: 's1' }} />)
       expect(e).toIncludeText('Hello from s1')
 
-      e
-        .find(Foo)
+      e.find(Foo)
         .at(0)
         .props()
         .dispatch({ type: 'capitalize' })
@@ -166,8 +281,7 @@ describe('Engine: wiring everything together', () => {
 
       expect(e).toIncludeText('Hello from m1')
 
-      e
-        .find(Foo)
+      e.find(Foo)
         .at(0)
         .props()
         .dispatch({ type: 'twiddle' })
@@ -196,8 +310,7 @@ describe('Engine: wiring everything together', () => {
 
       expect(e).toIncludeText('Hello from ss1')
 
-      e
-        .find(Foo)
+      e.find(Foo)
         .at(0)
         .props()
         .dispatch({ type: 'twiddle' })
@@ -227,8 +340,7 @@ describe('Engine: wiring everything together', () => {
 
       expect(e).toIncludeText('Hello from ssx1')
 
-      e
-        .find(Foo)
+      e.find(Foo)
         .at(0)
         .props()
         .dispatch({ type: 'twiddle' })

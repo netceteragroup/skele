@@ -9,6 +9,7 @@ import * as Kernel from '../kernel'
 import * as Subsystem from '../subsystem'
 import { defaultSubsystems } from '../core'
 
+// eslint-disable-next-line react/no-deprecated
 class EntryPointImpl extends React.Component {
   static propTypes = {
     kernel: PropTypes.shape({
@@ -34,6 +35,15 @@ class EntryPointImpl extends React.Component {
     this._reset(props)
   }
 
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.kernel !== prevProps.kernel ||
+      !R.equals(this.props.keyPath, prevProps.keyPath)
+    ) {
+      this._reset(this.props)
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     this._reset(nextProps)
   }
@@ -43,12 +53,12 @@ class EntryPointImpl extends React.Component {
   }
 
   _reset(props) {
-    const { kernel, keyPath } = props
+    const { kernel } = props
 
-    if (this._unsubscribe) this._unsubscribe()
-
-    this._unsubscribe = kernel.subscribe(this._reRender.bind(this))
-    this._rootPath = keyPath
+    if (!Kernel.isSubtreeRerenderEnabled(kernel.config)) {
+      if (this._unsubscribe != null) this._unsubscribe()
+      this._unsubscribe = kernel.subscribe(this._reRender.bind(this))
+    }
   }
 
   _reRender() {
@@ -57,10 +67,11 @@ class EntryPointImpl extends React.Component {
 
   render() {
     const kernel = this.props.kernel
-    return kernel.subsystems.ui.uiFor(kernel.query(this._rootPath))
+    return kernel.subsystems.ui.uiFor(kernel.query(this.props.keyPath))
   }
 }
 
+// eslint-disable-next-line react/no-deprecated
 export class EntryPoint extends React.Component {
   static propTypes = EntryPointImpl.propTypes
 
@@ -87,6 +98,7 @@ export class EntryPoint extends React.Component {
   }
 }
 
+// eslint-disable-next-line react/no-deprecated
 export class Engine extends React.Component {
   static propType = {
     initState: PropTypes.object.isRequired,
