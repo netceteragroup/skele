@@ -8,6 +8,7 @@
 //   closest ancestor
 // - note, for keys - a single string is trates the same as an array with just
 //   that string, i.e. 'a' <==> ['a']
+// - it is meant to be fast, so the code style is a bit unwieldly
 
 export default class Trie {
   // a node is an object, each own property corresponding to an entry towards the next node
@@ -79,5 +80,32 @@ export default class Trie {
     } else {
       return current.$$V
     }
+  }
+
+  collect(key) {
+    let current = this.root
+    let result = current.$$T
+      ? Array.isArray(current.$$V) ? current.$$V : [current.$$V]
+      : []
+
+    key = Array.isArray(key) ? key : [key]
+
+    for (const i = 0, len = key.length; i < len; i++) {
+      const p = key[i]
+      current = current[p]
+
+      if (current == null) break
+
+      if (current.$$T) {
+        const v = current.$$V
+        if (Array.isArray(v)) {
+          Array.prototype.push.apply(result, v)
+        } else {
+          result.push(v)
+        }
+      }
+    }
+
+    return result
   }
 }

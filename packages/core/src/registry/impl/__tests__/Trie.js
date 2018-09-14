@@ -65,4 +65,24 @@ describe('Trie', () => {
       expect(trie.get(['x', 'y', 1, 2], true)).toEqual('xVal')
     })
   })
+
+  describe('collect', () => {
+    test('for key [x, y, z], returns an array of entries for each found prefix of key', () => {
+      trie.register([], 'a')
+      trie.register('x', 'b')
+      trie.register(['x', 'y', 'z'], 'c')
+
+      expect(trie.collect(['x', 'y', 'z'])).toEqual(['a', 'b', 'c'])
+      expect(trie.collect(['x', 't', 'k'])).toEqual(['a', 'b'])
+      expect(trie.collect('t')).toEqual(['a'])
+    })
+
+    test('if any of the values is an array it will be spliced into the result', () => {
+      trie.register([], 'a')
+      trie.register('x', ['b', 'c'])
+      trie.register(['x', 'y', 'z'], 'd')
+
+      expect(trie.collect(['x', 'y', 'z'])).toEqual(['a', 'b', 'c', 'd'])
+    })
+  })
 })
