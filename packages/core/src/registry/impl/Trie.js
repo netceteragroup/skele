@@ -18,8 +18,11 @@ export default class Trie {
   root = {
     $$T: false,
   }
+  isEmpty = true
 
   register(key, obj) {
+    this.isEmpty = false
+
     let current = this.root
 
     if (!Array.isArray(key)) {

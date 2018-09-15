@@ -4,13 +4,10 @@ import AbstractRegistry from './AbstractRegistry'
 import { List, is, Iterable } from 'immutable'
 import * as R from 'ramda'
 
-export default class PatternRegistry extends AbstractRegistry {
-  constructor() {
-    super()
-    this._registry = new List()
-  }
+export default function PatternRegistry() {
+  this._registry = new List()
 
-  register(key, value) {
+  this.register = function(key, value) {
     let pattern
     if (typeof key === 'function') {
       pattern = List.of(key, value)
@@ -23,17 +20,15 @@ export default class PatternRegistry extends AbstractRegistry {
     this._registry = this._registry.push(pattern)
   }
 
-  isEmpty() {
+  this.isEmpty = function() {
     return this._registry.count() === 0
   }
-  reset() {
+
+  this.reset = function() {
     this._registry = new List()
   }
-  _adaptKey(key) {
-    return key
-  }
 
-  _getInternal(key) {
+  this.get = function(key) {
     let result = this._registry.find(r => r.get(0)(key))
 
     if (result) {
@@ -41,7 +36,7 @@ export default class PatternRegistry extends AbstractRegistry {
     }
   }
 
-  getEntry(key) {
+  this.getEntry = function(key) {
     const res = this.get(key)
 
     if (res != null) {
@@ -52,10 +47,6 @@ export default class PatternRegistry extends AbstractRegistry {
     }
 
     return undefined
-  }
-
-  _lessSpecificKey() {
-    return null
   }
 }
 
