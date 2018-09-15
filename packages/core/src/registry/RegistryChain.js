@@ -1,101 +1,98 @@
 'use strict'
 
 import * as R from 'ramda'
+import { List } from 'immutable'
 
-import AbstractRegistry from './AbstractRegistry'
 import Registry from './Registry'
 import MultivalueRegistry from './MultivalueRegistry'
 
-export class RegistryChain extends AbstractRegistry {
-  constructor(fallback, primary) {
-    super()
-    this._fallbackRegistry = fallback
-    this._primaryRegistry = primary
-  }
+export function RegistryChain(fallback, primary) {
+  this._primaryRegistry = primary
+  this._fallbackRegistry = fallback
 
-  register() {
+  this.register = function(kind, obj) {
     throw new Error('This is a read-only registry')
   }
 
-  reset() {
-    throw new Error('This is a read-only registry')
+  this.getEntry = function(key) {
+    const primary = this._primaryRegistry.getEntry(key)
+    const fallback = this._fallbackRegistry.getEntry(key)
+
+    if (primary == null && fallback == null) return undefined
+    if (primary != null && fallback == null) return primary
+    if (primary == null && fallback != null) return fallback
+
+    return primary.key.length >= fallback.key.length ? primary : fallback
   }
 
-  get(key) {
-    // avoid adopting the key, as we have to do it for each underlying registry
-    // separately
-    return this._getBySpecificity(key, true)
+  this.get = function(key) {
+    return this.getEntry(key).value
   }
 
-  isEmpty() {
+  this.isEmpty = function() {
     return this._primaryRegistry.isEmpty() && this._fallbackRegistry.isEmpty()
   }
 
-  _getInternal(key) {
-    let val = this._primaryRegistry._getInternal(
-      this._primaryRegistry._adaptKey(key)
-    )
+  this.reset = function() {
+    throw new Error('This is a read-only registry')
+  }
+}
 
-    if (!val) {
-      val = this._fallbackRegistry._getInternal(
-        this._fallbackRegistry._adaptKey(key)
-      )
+export function MultivalueRegistryChain(fallback, primary) {
+  this._fallbackRegistry = fallback
+  this._primaryRegistry = primary
+
+  this.register = function(kind, obj) {
+    throw new Error('This is a read-only registry')
+  }
+
+  this.collector = function*(key) {
+    const primary = this._primaryRegistry.collector(key)
+    const fallback = this._fallbackRegistry.collector(key)
+
+    let p = primary.next()
+    let f = fallback.next()
+
+    while (true) {
+      if (p.done && f.done) break
+
+      if (p.value != null && f.value == null) {
+        yield p.value
+        p = primary.next()
+        continue
+      }
+      if (p.value == null && f.value != null) {
+        yield f.value
+        f = fallback.next()
+        continue
+      }
+
+      if (f.value.key.length <= p.value.key.length) {
+        yield f.value
+        f = fallback.next()
+      } else {
+        yield p.value
+        p = primary.next()
+      }
     }
-
-    return val
   }
 
-  _adaptKey(key) {
-    // delegate to primary, to make chains of chains happy
-    return this._primaryRegistry._adaptKey(key)
+  this.get = function(key) {
+    let result = []
+    for (const e of this.collector(key)) {
+      Array.prototype.push.apply(result, e.value)
+    }
+    return List(result)
   }
 
-  _lessSpecificKey(key) {
-    // specificity rules are always dictated by the primary registry
-    return this._primaryRegistry._lessSpecificKey(
-      this._primaryRegistry._adaptKey(key)
-    )
-  }
-}
-
-export class MultivalueRegistryChain extends AbstractRegistry {
-  constructor(fallback, primary) {
-    super()
-    this._fallbackRegistry = fallback
-    this._primaryRegistry = primary
+  this.isEmpty = function() {
+    return this._primaryRegistry.isEmpty() && this._fallbackRegistry.isEmpty()
   }
 
-  register() {
+  this.reset = function() {
     throw new Error('This is a read-only registry')
   }
-
-  reset() {
-    throw new Error('This is a read-only registry')
-  }
-
-  _getInternal(key) {
-    return this._fallbackRegistry
-      ._getInternal(key)
-      .concat(this._primaryRegistry._getInternal(key))
-  }
-
-  _adaptKey(key) {
-    // always works with MultivalueRegistries so
-    return this._primaryRegistry._adaptKey(key)
-  }
-
-  _lessSpecificKey(key) {
-    // specificity rules are always dictated by the primary registry
-    return this._primaryRegistry._lessSpecificKey(
-      this._primaryRegistry._adaptKey(key)
-    )
-  }
 }
-
-MultivalueRegistryChain.prototype._getBySpecificity =
-  MultivalueRegistry.prototype._getBySpecificity
-
-MultivalueRegistryChain.prototype.isEmpty = RegistryChain.prototype.isEmpty
 
 const chain = (Chain, Zero) =>
   R.cond([

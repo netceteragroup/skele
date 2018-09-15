@@ -1,31 +1,36 @@
 'use strict'
 
-import Registry from './Registry'
+import { adaptKey } from './Registry'
+import Trie from './impl/Trie'
 import { List } from 'immutable'
 
-export default class MultivalueRegistry extends Registry {
-  register(kind, value) {
-    const adaptedKey = this._adaptKey(kind)
-    this._registry = this._registry.update(adaptedKey, bag =>
-      (bag || List()).push(value)
-    )
-  }
+export default function MultivalueRegistry() {
+  this._registry = new Trie()
 
-  _getInternal(key) {
-    return this._registry.get(key) || List()
-  }
-
-  _getBySpecificity(key, useSpecificity) {
-    if (useSpecificity) {
-      const lessSpecificKey = this._lessSpecificKey(key)
-
-      if (lessSpecificKey) {
-        const lessSpecific = this._getBySpecificity(lessSpecificKey, true)
-        const exact = this._getInternal(key)
-
-        return lessSpecific.concat(exact)
-      }
+  this.register = function(kind, obj) {
+    const key = adaptKey(kind)
+    let bag = this._registry.get(key)
+    if (bag == null) {
+      bag = [obj]
+      this._registry.register(key, bag)
+    } else {
+      bag.push(obj)
     }
-    return super._getBySpecificity(key, useSpecificity)
+  }
+
+  this.get = function(key) {
+    return List(this._registry.collect(adaptKey(key)))
+  }
+
+  this.collector = function(key) {
+    return this._registry.collector(adaptKey(key))
+  }
+
+  this.isEmpty = function() {
+    return this._registry.isEmpty
+  }
+
+  this.reset = function() {
+    this._registry = new Trie()
   }
 }

@@ -70,7 +70,7 @@ describe('benchmarks on registry access', () => {
     return keySet[idx]
   }
 
-  test('Benchmark: get ', () => {
+  test.skip('Benchmark: get ', () => {
     const registry = new Registry()
     const trie = new Trie()
 
@@ -104,7 +104,7 @@ describe('benchmarks on registry access', () => {
     // Fastest is trie.get
   })
 
-  test('Benchmark: collect vs. MultiValueRegistry ', () => {
+  test.skip('Benchmark: collect vs. MultiValueRegistry ', () => {
     const registry = new MultiValueRegistry()
     const trie = new Trie()
 

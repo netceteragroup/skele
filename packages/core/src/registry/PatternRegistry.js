@@ -41,6 +41,19 @@ export default class PatternRegistry extends AbstractRegistry {
     }
   }
 
+  getEntry(key) {
+    const res = this.get(key)
+
+    if (res != null) {
+      return {
+        key: [key],
+        value: res,
+      }
+    }
+
+    return undefined
+  }
+
   _lessSpecificKey() {
     return null
   }
