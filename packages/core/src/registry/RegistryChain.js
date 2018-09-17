@@ -26,8 +26,11 @@ export function RegistryChain(fallback, primary) {
   }
 
   this.get = function(key) {
-    return this.getEntry(key).value
+    let en = this.getEntry(key)
+    return en != null ? en.value : undefined
   }
+
+  this.collector = makeCollector(this)
 
   this.isEmpty = function() {
     return this._primaryRegistry.isEmpty() && this._fallbackRegistry.isEmpty()
@@ -46,9 +49,31 @@ export function MultivalueRegistryChain(fallback, primary) {
     throw new Error('This is a read-only registry')
   }
 
-  this.collector = function*(key) {
-    const primary = this._primaryRegistry.collector(key)
-    const fallback = this._fallbackRegistry.collector(key)
+  this.get = function(key) {
+    let result = []
+    for (const e of this.collector(key)) {
+      Array.prototype.push.apply(result, e.value)
+    }
+    return List(result)
+  }
+
+  this.collector = makeCollector(this)
+
+  this.isEmpty = function() {
+    return this._primaryRegistry.isEmpty() && this._fallbackRegistry.isEmpty()
+  }
+
+  this.reset = function() {
+    throw new Error('This is a read-only registry')
+  }
+}
+
+// yields less specific entries of either registry (fallaback first)
+// before yeilding more specific entries (fallback first)
+const makeCollector = self =>
+  function*(key) {
+    const primary = self._primaryRegistry.collector(key)
+    const fallback = self._fallbackRegistry.collector(key)
 
     let p = primary.next()
     let f = fallback.next()
@@ -76,23 +101,6 @@ export function MultivalueRegistryChain(fallback, primary) {
       }
     }
   }
-
-  this.get = function(key) {
-    let result = []
-    for (const e of this.collector(key)) {
-      Array.prototype.push.apply(result, e.value)
-    }
-    return List(result)
-  }
-
-  this.isEmpty = function() {
-    return this._primaryRegistry.isEmpty() && this._fallbackRegistry.isEmpty()
-  }
-
-  this.reset = function() {
-    throw new Error('This is a read-only registry')
-  }
-}
 
 const chain = (Chain, Zero) =>
   R.cond([
