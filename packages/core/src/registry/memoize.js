@@ -6,19 +6,19 @@ import { adaptKey } from './Registry'
 // A specialized memoization function for single argument
 // functions that take a registry key
 // allows efficient cache storage for such keys
-export default function memoize(fn) {
+export default function memoize(fn, keyExtractor = x => adaptKey(x)) {
   let cache = new Trie()
 
   return function(key) {
-    key = adaptKey(key)
-    let val = cache.get(key)
+    const cacheKey = keyExtractor(key)
+    let val = cache.get(cacheKey)
 
+    // note that we store nulls in the cache to avoid
+    // expensive lookups of missing values
     if (typeof val === 'undefined') {
-      // note that we store nulls in the cache to avoid
-      // expensive lookups of missing values
-      val = fn(key)
+      val = fn(key) // use arg as-is
 
-      cache.register(key, val != null ? val : null) // force 'null' for missing stuff
+      cache.register(cacheKey, val != null ? val : null) // force 'null' for missing stuff
     }
 
     return val != null ? val : undefined

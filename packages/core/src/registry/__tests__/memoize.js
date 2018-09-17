@@ -38,4 +38,56 @@ describe('memoize', () => {
     expect(memoized(['foo', 'bar'])).toBeUndefined()
     expect(misser).toHaveBeenCalledTimes(2)
   })
+
+  test('custom cachekey extractor', () => {
+    const fn = jest.fn(key => [key.kind, '.', key.action])
+    const memoized = memoize(fn, key => [
+      ...(Array.isArray(key.kind) ? key.kind : [key.kind]),
+      '$$sep$$',
+      key.action,
+    ])
+
+    expect(memoized({ kind: 'foo', action: 'update' })).toEqual([
+      'foo',
+      '.',
+      'update',
+    ])
+    expect(fn).toHaveBeenCalledTimes(1)
+    expect(memoized({ kind: 'foo', action: 'update' })).toEqual([
+      'foo',
+      '.',
+      'update',
+    ])
+    expect(fn).toHaveBeenCalledTimes(1)
+
+    fn.mockClear()
+
+    expect(memoized({ kind: ['foo', 'bar'], action: 'update' })).toEqual([
+      ['foo', 'bar'],
+      '.',
+      'update',
+    ])
+    expect(fn).toHaveBeenCalledTimes(1)
+    expect(memoized({ kind: ['foo', 'bar'], action: 'update' })).toEqual([
+      ['foo', 'bar'],
+      '.',
+      'update',
+    ])
+    expect(fn).toHaveBeenCalledTimes(1)
+
+    fn.mockClear()
+
+    expect(memoized({ kind: 'foo', action: 'update2' })).toEqual([
+      'foo',
+      '.',
+      'update2',
+    ])
+    expect(fn).toHaveBeenCalledTimes(1)
+    expect(memoized({ kind: 'foo', action: 'update2' })).toEqual([
+      'foo',
+      '.',
+      'update2',
+    ])
+    expect(fn).toHaveBeenCalledTimes(1)
+  })
 })
