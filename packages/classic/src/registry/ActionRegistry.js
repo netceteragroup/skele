@@ -2,8 +2,9 @@
 
 import { List } from 'immutable'
 
-import { registry } from '@skele/core'
+import { registry, data } from '@skele/core'
 import * as actions from '../action'
+import { ancestors } from '../impl/cursor'
 
 const { Registry } = registry
 
@@ -16,6 +17,23 @@ export const keyFromAction = ({
   [actions.actionMetaProperty]: { kind },
   type,
 }) => keyFor(kind, type)
+
+export const findParentEntry = (lookupFn, type, cursor) => {
+  for (const c of ancestors(cursor)) {
+    if (!data.isElement(c)) continue
+
+    const key = keyFor(data.kindOf(c), type)
+    const entry = lookupFn(key)
+
+    if (entry != null) {
+      return {
+        element: c,
+        entry,
+      }
+    }
+  }
+  return undefined
+}
 
 export function ActionRegistry() {
   this._registry = new Registry()
