@@ -1,6 +1,5 @@
 'use strict'
 
-import AbstractRegistry from './AbstractRegistry'
 import { List, is, Iterable } from 'immutable'
 import * as R from 'ramda'
 

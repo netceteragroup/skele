@@ -1,11 +1,6 @@
 'use strict'
 
-import {
-  ActionRegistry,
-  ActionMultivalueRegistry,
-  keyFor,
-  keyFromAction,
-} from '../ActionRegistry'
+import { ActionRegistry, keyFor, keyFromAction } from '../ActionRegistry'
 
 import * as actions from '../../action'
 import { List } from 'immutable'

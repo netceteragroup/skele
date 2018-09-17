@@ -10,7 +10,7 @@ export function RegistryChain(fallback, primary) {
   this._primaryRegistry = primary
   this._fallbackRegistry = fallback
 
-  this.register = function(kind, obj) {
+  this.register = function() {
     throw new Error('This is a read-only registry')
   }
 
@@ -45,7 +45,7 @@ export function MultivalueRegistryChain(fallback, primary) {
   this._fallbackRegistry = fallback
   this._primaryRegistry = primary
 
-  this.register = function(kind, obj) {
+  this.register = function() {
     throw new Error('This is a read-only registry')
   }
 
