@@ -18,34 +18,31 @@
 import { Iterable, Seq, Map, Record } from 'immutable'
 const Iterator = Iterable.Iterator
 
-function cursorFrom(rootData, keyPath, onChange) {
+function cursorFrom(rootData, keyPath) {
   if (arguments.length === 1) {
-    keyPath = []
-  } else if (typeof keyPath === 'function') {
-    onChange = keyPath
     keyPath = []
   } else {
     keyPath = valToKeyPath(keyPath)
   }
-  return makeCursor(rootData, keyPath, onChange)
+  return makeCursor(rootData, keyPath)
 }
 
 var KeyedCursorPrototype = Object.create(Seq.Keyed.prototype)
 var IndexedCursorPrototype = Object.create(Seq.Indexed.prototype)
 
-function KeyedCursor(rootData, keyPath, onChange, size) {
-  this.size = size
+function KeyedCursor(rootData, keyPath, value) {
+  this.size = value.size
+  this._value = value
   this._rootData = rootData
   this._keyPath = keyPath
-  this._onChange = onChange
 }
 KeyedCursorPrototype.constructor = KeyedCursor
 
-function IndexedCursor(rootData, keyPath, onChange, size) {
-  this.size = size
+function IndexedCursor(rootData, keyPath, value) {
+  this.size = value.size
   this._rootData = rootData
+  this._value = value
   this._keyPath = keyPath
-  this._onChange = onChange
 }
 IndexedCursorPrototype.constructor = IndexedCursor
 
@@ -59,14 +56,15 @@ IndexedCursorPrototype.toString = function() {
 KeyedCursorPrototype.deref = KeyedCursorPrototype.valueOf = IndexedCursorPrototype.deref = IndexedCursorPrototype.valueOf = function(
   notSetValue
 ) {
-  return this._rootData.getIn(this._keyPath, notSetValue)
+  return this._value
 }
 
 KeyedCursorPrototype.get = IndexedCursorPrototype.get = function(
   key,
   notSetValue
 ) {
-  return this.getIn([key], notSetValue)
+  var value = this._value.get(key, NOT_SET)
+  return value === NOT_SET ? notSetValue : wrappedValue(this, [key], value)
 }
 
 KeyedCursorPrototype.getIn = IndexedCursorPrototype.getIn = function(
@@ -77,54 +75,33 @@ KeyedCursorPrototype.getIn = IndexedCursorPrototype.getIn = function(
   if (keyPath.length === 0) {
     return this
   }
-  var value = this._rootData.getIn(newKeyPath(this._keyPath, keyPath), NOT_SET)
+  var value = this._value.getIn(keyPath, NOT_SET)
   return value === NOT_SET ? notSetValue : wrappedValue(this, keyPath, value)
 }
 
 IndexedCursorPrototype.set = KeyedCursorPrototype.set = function(key, value) {
-  if (arguments.length === 1) {
-    return updateCursor(
-      this,
-      function() {
-        return key
-      },
-      []
-    )
-  } else {
-    return updateCursor(
-      this,
-      function(m) {
-        return m.set(key, value)
-      },
-      [key]
-    )
-  }
+  return updateCursor(this, this._value.set(key, value))
 }
 
 IndexedCursorPrototype.push = function(/* values */) {
   var args = arguments
-  return updateCursor(this, function(m) {
-    return m.push.apply(m, args)
-  })
+  var m = this._value
+  return updateCursor(this, m.push.apply(m, args))
 }
 
 IndexedCursorPrototype.pop = function() {
-  return updateCursor(this, function(m) {
-    return m.pop()
-  })
+  return updateCursor(this, this._value.pop())
 }
 
 IndexedCursorPrototype.unshift = function(/* values */) {
   var args = arguments
-  return updateCursor(this, function(m) {
-    return m.unshift.apply(m, args)
-  })
+  var m = this._value
+
+  return updateCursor(this, m.unshift.apply(m, args))
 }
 
 IndexedCursorPrototype.shift = function() {
-  return updateCursor(this, function(m) {
-    return m.shift()
-  })
+  return updateCursor(this, this._value.shift())
 }
 
 IndexedCursorPrototype.setIn = KeyedCursorPrototype.setIn = Map.prototype.setIn
@@ -134,62 +111,48 @@ KeyedCursorPrototype.remove = KeyedCursorPrototype[
 ] = IndexedCursorPrototype.remove = IndexedCursorPrototype['delete'] = function(
   key
 ) {
-  return updateCursor(
-    this,
-    function(m) {
-      return m.remove(key)
-    },
-    [key]
-  )
+  return updateCursor(this, this._value.remove(key))
 }
 
 IndexedCursorPrototype.removeIn = IndexedCursorPrototype.deleteIn = KeyedCursorPrototype.removeIn = KeyedCursorPrototype.deleteIn =
   Map.prototype.deleteIn
 
 KeyedCursorPrototype.clear = IndexedCursorPrototype.clear = function() {
-  return updateCursor(this, function(m) {
-    return m.clear()
-  })
+  return updateCursor(this, this._value.clear())
 }
 
+// TODO maybe remove?
 IndexedCursorPrototype.update = KeyedCursorPrototype.update = function(
   keyOrFn,
   notSetValue,
   updater
 ) {
   return arguments.length === 1
-    ? updateCursor(this, keyOrFn)
+    ? updateCursor(this, this._value.update(keyOrFn))
     : this.updateIn([keyOrFn], notSetValue, updater)
 }
 
+// TODO maybe remove?
 IndexedCursorPrototype.updateIn = KeyedCursorPrototype.updateIn = function(
   keyPath,
   notSetValue,
   updater
 ) {
-  return updateCursor(
-    this,
-    function(m) {
-      return m.updateIn(keyPath, notSetValue, updater)
-    },
-    keyPath
-  )
+  return updateCursor(this, this._value.updateIn(keyPath, notSetValue, updater))
 }
 
 IndexedCursorPrototype.merge = KeyedCursorPrototype.merge = function(/*...iters*/) {
   var args = arguments
-  return updateCursor(this, function(m) {
-    return m.merge.apply(m, args)
-  })
+  var m = this._value
+  return updateCursor(this, m.merge.apply(m, args))
 }
 
 IndexedCursorPrototype.mergeWith = KeyedCursorPrototype.mergeWith = function(
   merger /*, ...iters*/
 ) {
   var args = arguments
-  return updateCursor(this, function(m) {
-    return m.mergeWith.apply(m, args)
-  })
+  var m = this._value
+  return updateCursor(this, m.mergeWith.apply(m, args))
 }
 
 IndexedCursorPrototype.mergeIn = KeyedCursorPrototype.mergeIn =
@@ -197,18 +160,14 @@ IndexedCursorPrototype.mergeIn = KeyedCursorPrototype.mergeIn =
 
 IndexedCursorPrototype.mergeDeep = KeyedCursorPrototype.mergeDeep = function(/*...iters*/) {
   var args = arguments
-  return updateCursor(this, function(m) {
-    return m.mergeDeep.apply(m, args)
-  })
+  return updateCursor(this, this._value.mergeDeep.apply(m, args))
 }
 
 IndexedCursorPrototype.mergeDeepWith = KeyedCursorPrototype.mergeDeepWith = function(
   merger /*, ...iters*/
 ) {
   var args = arguments
-  return updateCursor(this, function(m) {
-    return m.mergeDeepWith.apply(m, args)
-  })
+  return updateCursor(this, this._value.mergeDeepWith.apply(m, args))
 }
 
 IndexedCursorPrototype.mergeDeepIn = KeyedCursorPrototype.mergeDeepIn =
@@ -217,9 +176,7 @@ IndexedCursorPrototype.mergeDeepIn = KeyedCursorPrototype.mergeDeepIn =
 KeyedCursorPrototype.withMutations = IndexedCursorPrototype.withMutations = function(
   fn
 ) {
-  return updateCursor(this, function(m) {
-    return (m || Map()).withMutations(fn)
-  })
+  return updateCursor(this, (this._value || Map()).withMutations(fn))
 }
 
 KeyedCursorPrototype.cursor = IndexedCursorPrototype.cursor = function(
@@ -279,13 +236,19 @@ IndexedCursor.prototype = IndexedCursorPrototype
 
 var NOT_SET = {} // Sentinel value
 
-function makeCursor(rootData, keyPath, onChange, value) {
-  if (arguments.length < 4) {
+function makeCursor(rootData, keyPath, value) {
+  if (arguments.length < 3) {
     value = rootData.getIn(keyPath)
   }
-  var size = value && value.size
+
+  if (value && value.deref) {
+    throw new Error('Placing cursors inside cursors is not allowed!')
+  }
+
+  if (!Iterable.isIterable(value)) return value
+
   var CursorClass = Iterable.isIndexed(value) ? IndexedCursor : KeyedCursor
-  var cursor = new CursorClass(rootData, keyPath, onChange, size)
+  var cursor = new CursorClass(rootData, keyPath, value)
 
   if (value instanceof Record) {
     defineRecordProperties(cursor, value)
@@ -324,38 +287,18 @@ function subCursor(cursor, keyPath, value) {
     return makeCursor(
       // call without value
       cursor._rootData,
-      newKeyPath(cursor._keyPath, keyPath),
-      cursor._onChange
+      newKeyPath(cursor._keyPath, keyPath)
     )
   }
   return makeCursor(
     cursor._rootData,
     newKeyPath(cursor._keyPath, keyPath),
-    cursor._onChange,
     value
   )
 }
 
-function updateCursor(cursor, changeFn, changeKeyPath) {
-  var deepChange = arguments.length > 2
-  var newRootData = cursor._rootData.updateIn(
-    cursor._keyPath,
-    deepChange ? Map() : undefined,
-    changeFn
-  )
-  var keyPath = cursor._keyPath || []
-  var result =
-    cursor._onChange &&
-    cursor._onChange.call(
-      undefined,
-      newRootData,
-      cursor._rootData,
-      deepChange ? newKeyPath(keyPath, changeKeyPath) : keyPath
-    )
-  if (result !== undefined) {
-    newRootData = result
-  }
-  return makeCursor(newRootData, cursor._keyPath, cursor._onChange)
+function updateCursor(cursor, newVal) {
+  return makeCursor(cursor._rootData, cursor._keyPath, newVal)
 }
 
 function newKeyPath(head, tail) {

@@ -23,10 +23,10 @@ describe('Cursor', () => {
     expect(deepCursor.get('c')).toBe(1)
 
     var leafCursor = deepCursor.cursor('c')
-    expect(leafCursor.deref()).toBe(1)
+    expect(leafCursor).toBe(1)
 
-    var missCursor = leafCursor.cursor('d')
-    expect(missCursor.deref()).toBe(undefined)
+    var missCursor = deepCursor.cursor('d')
+    expect(missCursor).toBe(undefined)
   })
 
   it('gets return new cursors', () => {
@@ -39,9 +39,7 @@ describe('Cursor', () => {
   it('gets return new cursors using List', () => {
     var data = fromJS(json)
     var cursor = Cursor.from(data)
-    console.log('AAAAA')
     var deepCursor = cursor.getIn(fromJS(['a', 'b']))
-    console.log('b')
     expect(deepCursor.deref()).toBe(data.getIn(fromJS(['a', 'b'])))
   })
 
@@ -61,112 +59,40 @@ describe('Cursor', () => {
     expect(cursor.get('c')).toBe(1)
   })
 
-  it('can be value compared to a primitive', () => {
+  it('returns the actual value if the position is not a collection', () => {
     var data = Map({ a: 'A' })
     var aCursor = Cursor.from(data, 'a')
-    expect(aCursor.size).toBe(undefined)
-    expect(aCursor.deref()).toBe('A')
-    expect(is(aCursor, 'A')).toBe(true)
+    expect(aCursor).toBe('A')
   })
 
   it('updates at its path', () => {
-    var onChange = jest.fn()
-
     var data = fromJS(json)
-    var aCursor = Cursor.from(data, 'a', onChange)
+    var aCursor = Cursor.from(data, 'a')
 
-    var deepCursor = aCursor.cursor(['b', 'c'])
-    expect(deepCursor.deref()).toBe(1)
+    var deepCursor = aCursor.cursor(['b'])
+    expect(deepCursor.deref()).toValueEqual(fromJS({ c: 1 }))
 
     // cursor edits return new cursors:
-    var newDeepCursor = deepCursor.update(x => x + 1)
-    expect(newDeepCursor.deref()).toBe(2)
-    var call1 = onChange.mock.calls[0]
-    expect(call1[0]).toValueEqual(fromJS({ a: { b: { c: 2 } } }))
-    expect(call1[1]).toBe(data)
-    expect(call1[2]).toEqual(['a', 'b', 'c'])
-
-    var newestDeepCursor = newDeepCursor.update(x => x + 1)
-    expect(newestDeepCursor.deref()).toBe(3)
-    var call2 = onChange.mock.calls[1]
-    expect(call2[0]).toValueEqual(fromJS({ a: { b: { c: 3 } } }))
-    expect(call2[1]).toValueEqual(fromJS({ a: { b: { c: 2 } } }))
-    expect(call2[2]).toEqual(['a', 'b', 'c'])
+    var newDeepCursor = deepCursor.update(x => 2)
+    expect(newDeepCursor).toBe(2)
 
     // meanwhile, data is still immutable:
     expect(data.toJS()).toEqual(json)
-
-    // as is the original cursor.
-    expect(deepCursor.deref()).toBe(1)
-    var otherNewDeepCursor = deepCursor.update(x => x + 10)
-    expect(otherNewDeepCursor.deref()).toBe(11)
-    var call3 = onChange.mock.calls[2]
-    expect(call3[0]).toValueEqual(fromJS({ a: { b: { c: 11 } } }))
-    expect(call3[1]).toBe(data)
-    expect(call3[2]).toEqual(['a', 'b', 'c'])
-
-    // and update has been called exactly thrice.
-    expect(onChange.mock.calls.length).toBe(3)
-  })
-
-  it('updates with the return value of onChange', () => {
-    var onChange = jest.fn()
-
-    var data = fromJS(json)
-    var deepCursor = Cursor.from(data, ['a', 'b', 'c'], onChange)
-
-    onChange.mockReturnValueOnce(undefined)
-    // onChange returning undefined has no effect
-    var newCursor = deepCursor.update(x => x + 1)
-    expect(newCursor.deref()).toBe(2)
-    var call1 = onChange.mock.calls[0]
-    expect(call1[0]).toValueEqual(fromJS({ a: { b: { c: 2 } } }))
-    expect(call1[1]).toBe(data)
-    expect(call1[2]).toEqual(['a', 'b', 'c'])
-
-    onChange.mockReturnValueOnce(fromJS({ a: { b: { c: 11 } } }))
-    // onChange returning something else has an effect
-    newCursor = newCursor.update(x => 999)
-    expect(newCursor.deref()).toBe(11)
-    var call2 = onChange.mock.calls[1]
-    expect(call2[0]).toValueEqual(fromJS({ a: { b: { c: 999 } } }))
-    expect(call2[1]).toValueEqual(fromJS({ a: { b: { c: 2 } } }))
-    expect(call2[2]).toEqual(['a', 'b', 'c'])
-
-    // and update has been called exactly twice
-    expect(onChange.mock.calls.length).toBe(2)
   })
 
   it('has map API for update shorthand', () => {
-    var onChange = jest.fn()
-
     var data = fromJS(json)
-    var aCursor = Cursor.from(data, 'a', onChange)
+    var aCursor = Cursor.from(data, 'a')
     var bCursor = aCursor.cursor('b')
     var cCursor = bCursor.cursor('c')
 
     expect(bCursor.set('c', 10).deref()).toValueEqual(fromJS({ c: 10 }))
-
-    var call1 = onChange.mock.calls[0]
-    expect(call1[0]).toValueEqual(fromJS({ a: { b: { c: 10 } } }))
-    expect(call1[1]).toBe(data)
-    expect(call1[2]).toEqual(['a', 'b', 'c'])
   })
 
-  it('creates maps as necessary', () => {
+  it('returns undefined if there is nothing under the path', () => {
     var data = Map()
     var cursor = Cursor.from(data, ['a', 'b', 'c'])
-    expect(cursor.deref()).toBe(undefined)
-    cursor = cursor.set('d', 3)
-    expect(cursor.deref()).toValueEqual(Map({ d: 3 }))
-  })
-
-  it('can set undefined', () => {
-    var data = Map()
-    var cursor = Cursor.from(data, ['a', 'b', 'c'])
-    expect(cursor.deref()).toBe(undefined)
-    cursor = cursor.set('d', undefined)
-    expect(cursor.toJS()).toEqual({ d: undefined })
+    expect(cursor).toBeUndefined()
   })
 
   it('has the sequence API', () => {
@@ -176,72 +102,39 @@ describe('Cursor', () => {
   })
 
   it('can push values on a List', () => {
-    var onChange = jest.fn()
     var data = fromJS({ a: { b: [0, 1, 2] } })
-    var cursor = Cursor.from(data, ['a', 'b'], onChange)
+    var cursor = Cursor.from(data, ['a', 'b'])
 
     expect(cursor.push(3, 4)).toValueEqual(List([0, 1, 2, 3, 4]))
-
-    var call = onChange.mock.calls[0]
-    expect(call[0]).toValueEqual(fromJS({ a: { b: [0, 1, 2, 3, 4] } }))
-    expect(call[1]).toBe(data)
-    expect(call[2]).toEqual(['a', 'b'])
   })
 
   it('can pop values of a List', () => {
-    var onChange = jest.fn()
     var data = fromJS({ a: { b: [0, 1, 2] } })
-    var cursor = Cursor.from(data, ['a', 'b'], onChange)
+    var cursor = Cursor.from(data, ['a', 'b'])
 
     expect(cursor.pop()).toValueEqual(List([0, 1]))
-
-    var call = onChange.mock.calls[0]
-    expect(call[0]).toValueEqual(fromJS({ a: { b: [0, 1] } }))
-    expect(call[1]).toBe(data)
-    expect(call[2]).toEqual(['a', 'b'])
   })
 
   it('can unshift values on a List', () => {
-    var onChange = jest.fn()
     var data = fromJS({ a: { b: [0, 1, 2] } })
-    var cursor = Cursor.from(data, ['a', 'b'], onChange)
+    var cursor = Cursor.from(data, ['a', 'b'])
 
     expect(cursor.unshift(-2, -1)).toValueEqual(List([-2, -1, 0, 1, 2]))
-
-    var call = onChange.mock.calls[0]
-    expect(call[0]).toValueEqual(fromJS({ a: { b: [-2, -1, 0, 1, 2] } }))
-    expect(call[1]).toBe(data)
-    expect(call[2]).toEqual(['a', 'b'])
   })
 
   it('can shift values of a List', () => {
-    var onChange = jest.fn()
     var data = fromJS({ a: { b: [0, 1, 2] } })
-    var cursor = Cursor.from(data, ['a', 'b'], onChange)
+    var cursor = Cursor.from(data, ['a', 'b'])
 
     expect(cursor.shift()).toValueEqual(List([1, 2]))
-
-    var call = onChange.mock.calls[0]
-    expect(call[0]).toValueEqual(fromJS({ a: { b: [1, 2] } }))
-    expect(call[1]).toBe(data)
-    expect(call[2]).toEqual(['a', 'b'])
   })
 
   it('returns wrapped values for sequence API', () => {
     var data = fromJS({ a: { v: 1 }, b: { v: 2 }, c: { v: 3 } })
-    var onChange = jest.fn()
-    var cursor = Cursor.from(data, onChange)
+    var cursor = Cursor.from(data)
 
     var found = cursor.find(map => map.get('v') === 2)
     expect(typeof found.deref).toBe('function') // is a cursor!
-    found = found.set('v', 20)
-
-    var call = onChange.mock.calls[0]
-    expect(call[0]).toValueEqual(
-      fromJS({ a: { v: 1 }, b: { v: 20 }, c: { v: 3 } })
-    )
-    expect(call[1]).toBe(data)
-    expect(call[2]).toEqual(['b', 'v'])
   })
 
   it('returns wrapped values for iteration API', () => {
@@ -285,10 +178,9 @@ describe('Cursor', () => {
   })
 
   it('can have mutations apply with a single callback', () => {
-    var onChange = jest.fn()
     var data = fromJS({ a: 1 })
 
-    var c1 = Cursor.from(data, onChange)
+    var c1 = Cursor.from(data)
     var c2 = c1.withMutations(m =>
       m
         .set('b', 2)
@@ -298,24 +190,6 @@ describe('Cursor', () => {
 
     expect(c1.deref().toObject()).toEqual({ a: 1 })
     expect(c2.deref().toObject()).toEqual({ a: 1, b: 2, c: 3, d: 4 })
-    expect(onChange.mock.calls.length).toBe(1)
-  })
-
-  it('can use withMutations on an unfulfilled cursor', () => {
-    var onChange = jest.fn()
-    var data = fromJS({})
-
-    var c1 = Cursor.from(data, ['a', 'b', 'c'], onChange)
-    var c2 = c1.withMutations(m =>
-      m
-        .set('x', 1)
-        .set('y', 2)
-        .set('z', 3)
-    )
-
-    expect(c1.deref()).toEqual(undefined)
-    expect(c2.deref()).toValueEqual(fromJS({ x: 1, y: 2, z: 3 }))
-    expect(onChange.mock.calls.length).toBe(1)
   })
 
   it('maintains indexed sequences', () => {
@@ -332,29 +206,17 @@ describe('Cursor', () => {
   })
 
   it('can update deeply', () => {
-    var onChange = jest.fn()
     var data = fromJS({ a: { b: { c: 1 } } })
-    var c = Cursor.from(data, ['a'], onChange)
+    var c = Cursor.from(data, ['a'])
     var c1 = c.updateIn(['b', 'c'], x => x * 10)
     expect(c1.getIn(['b', 'c'])).toBe(10)
-
-    var call = onChange.mock.calls[0]
-    expect(call[0]).toValueEqual(fromJS({ a: { b: { c: 10 } } }))
-    expect(call[1]).toBe(data)
-    expect(call[2]).toEqual(['a', 'b', 'c'])
   })
 
   it('can set deeply', () => {
-    var onChange = jest.fn()
     var data = fromJS({ a: { b: { c: 1 } } })
-    var c = Cursor.from(data, ['a'], onChange)
+    var c = Cursor.from(data, ['a'])
     var c1 = c.setIn(['b', 'c'], 10)
     expect(c1.getIn(['b', 'c'])).toBe(10)
-
-    var call = onChange.mock.calls[0]
-    expect(call[0]).toValueEqual(fromJS({ a: { b: { c: 10 } } }))
-    expect(call[1]).toBe(data)
-    expect(call[2]).toEqual(['a', 'b', 'c'])
   })
 
   it('can get Record value as a property', () => {
@@ -363,31 +225,5 @@ describe('Cursor', () => {
     var data = Map({ users: users })
     var cursor = Cursor.from(data, ['users'])
     expect(cursor.first().name).toBe('John')
-  })
-
-  it('can set value of a cursor directly', () => {
-    var onChange = jest.fn()
-    var data = fromJS({ a: 1 })
-    var c = Cursor.from(data, ['a'], onChange)
-    var c1 = c.set(2)
-    expect(c1.deref()).toBe(2)
-
-    var call = onChange.mock.calls[0]
-    expect(call[0]).toValueEqual(fromJS({ a: 2 }))
-    expect(call[1]).toBe(data)
-    expect(call[2]).toEqual(['a'])
-  })
-
-  it('can set value of a cursor to undefined directly', () => {
-    var onChange = jest.fn()
-    var data = fromJS({ a: 1 })
-    var c = Cursor.from(data, ['a'], onChange)
-    var c1 = c.set(undefined)
-    expect(c1.deref()).toBe(undefined)
-
-    var call = onChange.mock.calls[0]
-    expect(call[0]).toValueEqual(fromJS({ a: undefined }))
-    expect(call[1]).toBe(data)
-    expect(call[2]).toEqual(['a'])
   })
 })
