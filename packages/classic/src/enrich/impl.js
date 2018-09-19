@@ -1,8 +1,8 @@
 'use strict'
 
 import * as R from 'ramda'
-import { memoize } from '../impl/util'
-import { data, zip } from '@skele/core'
+import { data, zip, registry } from '@skele/core'
+const memoize = registry.memoize
 
 export function enricher(config) {
   const { registry, elementZipper } = config

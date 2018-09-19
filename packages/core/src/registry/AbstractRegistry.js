@@ -1,6 +1,12 @@
 'use strict'
 
+import deprecated from '../log/deprecated'
+
 export default class AbstractRegistry {
+  constructor() {
+    deprecated('This class is deprecated')
+  }
+
   // eslint-disable-next-line no-unused-vars
   register(key, value) {
     throw new Error('Must be implemented')

@@ -1,62 +1,75 @@
 'use strict'
 
 import * as R from 'ramda'
+import { Iterable } from 'immutable'
 
 import * as actions from '../action'
 import { types as actionTypes } from './actions'
-import { data, log } from '@skele/core'
-
-import { findParentEntry } from '../impl/cursor'
-
-import { ActionRegistry } from '../registry'
+import { log, registry } from '@skele/core'
+const { memoize } = registry
+import { ActionRegistry, findParentEntry } from '../registry/ActionRegistry'
 
 const updateStateAction = '@@skele/_effects.updateState'
 const { error } = log
 
-export const middleware = R.curry((config, store, next, action) => {
+export const middleware = config => {
   const { kernel, effectsRegistry } = config
-  const actionMeta = actions.actionMeta(action)
 
-  if (actionMeta == null) return next(action)
+  const sep = '$$sep$$' // ideally this would be a Symbol but we aren't there yet
+  const cacheKeyFn = key => {
+    const kind = key.kind
+    let res = Iterable.isIndexed(kind)
+      ? kind.toArray()
+      : Array.isArray(kind) ? kind : [kind]
+    res.push(sep, key.action)
 
-  const key = ActionRegistry.keyFromAction(action)
-  let effect = effectsRegistry.get(key)
-  let context = kernel.focusOn(actionMeta.keyPath)
-
-  if (effect == null && action.type.startsWith('.')) {
-    // global action
-    const keyFn = el => ActionRegistry.keyFor(data.kindOf(el), action.type)
-    const entry = findParentEntry(effectsRegistry, keyFn, context.query())
-
-    if (entry != null) {
-      const { element, entry: eff } = entry
-      effect = eff
-      context = kernel.focusOn(element._keyPath)
-    }
+    return res
   }
+  const effectFor = memoize(key => effectsRegistry.get(key), cacheKeyFn)
 
-  if (effect != null) {
-    const result = effect(context, action)
+  return R.curry((store, next, action) => {
+    const actionMeta = actions.actionMeta(action)
 
-    if (result && typeof result.then === 'function') {
-      result
-        .then(updateFn => {
-          if (typeof updateFn === 'function') {
-            context.dispatch({ type: updateStateAction, updateFn })
-          }
-        })
-        .catch(e => {
-          kernel.dispatch({ type: actionTypes.fail, error: e })
-          error('Exception while executing an effect: ', e)
-        })
-    } else if (typeof result === 'function') {
-      context.dispatch({ type: updateStateAction, updateFn: result })
+    if (actionMeta == null) return next(action)
+
+    const key = ActionRegistry.keyFromAction(action)
+    let effect = effectFor(key)
+    let context = kernel.focusOn(actionMeta.keyPath)
+
+    if (effect == null && action.type.startsWith('.')) {
+      // global action
+      const entry = findParentEntry(effectFor, action.type, context.query())
+
+      if (entry != null) {
+        const { element, entry: eff } = entry
+        effect = eff
+        context = kernel.focusOn(element._keyPath)
+      }
     }
-  } else {
-    // the effect consumes the action
-    return next(action)
-  }
-})
+
+    if (effect != null) {
+      const result = effect(context, action)
+
+      if (result && typeof result.then === 'function') {
+        result
+          .then(updateFn => {
+            if (typeof updateFn === 'function') {
+              context.dispatch({ type: updateStateAction, updateFn })
+            }
+          })
+          .catch(e => {
+            kernel.dispatch({ type: actionTypes.fail, error: e })
+            error('Exception while executing an effect: ', e)
+          })
+      } else if (typeof result === 'function') {
+        context.dispatch({ type: updateStateAction, updateFn: result })
+      }
+    } else {
+      // the effect consumes the action
+      return next(action)
+    }
+  })
+}
 
 export const reducer = R.curry((config, state, action) => {
   if (action.type === updateStateAction) {

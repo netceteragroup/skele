@@ -2,9 +2,8 @@
 
 import * as R from 'ramda'
 
-import { data, zip } from '@skele/core'
-
-import { memoize } from '../impl/util'
+import { data, zip, registry } from '@skele/core'
+const memoize = registry.memoize
 
 const { postWalk, root, value } = zip
 const { flow, kindOf } = data

@@ -1,46 +1,42 @@
 'use strict'
 
-import { Map, List } from 'immutable'
+import { List } from 'immutable'
+import Trie from './impl/Trie'
 
-import AbstractRegistry from './AbstractRegistry'
+export function adaptKey(key) {
+  if (key instanceof List) {
+    // cast
+    return key.toArray()
+  }
+  return key
+}
 
-export default class Registry extends AbstractRegistry {
-  constructor() {
-    super()
-    this._registry = new Map()
+// use verbatim objects as prototype lookup is known to be slow
+// in most VMs (cf. Inferno library design)
+export default function Registry() {
+  this._registry = new Trie()
+
+  this.register = function(kind, obj) {
+    this._registry.register(adaptKey(kind), obj)
   }
 
-  register(kind, element) {
-    const adaptedKey = this._adaptKey(kind)
-    this._registry = this._registry.set(adaptedKey, element)
+  this.get = function(key) {
+    return this._registry.get(adaptKey(key), true)
   }
 
-  isEmpty() {
-    return this._registry.count() === 0
+  this.getEntry = function(key) {
+    return this._registry.getEntry(adaptKey(key), true)
   }
 
-  reset() {
-    this._registry = new Map()
+  this.collector = function(key) {
+    return this._registry.collector(key)
   }
 
-  _adaptKey(key) {
-    if (key instanceof List) {
-      // cast
-      return key
-    }
-
-    if (Array.isArray(key)) {
-      return List(key)
-    }
-
-    return List.of(key)
+  this.isEmpty = function() {
+    return this._registry.isEmpty
   }
 
-  _getInternal(key) {
-    return this._registry.get(key)
-  }
-
-  _lessSpecificKey(key) {
-    return key.count() > 0 ? key.butLast() : undefined
+  this.reset = function() {
+    this._registry = new Trie()
   }
 }
