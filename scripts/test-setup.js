@@ -39,6 +39,35 @@ expect.extend({
       }
     }
   },
+
+  toValueEqual(actual, expected) {
+    actual = actual.deref ? actual.deref() : actual
+    const pass = I.is(actual, expected)
+
+    if (pass) {
+      return {
+        pass,
+        message: () =>
+          this.utils.matcherHint('.not.toValueEqual') +
+          '\n\n' +
+          'Expected value not to equal (using I.is):\n' +
+          `  ${this.utils.printExpected(expected)}\n` +
+          `Received:\n` +
+          `  ${this.utils.printReceived(actual)}`,
+      }
+    } else {
+      return {
+        pass,
+        message: () =>
+          this.utils.matcherHint('.toValueEqual') +
+          '\n\n' +
+          'Expected value equal (using I.is):\n' +
+          `  ${this.utils.printExpected(expected)}\n` +
+          `Received:\n` +
+          `  ${this.utils.printReceived(actual)}`,
+      }
+    }
+  },
 })
 
 // In Node v7 unhandled promise rejections will terminate the process
