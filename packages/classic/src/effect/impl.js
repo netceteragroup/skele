@@ -1,7 +1,6 @@
 'use strict'
 
 import * as R from 'ramda'
-import { Iterable } from 'immutable'
 
 import * as actions from '../action'
 import { types as actionTypes } from './actions'
@@ -15,17 +14,10 @@ const { error } = log
 export const middleware = config => {
   const { kernel, effectsRegistry } = config
 
-  const sep = '$$sep$$' // ideally this would be a Symbol but we aren't there yet
-  const cacheKeyFn = key => {
-    const kind = key.kind
-    let res = Iterable.isIndexed(kind)
-      ? kind.toArray()
-      : Array.isArray(kind) ? kind : [kind]
-    res.push(sep, key.action)
-
-    return res
-  }
-  const effectFor = memoize(key => effectsRegistry.get(key), cacheKeyFn)
+  const effectFor = memoize(
+    key => effectsRegistry.get(key),
+    ActionRegistry.cacheKey
+  )
 
   return R.curry((store, next, action) => {
     const actionMeta = actions.actionMeta(action)

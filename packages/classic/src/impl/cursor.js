@@ -1,7 +1,8 @@
 'use strict'
 
 import { List, Seq } from 'immutable'
-import Cursor from 'immutable/contrib/cursor'
+import { internal } from '@skele/core'
+const { Cursor } = internal
 
 /**
  * Gets the parent value of this cursor. returns null if this is the root cursors.

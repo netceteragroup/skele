@@ -4,9 +4,9 @@ import { mount } from 'enzyme'
 
 import React from 'react'
 import { Iterable, List, fromJS } from 'immutable'
-import Cursor from 'immutable/contrib/cursor'
 
-import { data } from '@skele/core'
+import { data, internal } from '@skele/core'
+const { Cursor } = internal
 
 import { isSubclassOf } from '../../impl/classes'
 

@@ -31,8 +31,8 @@ export default R.curry((kind, Component, runtime) => {
     }
 
     shouldComponentUpdate(nextProps) {
-      const { element: current } = this.props
-      const { element: next } = nextProps
+      let { element: current } = this.props
+      let { element: next } = nextProps
 
       if (
         (current != null && next == null) ||
@@ -40,6 +40,9 @@ export default R.curry((kind, Component, runtime) => {
       ) {
         return true
       }
+
+      if (current.deref) current = current.deref()
+      if (next.deref) next = next.deref()
 
       return !I.is(current, next)
     }

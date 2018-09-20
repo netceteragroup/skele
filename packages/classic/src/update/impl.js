@@ -1,10 +1,9 @@
 'use strict'
 
 import * as R from 'ramda'
-import { Iterable } from 'immutable'
-import invariant from 'invariant'
 
-import { log, registry } from '@skele/core'
+import { log, registry, internal } from '@skele/core'
+const { Cursor } = internal
 import * as actions from '../action'
 
 import { ActionRegistry, findParentEntry } from '../registry/ActionRegistry'
@@ -23,57 +22,48 @@ const { memoize } = registry
 export const reducer = config => {
   const { registry } = config
 
-  const sep = '$$sep$$' // ideally this would be a Symbol but we aren't there yet
-  const cacheKeyFn = key => {
-    const kind = key.kind
-    let res = Iterable.isIndexed(kind)
-      ? kind.toArray()
-      : Array.isArray(kind) ? kind : [kind]
-    res.push(sep, key.action)
+  const updateFor = memoize(key => registry.get(key), ActionRegistry.cacheKey)
 
-    return res
-  }
-  const updateFor = memoize(key => registry.get(key), cacheKeyFn)
-
-  return (cursor, action) => {
+  return (state, action) => {
     // skip actions that are not for us
-    if (!isApplicable(action)) return cursor
-
-    invariant(
-      cursor != null && cursor._keyPath != null,
-      'The reducer is meant to work only with cursors'
-    )
+    if (!isApplicable(action)) return state
 
     const { keyPath: fromPath } = actions.actionMeta(action)
+    const cursor = Cursor.from(state, fromPath)
+
+    if (cursor == null) {
+      warning(
+        'Unable to perform local update, element has changed in meantime...'
+      )
+      return state
+    }
     const type = action.type
 
     // handle global updates
     if (type.startsWith('.')) {
-      const entry = findParentEntry(updateFor, type, cursor.getIn(fromPath))
+      const entry = findParentEntry(updateFor, type, cursor)
       if (entry != null) {
         const { element, entry: update } = entry
-        return cursor.setIn(element._keyPath, update(element.deref(), action))
+        return state.setIn(element._keyPath, update(element.deref(), action))
       }
-      return cursor
+      return state
     }
 
     // handle local updates
     const update = updateFor(ActionRegistry.keyFromAction(action))
-    const element = cursor.getIn(fromPath)
+    const element = state.getIn(fromPath)
     if (element) {
       if (update) {
-        return cursor.setIn(fromPath, update(element.deref(), action))
+        return state.setIn(fromPath, update(element, action))
       } else {
-        return cursor
+        return state
       }
     } else {
       warning(
         'Unable to perform local update, element has changed in meantime...'
       )
-      return cursor
+      return state
     }
-
-    return cursor
   }
 }
 
