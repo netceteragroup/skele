@@ -68,7 +68,4 @@ export const reducer = config => {
   }
 }
 
-const isApplicable = R.pipe(
-  actions.actionMeta,
-  R.complement(R.isNil)
-)
+const isApplicable = R.pipe(actions.actionMeta, R.complement(R.isNil))

@@ -20,16 +20,10 @@ export const reducer = R.prop('reducer')
 // -- start (optional)
 
 // -- element mixins (optional, not implemented currently)
-export const elementMixins = R.pipe(
-  R.prop('elementMixins'),
-  R.defaultTo([])
-)
+export const elementMixins = R.pipe(R.prop('elementMixins'), R.defaultTo([]))
 
 // -- engine mixins (optional)
-export const engineMixins = R.pipe(
-  R.prop('engineMixins'),
-  R.defaultTo([])
-)
+export const engineMixins = R.pipe(R.prop('engineMixins'), R.defaultTo([]))
 
 // default extension points
 

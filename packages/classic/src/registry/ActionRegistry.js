@@ -43,9 +43,7 @@ export const cacheKey = key => {
   const kind = key.kind
   let res = Iterable.isIndexed(kind)
     ? kind.toArray()
-    : Array.isArray(kind)
-      ? kind
-      : [kind]
+    : Array.isArray(kind) ? kind : [kind]
   res.push(sep, key.action)
 
   return res
