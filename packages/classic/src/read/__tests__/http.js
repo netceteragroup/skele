@@ -72,11 +72,23 @@ describe('http', () => {
     test('chains transformation fns on the value of a OK responise', () => {
       const resp = http.asResponse(10)
 
-      expect(http.flow(resp, R.inc, R.add(10))).toEqual({
+      expect(
+        http.flow(
+          resp,
+          R.inc,
+          R.add(10)
+        )
+      ).toEqual({
         value: 21,
       })
 
-      expect(http.flow(http.failedResponse('Fail'), R.inc, R.add(10))).toEqual({
+      expect(
+        http.flow(
+          http.failedResponse('Fail'),
+          R.inc,
+          R.add(10)
+        )
+      ).toEqual({
         meta: {
           status: 999,
           message: 'Fail',
@@ -88,13 +100,23 @@ describe('http', () => {
       const resp = http.asResponse(10)
 
       expect(
-        http.flow(resp, R.inc, () => http.asResponse('something'), R.length)
+        http.flow(
+          resp,
+          R.inc,
+          () => http.asResponse('something'),
+          R.length
+        )
       ).toEqual({
         value: 9,
       })
 
       expect(
-        http.flow(resp, R.inc, () => http.failedResponse('Fail'), R.dec)
+        http.flow(
+          resp,
+          R.inc,
+          () => http.failedResponse('Fail'),
+          R.dec
+        )
       ).toEqual({
         meta: {
           status: 999,

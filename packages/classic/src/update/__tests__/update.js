@@ -104,8 +104,26 @@ describe('updates API', function() {
     const kernel = Kernel.create([updateSubS, app], {}, {})
     const reducer = kernel.subsystems.update.reducer
 
-    expect(flow(reducer(data, localUpdate), el3, bookmark)).toBe(true)
-    expect(flow(reducer(data, globalUpdate), el1, globalBookmark)).toBe(true)
-    expect(flow(reducer(data, bubblingUpdate), el2, globalBookmark)).toBe(true)
+    expect(
+      flow(
+        reducer(data, localUpdate),
+        el3,
+        bookmark
+      )
+    ).toBe(true)
+    expect(
+      flow(
+        reducer(data, globalUpdate),
+        el1,
+        globalBookmark
+      )
+    ).toBe(true)
+    expect(
+      flow(
+        reducer(data, bubblingUpdate),
+        el2,
+        globalBookmark
+      )
+    ).toBe(true)
   })
 })

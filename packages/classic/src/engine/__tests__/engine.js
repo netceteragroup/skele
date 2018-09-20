@@ -35,22 +35,20 @@ describe('Engine: wiring everything together', () => {
     app.update.register('c1', 'capitalize', capitalize)
 
     let kernel
-    beforeEach(
-      () =>
-        (kernel = Kernel.create([...defaultSubsystems, app], {
-          kind: 'nav',
-          scenes: [
-            {
-              kind: 'c1',
-              text: 'Scene 1',
-            },
-            {
-              kind: 'c2',
-              text: 'Scene 2',
-            },
-          ],
-        }))
-    )
+    beforeEach(() =>
+      (kernel = Kernel.create([...defaultSubsystems, app], {
+        kind: 'nav',
+        scenes: [
+          {
+            kind: 'c1',
+            text: 'Scene 1',
+          },
+          {
+            kind: 'c2',
+            text: 'Scene 2',
+          },
+        ],
+      })))
 
     test('multiple entrypoints can be linked with a single kernel inst.', () => {
       const ep1 = mount(<EntryPoint kernel={kernel} keyPath={['scenes', 0]} />)
@@ -140,8 +138,7 @@ describe('Engine: wiring everything together', () => {
       const e = mount(<Engine initState={{ kind: 's1', text: 's1' }} />)
       expect(e).toIncludeText('Hello from s1')
 
-      e
-        .find(Foo)
+      e.find(Foo)
         .at(0)
         .props()
         .dispatch({ type: 'capitalize' })
@@ -166,8 +163,7 @@ describe('Engine: wiring everything together', () => {
 
       expect(e).toIncludeText('Hello from m1')
 
-      e
-        .find(Foo)
+      e.find(Foo)
         .at(0)
         .props()
         .dispatch({ type: 'twiddle' })
@@ -196,8 +192,7 @@ describe('Engine: wiring everything together', () => {
 
       expect(e).toIncludeText('Hello from ss1')
 
-      e
-        .find(Foo)
+      e.find(Foo)
         .at(0)
         .props()
         .dispatch({ type: 'twiddle' })
@@ -227,8 +222,7 @@ describe('Engine: wiring everything together', () => {
 
       expect(e).toIncludeText('Hello from ssx1')
 
-      e
-        .find(Foo)
+      e.find(Foo)
         .at(0)
         .props()
         .dispatch({ type: 'twiddle' })

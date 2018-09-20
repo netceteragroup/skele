@@ -7,8 +7,15 @@ import PropTypes from 'prop-types'
 
 import { data } from '@skele/core'
 
+import memoizeOne from '../impl/memoize-one'
+
 export default R.curry((kind, Component, runtime) => {
   const { uiFor: globalUIFor, system } = runtime
+
+  const dispatchFor = memoizeOne(element => {
+    const focused = system.focusOn(element._keyPath)
+    return focused.dispatch.bind(focused)
+  })
 
   return class extends React.Component {
     static propTypes = {
@@ -23,11 +30,6 @@ export default R.curry((kind, Component, runtime) => {
 
     constructor(props) {
       super(props)
-      this._reset(props)
-    }
-
-    componentWillReceiveProps(nextProps) {
-      this._reset(nextProps)
     }
 
     shouldComponentUpdate(nextProps) {
@@ -47,11 +49,6 @@ export default R.curry((kind, Component, runtime) => {
       return !I.is(current, next)
     }
 
-    _reset(props) {
-      this._system = system.focusOn(props.element._keyPath)
-      this._dispatch = this._system.dispatch.bind(this._system)
-    }
-
     _uiFor = (path, reactKey = undefined) => {
       const { element } = this.props
 
@@ -62,15 +59,15 @@ export default R.curry((kind, Component, runtime) => {
         sub = element.get(path)
       }
 
-      // console.log('sub el lookup', sub, globalUIFor(sub, reactKey))
       return globalUIFor(sub, reactKey)
     }
 
     render() {
+      const dispatch = dispatchFor(this.props.element)
       return (
         <Component
           element={this.props.element}
-          dispatch={this._dispatch}
+          dispatch={dispatch}
           uiFor={this._uiFor}
         />
       )

@@ -76,7 +76,6 @@ export function setRefreshMetadata(element, action) {
 
 export function applyRead(element, action) {
   const { readId, readValue } = action
-
   if (element == null || readId !== getReadId(element)) return element
 
   return flow(

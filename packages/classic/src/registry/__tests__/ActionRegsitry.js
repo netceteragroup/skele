@@ -46,4 +46,7 @@ function makeAction(kind, type) {
   }
 }
 
-const makeKeyFromAction = R.compose(keyFromAction, makeAction)
+const makeKeyFromAction = R.compose(
+  keyFromAction,
+  makeAction
+)

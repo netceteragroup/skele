@@ -131,7 +131,9 @@ export default class Trie {
   collect(key) {
     let current = this.root
     let result = current.$$T
-      ? Array.isArray(current.$$V) ? current.$$V : [current.$$V]
+      ? Array.isArray(current.$$V)
+        ? current.$$V
+        : [current.$$V]
       : []
 
     key = Array.isArray(key) ? key : [key]

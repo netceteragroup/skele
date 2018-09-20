@@ -1,13 +1,14 @@
 'use strict'
 
 import * as R from 'ramda'
-import I from 'immutable'
 import React from 'react'
 import PropTypes from 'prop-types'
 
 import * as Kernel from '../kernel'
 import * as Subsystem from '../subsystem'
 import { defaultSubsystems } from '../core'
+
+import memoizeOne from '../impl/memoize-one'
 
 class EntryPointImpl extends React.Component {
   static propTypes = {
@@ -31,24 +32,21 @@ class EntryPointImpl extends React.Component {
 
   constructor(props, context) {
     super(props, context)
-    this._reset(props)
+    this._unsubscribe = this.props.kernel.subscribe(this._reRender.bind(this))
   }
 
-  componentWillReceiveProps(nextProps) {
-    this._reset(nextProps)
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.kernel !== prevProps.kernel ||
+      !R.equals(this.props.keyPath, prevProps.keyPath)
+    ) {
+      if (this._unsubscribe) this._unsubscribe()
+      this._unsubscribe = this.props.kernel.subscribe(this._reRender.bind(this))
+    }
   }
 
   componentWillUnmount() {
     if (this._unsubscribe) this._unsubscribe()
-  }
-
-  _reset(props) {
-    const { kernel, keyPath } = props
-
-    if (this._unsubscribe) this._unsubscribe()
-
-    this._unsubscribe = kernel.subscribe(this._reRender.bind(this))
-    this._rootPath = keyPath
   }
 
   _reRender() {
@@ -57,35 +55,47 @@ class EntryPointImpl extends React.Component {
 
   render() {
     const kernel = this.props.kernel
-    return kernel.subsystems.ui.uiFor(kernel.query(this._rootPath))
+    return kernel.subsystems.ui.uiFor(kernel.query(this.props.keyPath))
   }
 }
+
+const buildImpl = memoizeOne(kernel => {
+  const entryPointMixins = getCombinedMixins(kernel.subsystemSequence)
+
+  return R.isEmpty(entryPointMixins)
+    ? EntryPointImpl
+    : R.reduce((C, M) => M(C), EntryPointImpl, entryPointMixins)
+})
 
 export class EntryPoint extends React.Component {
   static propTypes = EntryPointImpl.propTypes
 
   constructor(props, context) {
     super(props, context)
-    this._reset(props)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this._reset(nextProps)
-  }
-
-  _reset(props) {
-    const { kernel } = props
-    const entryPointMixins = getCombinedMixins(kernel.subsystemSequence)
-
-    this.Impl = R.isEmpty(entryPointMixins)
-      ? EntryPointImpl
-      : R.reduce((C, M) => M(C), EntryPointImpl, entryPointMixins)
   }
 
   render() {
-    return <this.Impl {...this.props} />
+    const Impl = buildImpl(this.props.kernel)
+    return <Impl {...this.props} />
   }
 }
+
+const buildKernel = memoizeOne(
+  (initState, subsystems, additionalSubsystems, customMiddleware, config) => {
+    subsystems = subsystems || defaultSubsystems
+
+    if (additionalSubsystems != null) {
+      subsystems = subsystems.concat(additionalSubsystems)
+    }
+
+    if (customMiddleware != null) {
+      subsystems = subsystems.concat(
+        R.map(Subsystem.fromMiddleware, customMiddleware)
+      )
+    }
+    return Kernel.create(subsystems, initState, config)
+  }
+)
 
 export class Engine extends React.Component {
   static propType = {
@@ -98,32 +108,24 @@ export class Engine extends React.Component {
 
   constructor(props, context) {
     super(props, context)
-    this._reset(props)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const current = I.fromJS(this.props.initState)
-    const next = I.fromJS(nextProps.initState)
-
-    if (!I.is(current, next)) this._reset(nextProps)
-  }
-
-  _reset(props) {
-    let subsystems = props.subsystems || defaultSubsystems
-    if (props.additionalSubsystems != null) {
-      subsystems = subsystems.concat(props.additionalSubsystems)
-    }
-    if (props.customMiddleware != null) {
-      subsystems = subsystems.concat(
-        R.map(Subsystem.fromMiddleware, props.customMiddleware)
-      )
-    }
-
-    this._kernel = Kernel.create(subsystems, props.initState, props.config)
   }
 
   render() {
-    return <EntryPoint kernel={this._kernel} keyPath={[]} />
+    const {
+      initState,
+      customMiddleware,
+      subsystems,
+      additionalSubsystems,
+      config,
+    } = this.props
+    const kernel = buildKernel(
+      initState,
+      subsystems,
+      additionalSubsystems,
+      customMiddleware,
+      config
+    )
+    return <EntryPoint kernel={kernel} keyPath={[]} />
   }
 }
 

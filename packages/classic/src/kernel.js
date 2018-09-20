@@ -141,14 +141,18 @@ class Kernel {
 }
 
 function buildReducer(subsystems) {
-  const reducers = R.pipe(R.map(SubSystem.reducer), R.reject(R.isNil))(
-    subsystems
-  )
+  const reducers = R.pipe(
+    R.map(SubSystem.reducer),
+    R.reject(R.isNil)
+  )(subsystems)
 
   return (state, action) => R.reduce((s, r) => r(s, action), state, reducers)
 }
 
-const getMiddleware = R.pipe(R.map(SubSystem.middleware), R.reject(R.isNil))
+const getMiddleware = R.pipe(
+  R.map(SubSystem.middleware),
+  R.reject(R.isNil)
+)
 
 const getChildPostions = R.either(
   R.path(['data', 'defaultChildPositions']),
