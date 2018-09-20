@@ -38,7 +38,7 @@ export default class Trie {
       return
     }
 
-    for (let i = 0, len = key.length; i < len; i++) {
+    for (const i = 0, len = key.length; i < len; i++) {
       const p = key[i]
       let n = current[p]
       if (n == null) {
@@ -67,7 +67,7 @@ export default class Trie {
       return undefined
     }
 
-    for (let i = 0, len = key.length; i < len; i++) {
+    for (const i = 0, len = key.length; i < len; i++) {
       const p = key[i]
       current = current[p]
 
@@ -102,7 +102,7 @@ export default class Trie {
       return undefined
     }
 
-    for (let i = 0, len = key.length; i < len; i++) {
+    for (const i = 0, len = key.length; i < len; i++) {
       const p = key[i]
       current = current[p]
       currentKey.push(p)
@@ -136,7 +136,7 @@ export default class Trie {
 
     key = Array.isArray(key) ? key : [key]
 
-    for (let i = 0, len = key.length; i < len; i++) {
+    for (const i = 0, len = key.length; i < len; i++) {
       const p = key[i]
       current = current[p]
 
@@ -168,7 +168,7 @@ export default class Trie {
 
     key = Array.isArray(key) ? key : [key]
 
-    for (let i = 0, len = key.length; i < len; i++) {
+    for (const i = 0, len = key.length; i < len; i++) {
       const p = key[i]
       current = current[p]
       currentKey.push(p)
