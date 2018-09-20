@@ -30,7 +30,7 @@
     "clean:config": "del-cli packages/config/dist",
     "clean:components": "del-cli packages/components/dist",
     "clean:core": "del-cli packages/core/dist",
-    "build": "yarn run clean && yarn run test && yarn run lint && yarn run es5",
+    "build": "yarn run clean && yarn run es5 && yarn run test && yarn run lint",
     "release:test-token": "test -n \"$CONVENTIONAL_GITHUB_RELEASER_TOKEN\" || (echo 'Setup your github autho token first: https://github.com/conventional-changelog/conventional-github-releaser#cli' && exit 1)",
     "release:publish": "lerna publish",
     "release:github": "conventional-github-releaser -p angular",
