@@ -1,8 +1,8 @@
 'use strict'
 
 import { fromJS } from 'immutable'
-import Cursor from 'immutable/contrib/cursor'
-import { data } from '@skele/core'
+import { data, internal } from '@skele/core'
+const { Cursor } = internal
 import * as actions from '../../action'
 import { ActionRegistry } from '../../registry'
 import * as Subsystem from '../../subsystem'
@@ -104,8 +104,26 @@ describe('updates API', function() {
     const kernel = Kernel.create([updateSubS, app], {}, {})
     const reducer = kernel.subsystems.update.reducer
 
-    expect(flow(reducer(root, localUpdate), el3, bookmark)).toBe(true)
-    expect(flow(reducer(root, globalUpdate), el1, globalBookmark)).toBe(true)
-    expect(flow(reducer(root, bubblingUpdate), el2, globalBookmark)).toBe(true)
+    expect(
+      flow(
+        reducer(data, localUpdate),
+        el3,
+        bookmark
+      )
+    ).toBe(true)
+    expect(
+      flow(
+        reducer(data, globalUpdate),
+        el1,
+        globalBookmark
+      )
+    ).toBe(true)
+    expect(
+      flow(
+        reducer(data, bubblingUpdate),
+        el2,
+        globalBookmark
+      )
+    ).toBe(true)
   })
 })

@@ -1,10 +1,10 @@
 'use strict'
 
 import I from 'immutable'
-import Cursor from 'immutable/contrib/cursor'
 import * as R from 'ramda'
 
-import { data, zip } from '@skele/core'
+import { data, zip, internal } from '@skele/core'
+const { Cursor } = internal
 import * as actions from './action'
 
 import { createStore, applyMiddleware } from 'redux'
@@ -21,7 +21,7 @@ import * as SubSystem from './subsystem'
 class Kernel {
   constructor(subsystems, init, config) {
     this._config = config
-    this._init = Cursor.from(I.fromJS(init || {}))
+    this._init = I.fromJS(init || {})
 
     // booting
 
@@ -79,13 +79,8 @@ class Kernel {
   }
 
   // query the current state at a position
-  query(path) {
-    const p = data.asList(path)
-
-    const root = Cursor.from(this._store.getState())
-    const result = p.isEmpty() ? root : root.getIn(p)
-
-    return result
+  query(path = []) {
+    return Cursor.from(this._store.getState(), path || [])
   }
 
   get subsystems() {

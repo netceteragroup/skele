@@ -1,6 +1,6 @@
 'use strict'
 
-import { List } from 'immutable'
+import { List, Iterable } from 'immutable'
 
 import { registry, data } from '@skele/core'
 import * as actions from '../action'
@@ -33,6 +33,22 @@ export const findParentEntry = (lookupFn, type, cursor) => {
     }
   }
   return undefined
+}
+
+// ideally this would be a Symbol but we aren't there yet
+const sep = '$$sep$$'
+
+// useful with core's memoize() fn for caching responses from ActionRegistries
+export const cacheKey = key => {
+  const kind = key.kind
+  let res = Iterable.isIndexed(kind)
+    ? kind.toArray()
+    : Array.isArray(kind)
+      ? kind
+      : [kind]
+  res.push(sep, key.action)
+
+  return res
 }
 
 export function ActionRegistry() {
@@ -89,6 +105,7 @@ export function ActionRegistry() {
 }
 
 ActionRegistry.keyFor = keyFor
+ActionRegistry.cacheKey = cacheKey
 ActionRegistry.keyFromAction = keyFromAction
 
 // TODO this class has no tests yet. make sure you write some before using it
@@ -152,4 +169,5 @@ export function ActionMultivalueRegistry() {
 }
 
 ActionMultivalueRegistry.keyFor = keyFor
+ActionMultivalueRegistry.cacheKey = cacheKey
 ActionMultivalueRegistry.keyFromAction = keyFromAction
