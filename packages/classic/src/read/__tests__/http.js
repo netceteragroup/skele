@@ -246,8 +246,8 @@ describe('http', () => {
       })
     })
 
-    describe('options/head/delete', async () => {
-      for (const m of ['options', 'head', 'delete']) {
+    describe('options/head/del', async () => {
+      for (const m of ['options', 'head', 'del']) {
         fetch.resetMocks()
         fetch.mockResponseOnce(JSON.stringify({ data: '12345' }))
 
@@ -260,7 +260,7 @@ describe('http', () => {
         expect(fetch).toHaveBeenCalledWith(
           'http://example.com',
           expect.objectContaining({
-            method: m.toUpperCase(),
+            method: m === 'del' ? 'DELETE' : m.toUpperCase(),
             foo: 'bar',
           })
         )
