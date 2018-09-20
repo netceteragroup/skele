@@ -1,7 +1,6 @@
 'use strict'
 
 import * as R from 'ramda'
-import { Iterable } from 'immutable'
 
 import { log, registry, internal } from '@skele/core'
 const { Cursor } = internal

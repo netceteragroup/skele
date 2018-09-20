@@ -1,7 +1,6 @@
 'use strict'
 
 import * as R from 'ramda'
-import { Iterable } from 'immutable'
 
 import * as actions from '../action'
 import { types as actionTypes } from './actions'
