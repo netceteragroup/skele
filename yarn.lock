@@ -6709,13 +6709,13 @@ prettier-eslint@^8.5.0:
     typescript-eslint-parser "^16.0.0"
     vue-eslint-parser "^2.0.2"
 
+prettier@1.14.3, prettier@^1.7.0:
+  version "1.14.3"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.14.3.tgz#90238dd4c0684b7edce5f83b0fb7328e48bd0895"
+
 prettier@^1.6.0:
   version "1.7.4"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.7.4.tgz#5e8624ae9363c80f95ec644584ecdf55d74f93fa"
-
-prettier@^1.7.0, prettier@^1.9.2:
-  version "1.14.3"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.14.3.tgz#90238dd4c0684b7edce5f83b0fb7328e48bd0895"
 
 pretty-format@^20.0.3:
   version "20.0.3"

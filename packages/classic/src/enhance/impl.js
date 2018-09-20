@@ -25,9 +25,19 @@ function compressUpdates(updates, elementZipper) {
   const slices = partitionBy(Array.isArray, updates)
 
   return R.chain(
-    R.when(R.pipe(R.head, Array.isArray), slice => [
-      R.pipe(elementZipper, zip.editCond(concatAll(slice)), zip.value),
-    ]),
+    R.when(
+      R.pipe(
+        R.head,
+        Array.isArray
+      ),
+      slice => [
+        R.pipe(
+          elementZipper,
+          zip.editCond(concatAll(slice)),
+          zip.value
+        ),
+      ]
+    ),
     slices
   )
 }

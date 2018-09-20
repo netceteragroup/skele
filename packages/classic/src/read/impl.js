@@ -20,7 +20,13 @@ const { info, error } = log
 export const fallback = '@@skele/defaultRead'
 
 const updateKind = R.curry((update, element) =>
-  element.update('kind', R.pipe(canonical, update))
+  element.update(
+    'kind',
+    R.pipe(
+      canonical,
+      update
+    )
+  )
 )
 const setReadId = R.curry((id, el) =>
   el.setIn([propNames.metadata, 'readId'], id)
@@ -49,7 +55,11 @@ export function setRefreshing(element, action) {
   let { readId, refreshing } = action
   if (refreshing == null) refreshing = true
 
-  return flow(element, setReadId(readId), setRefreshingAttr(refreshing))
+  return flow(
+    element,
+    setReadId(readId),
+    setRefreshingAttr(refreshing)
+  )
 }
 
 export function setRefreshMetadata(element, action) {
@@ -69,7 +79,10 @@ export function applyRead(element, action) {
 
   if (element == null || readId !== getReadId(element)) return element
 
-  return flow(readValue, setReadId(readId))
+  return flow(
+    readValue,
+    setReadId(readId)
+  )
 }
 
 export function fail(element, action) {
@@ -262,7 +275,11 @@ export async function readRefresh(context, action) {
     'The element you are refreshing must have been loaded via a read, or you must provide an uri yourself.'
   )
 
-  readAction.revalidate = flow(action, R.prop('revalidate'), R.defaultTo(true))
+  readAction.revalidate = flow(
+    action,
+    R.prop('revalidate'),
+    R.defaultTo(true)
+  )
 
   context.dispatch({
     ...action,

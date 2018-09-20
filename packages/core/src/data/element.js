@@ -173,7 +173,11 @@ const deprecatedChildrenProperty = '@@girders-elements/children'
 export const asList = v =>
   Iterable.isIndexed(v)
     ? v
-    : Array.isArray(v) ? List(v) : v != null ? List.of(v) : List()
+    : Array.isArray(v)
+      ? List(v)
+      : v != null
+        ? List.of(v)
+        : List()
 
 const deprecatedChildrenGetter = deprecated(
   'The use of `@@girders-elements/children` to demarcate child positions in an element ' +

@@ -39,7 +39,12 @@ export function enricher(config) {
       loc = zip.replace(changedValue, loc)
     }
 
-    const elEnricher = data.flow(loc, zip.value, data.kindOf, elementEnricher)
+    const elEnricher = data.flow(
+      loc,
+      zip.value,
+      data.kindOf,
+      elementEnricher
+    )
 
     if (elEnricher != null) {
       const changedValue = await elEnricher(zip.value(loc), context)

@@ -18,5 +18,11 @@ export function transformer(registry, elementZipper) {
   const transform = context => el => elementTransformer(kindOf(el))(el, context)
 
   return (el, context = {}) =>
-    flow(el, elementZipper, postWalk(transform(context)), root, value)
+    flow(
+      el,
+      elementZipper,
+      postWalk(transform(context)),
+      root,
+      value
+    )
 }
