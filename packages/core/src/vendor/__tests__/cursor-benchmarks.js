@@ -104,7 +104,8 @@ describe('Cursor benchmarks', () => {
     },
   }
 
-  it('is faster than the library impl. in terms of get() /getIn() deep in the tree', () => {
+  // disabled by default, remove .skip to run the benchmarks
+  it.skip('is faster than the library impl. in terms of get() /getIn() deep in the tree', () => {
     const im = fromJS(data)
     const path = [
       'content',
@@ -142,5 +143,11 @@ describe('Cursor benchmarks', () => {
         console.log('Fastest is ' + this.filter('fastest').map('name'))
       })
       .run()
+
+    // on my computer it's
+    // get() (old) x 721,163 ops/sec ±6.31% (85 runs sampled)
+    // get() (new) x 8,523,821 ops/sec ±0.59% (92 runs sampled)
+    // getIn() (old) x 803,261 ops/sec ±0.68% (90 runs sampled)
+    // getIn() / (new) x 2,482,453 ops/sec ±1.70% (91 runs sampled)
   })
 })
