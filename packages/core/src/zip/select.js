@@ -11,7 +11,11 @@ export const isStringArray = obj =>
     R.allPass([R.is(Array), R.or(R.all(R.is(String)), R.propEq('length', 0))])
   )
 const isImm = I.Iterable.isIterable
-const areImm = (...vals) => flow(vals, R.all(isImm))
+const areImm = (...vals) =>
+  flow(
+    vals,
+    R.all(isImm)
+  )
 const isTrue = R.allPass([R.is(Boolean), R.equals(true)])
 const isLocation = loc =>
   loc &&

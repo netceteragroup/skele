@@ -95,16 +95,27 @@ describe('zip.select', () => {
     test('child', () => {
       const root = zipper(I.fromJS(data))
 
-      const storage = flow(root, child('storage'))
+      const storage = flow(
+        root,
+        child('storage')
+      )
       expect(storage).toBeNull()
 
       // child pointing to a non-collection element
-      const settings = flow(root, child('settings'), zip.value)
+      const settings = flow(
+        root,
+        child('settings'),
+        zip.value
+      )
       expect(isElement(settings)).toEqual(true)
       expect(settings.get('title')).toEqual('Martha Wells')
 
       // child positioning to the first element of a collection
-      const firstTab = flow(root, child('tabs'), zip.value)
+      const firstTab = flow(
+        root,
+        child('tabs'),
+        zip.value
+      )
       expect(isElement(firstTab)).toEqual(true)
       expect(firstTab.get('title')).toEqual('Murder Bot')
     })
@@ -115,15 +126,30 @@ describe('zip.select', () => {
       const kids = children(root)
 
       expect(kids.length).toEqual(3)
-      expect(flow(kids, R.path([0]), zip.value, iprop('title'))).toEqual(
-        'Murder Bot'
-      )
-      expect(flow(kids, R.path([1]), zip.value, iprop('title'))).toEqual(
-        'Dr Mensah'
-      )
-      expect(flow(kids, R.path([2]), zip.value, iprop('title'))).toEqual(
-        'Martha Wells'
-      )
+      expect(
+        flow(
+          kids,
+          R.path([0]),
+          zip.value,
+          iprop('title')
+        )
+      ).toEqual('Murder Bot')
+      expect(
+        flow(
+          kids,
+          R.path([1]),
+          zip.value,
+          iprop('title')
+        )
+      ).toEqual('Dr Mensah')
+      expect(
+        flow(
+          kids,
+          R.path([2]),
+          zip.value,
+          iprop('title')
+        )
+      ).toEqual('Martha Wells')
 
       const extendedData = I.fromJS(data)
         .updateIn([childrenProperty], children => children.push('world'))
@@ -132,7 +158,12 @@ describe('zip.select', () => {
       const newKidsOnTheBlock = children(zipper(extendedData))
       expect(newKidsOnTheBlock.length).toEqual(4)
       expect(
-        flow(newKidsOnTheBlock, R.path([3]), zip.value, iprop('title'))
+        flow(
+          newKidsOnTheBlock,
+          R.path([3]),
+          zip.value,
+          iprop('title')
+        )
       ).toEqual('Alien')
     })
 
@@ -149,27 +180,53 @@ describe('zip.select', () => {
         )
       ).toBeTruthy()
       expect(
-        flow(root, child('settings'), propEq('title', 'Martha Wells'))
+        flow(
+          root,
+          child('settings'),
+          propEq('title', 'Martha Wells')
+        )
       ).toBeTruthy()
     })
 
     test('ancestors', () => {
       const root = zipper(I.fromJS(data))
 
-      const settings = flow(root, child('settings'))
-      expect(flow(settings, zip.value, iprop('title'))).toEqual('Martha Wells')
+      const settings = flow(
+        root,
+        child('settings')
+      )
+      expect(
+        flow(
+          settings,
+          zip.value,
+          iprop('title')
+        )
+      ).toEqual('Martha Wells')
 
-      const tabs = flow(root, childrenFor('tabs'))
+      const tabs = flow(
+        root,
+        childrenFor('tabs')
+      )
       expect(tabs.length).toEqual(2)
 
-      const mensahChildren = flow(tabs, R.path([1]), children)
+      const mensahChildren = flow(
+        tabs,
+        R.path([1]),
+        children
+      )
       expect(mensahChildren.length).toEqual(3)
 
       const deeplinkLoc = R.find(
         loc => isOfKind('link', loc.value()),
         mensahChildren
       )
-      expect(flow(deeplinkLoc, zip.value, iprop('title'))).toEqual('goodreads')
+      expect(
+        flow(
+          deeplinkLoc,
+          zip.value,
+          iprop('title')
+        )
+      ).toEqual('goodreads')
 
       const robotLoc = R.find(
         loc =>
@@ -177,68 +234,151 @@ describe('zip.select', () => {
           loc.value().get('title') === 'robot',
         mensahChildren
       )
-      expect(flow(robotLoc, zip.value, iprop('title'))).toEqual('robot')
+      expect(
+        flow(
+          robotLoc,
+          zip.value,
+          iprop('title')
+        )
+      ).toEqual('robot')
 
       const robotAncestors = ancestors(robotLoc)
       expect(robotAncestors.length).toEqual(2)
       expect(
-        flow(robotAncestors, R.path([0]), zip.value, iprop('title'))
+        flow(
+          robotAncestors,
+          R.path([0]),
+          zip.value,
+          iprop('title')
+        )
       ).toEqual('Dr Mensah')
       expect(
-        flow(robotAncestors, R.path([1]), zip.value, iprop('title'))
+        flow(
+          robotAncestors,
+          R.path([1]),
+          zip.value,
+          iprop('title')
+        )
       ).toEqual('App')
 
       const deeplinkAncestors = ancestors(deeplinkLoc)
       expect(deeplinkAncestors.length).toEqual(2)
       expect(
-        flow(deeplinkAncestors, R.path([0]), zip.value, iprop('title'))
+        flow(
+          deeplinkAncestors,
+          R.path([0]),
+          zip.value,
+          iprop('title')
+        )
       ).toEqual('Dr Mensah')
       expect(
-        flow(deeplinkAncestors, R.path([1]), zip.value, iprop('title'))
+        flow(
+          deeplinkAncestors,
+          R.path([1]),
+          zip.value,
+          iprop('title')
+        )
       ).toEqual('App')
 
       const settingsAncestors = ancestors(settings)
       expect(settingsAncestors.length).toEqual(1)
       expect(
-        flow(settingsAncestors, R.path([0]), zip.value, iprop('title'))
+        flow(
+          settingsAncestors,
+          R.path([0]),
+          zip.value,
+          iprop('title')
+        )
       ).toEqual('App')
     })
 
     test('desendants', () => {
       const root = zipper(I.fromJS(data))
 
-      const settings = flow(root, child('settings'))
+      const settings = flow(
+        root,
+        child('settings')
+      )
       expect(descendants(settings).length).toEqual(0)
 
       const tabs = childrenFor('tabs')(root)
       const mensahDescendants = descendants(tabs[1])
       expect(mensahDescendants.length).toEqual(3)
       expect(
-        flow(mensahDescendants, R.path([0]), zip.value, iprop('title'))
+        flow(
+          mensahDescendants,
+          R.path([0]),
+          zip.value,
+          iprop('title')
+        )
       ).toEqual('human')
       expect(
-        flow(mensahDescendants, R.path([1]), zip.value, iprop('title'))
+        flow(
+          mensahDescendants,
+          R.path([1]),
+          zip.value,
+          iprop('title')
+        )
       ).toEqual('robot')
       expect(
-        flow(mensahDescendants, R.path([2]), zip.value, iprop('title'))
+        flow(
+          mensahDescendants,
+          R.path([2]),
+          zip.value,
+          iprop('title')
+        )
       ).toEqual('goodreads')
 
       const all = descendants(root)
       expect(all.length).toEqual(6)
-      expect(flow(all, R.path([0]), zip.value, iprop('title'))).toEqual('human')
-      expect(flow(all, R.path([1]), zip.value, iprop('title'))).toEqual('robot')
-      expect(flow(all, R.path([2]), zip.value, iprop('title'))).toEqual(
-        'goodreads'
-      )
-      expect(flow(all, R.path([3]), zip.value, iprop('title'))).toEqual(
-        'Dr Mensah'
-      )
-      expect(flow(all, R.path([4]), zip.value, iprop('title'))).toEqual(
-        'Murder Bot'
-      )
-      expect(flow(all, R.path([5]), zip.value, iprop('title'))).toEqual(
-        'Martha Wells'
-      )
+      expect(
+        flow(
+          all,
+          R.path([0]),
+          zip.value,
+          iprop('title')
+        )
+      ).toEqual('human')
+      expect(
+        flow(
+          all,
+          R.path([1]),
+          zip.value,
+          iprop('title')
+        )
+      ).toEqual('robot')
+      expect(
+        flow(
+          all,
+          R.path([2]),
+          zip.value,
+          iprop('title')
+        )
+      ).toEqual('goodreads')
+      expect(
+        flow(
+          all,
+          R.path([3]),
+          zip.value,
+          iprop('title')
+        )
+      ).toEqual('Dr Mensah')
+      expect(
+        flow(
+          all,
+          R.path([4]),
+          zip.value,
+          iprop('title')
+        )
+      ).toEqual('Murder Bot')
+      expect(
+        flow(
+          all,
+          R.path([5]),
+          zip.value,
+          iprop('title')
+        )
+      ).toEqual('Martha Wells')
     })
   })
 
@@ -246,10 +386,20 @@ describe('zip.select', () => {
     const root = zipper(I.fromJS(data))
 
     it('should return array with given location for no predicates', () => {
-      expect(flow(root, select()).length).toEqual(1)
-      expect(flow(root, select(), R.path([0]), zip.value)).toEqualI(
-        root.value()
-      )
+      expect(
+        flow(
+          root,
+          select()
+        ).length
+      ).toEqual(1)
+      expect(
+        flow(
+          root,
+          select(),
+          R.path([0]),
+          zip.value
+        )
+      ).toEqualI(root.value())
     })
 
     it('should give proper result for combinations of predicates', () => {
@@ -261,7 +411,11 @@ describe('zip.select', () => {
         )
       ).toEqual(1)
       expect(
-        flow(root, select(descendants, ofKind('element')), R.prop('length'))
+        flow(
+          root,
+          select(descendants, ofKind('element')),
+          R.prop('length')
+        )
       ).toEqual(2)
       expect(
         flow(
@@ -271,13 +425,25 @@ describe('zip.select', () => {
         )
       ).toEqual(1)
       expect(
-        flow(root, select(descendants, ['link']), R.prop('length'))
+        flow(
+          root,
+          select(descendants, ['link']),
+          R.prop('length')
+        )
       ).toEqual(1)
       expect(
-        flow(root, select(descendants, ['tab']), R.prop('length'))
+        flow(
+          root,
+          select(descendants, ['tab']),
+          R.prop('length')
+        )
       ).toEqual(2)
       expect(
-        flow(root, select(descendants, ['tab'], 'deeplink'), R.prop('length'))
+        flow(
+          root,
+          select(descendants, ['tab'], 'deeplink'),
+          R.prop('length')
+        )
       ).toEqual(1)
     })
 
@@ -292,7 +458,11 @@ describe('zip.select', () => {
         )
       ).toEqual(0)
       expect(
-        flow(root, select(descendants, { prop: 'test' }), R.prop('length'))
+        flow(
+          root,
+          select(descendants, { prop: 'test' }),
+          R.prop('length')
+        )
       ).toEqual(0)
     })
   })
