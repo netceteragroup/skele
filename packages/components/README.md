@@ -46,7 +46,8 @@ render() {
       source={{ uri: 'https://facebook.github.io/react-native/img/header_logo.png' }}
       preTriggerRatio={0.5}
       onViewportEnter={() => console.log('Entered!')}
-      onViewportLeave={() => console.log('Left!')} />
+      onViewportLeave={() => console.log('Left!')}
+      innerRef={ref => (this._ref = ref)} />
   )
 }
 ```
@@ -58,6 +59,7 @@ render() {
 |**`preTriggerRatio`**| Determines pre-triggering of `inViewport`. Useful for rendering components beforehand to improve user experience. A ratio of `0.5` means that the effective viewport will be twice the size of the real viewport. | `0` |
 |**`onViewportEnter`**| Invoked when the component enters the viewport. | `null` |
 |**`onViewportLeave`**| Invoked when the component leaves the viewport. | `null` |
+|**`innerRef`**| Allows access to the reference of the wrapped component. | `null` |
 
 ### With Placeholder
 
