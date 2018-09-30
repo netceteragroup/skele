@@ -58,6 +58,7 @@ render() {
 |**`preTriggerRatio`**| Determines pre-triggering of `inViewport`. Useful for rendering components beforehand to improve user experience. A ratio of `0.5` means that the effective viewport will be twice the size of the real viewport. | `0` |
 |**`onViewportEnter`**| Invoked when the component enters the viewport. | `null` |
 |**`onViewportLeave`**| Invoked when the component leaves the viewport. | `null` |
+|**`innerRef`**| Allows access to the reference of the wrapped component. | `null` |
 
 ### With Placeholder
 
