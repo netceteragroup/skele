@@ -46,7 +46,8 @@ render() {
       source={{ uri: 'https://facebook.github.io/react-native/img/header_logo.png' }}
       preTriggerRatio={0.5}
       onViewportEnter={() => console.log('Entered!')}
-      onViewportLeave={() => console.log('Left!')} />
+      onViewportLeave={() => console.log('Left!')}
+      innerRef={ref => (this._ref = ref)} />
   )
 }
 ```
