@@ -118,7 +118,7 @@ function finishVisit(loc, state) {
  * @param  {Zipper} initialZipper - A Zipper value to visit
  * @return {Object}
  */
-export const visit = curry(function visit(visitors, initialState, initialZipper) {
+export const visit = function visit(visitors, initialState, initialZipper) {
     let direction = DOWN;
     let z = initialZipper;
     let state = initialState;
@@ -174,7 +174,7 @@ export const visit = curry(function visit(visitors, initialState, initialZipper)
         zipper: z,
         state,
     };
-});
+};
 
 const onEvent = curry(
     (matchEvent, fn) =>

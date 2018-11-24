@@ -12,7 +12,16 @@ import { List, Seq, is, Iterable } from 'immutable'
  * @param element the element
  * @returns {*}
  */
-export const isOfKind = R.curry(function isOfKind(kind, element) {
+export const isOfKind = R.curry(isOfKindNonCurried)
+
+const sCurry = fn => (...args) =>
+  args.length >= fn.length
+    ? fn(...args)
+    : (...innerArgs) => fn(...args, ...innerArgs)
+
+export const isOfKindSimpleCurried = sCurry(isOfKindNonCurried)
+
+export function isOfKindNonCurried(kind, element) {
   if (element == null) {
     return false
   }
@@ -27,7 +36,7 @@ export const isOfKind = R.curry(function isOfKind(kind, element) {
   )
 
   return is(elementKindNormalized.take(normalized.count()), normalized)
-})
+}
 
 export function isElementRef(obj) {
   const isString = o => typeof o === 'string'
