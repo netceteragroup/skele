@@ -35,6 +35,7 @@ const appStateDualPanel = {
 
 describe('elementZipperWalk', () => {
   test('postWalk', () => {
+    // given
     const trans = R.pipe(
       zip.elementZipper({
         defaultChildPositions: ['content', 'children', 'left', 'right'],
@@ -45,15 +46,22 @@ describe('elementZipperWalk', () => {
             ['metadata', 'title'],
             el.getIn(['metadata', 'title']) + ' new'
           )
-        } else if (el.get('kind') === 'app') {
-          return el.set('bla', 'abl')
         }
         return el
       }),
       zip.value
     )
 
+    // when
     const result = trans(I.fromJS(appStateDualPanel))
-    console.log(JSON.stringify(result.toJS(), null, 2))
+
+    // then
+    expect(result.getIn(['left', 'metadata', 'title'])).toBe('Title left new')
+    expect(result.getIn(['right', 0, 'metadata', 'title'])).toBe(
+      'Title right 1 new'
+    )
+    expect(result.getIn(['right', 1, 'metadata', 'title'])).toBe(
+      'Title right 2 new'
+    )
   })
 })
