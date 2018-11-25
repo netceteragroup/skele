@@ -97,7 +97,7 @@
       "<rootDir>/packages/core"
     ],
     "testMatch": [
-      "**/__tests__/**/elementZipper-benchmark.js"
+      "**/__tests__/**/*.js"
     ],
     "collectCoverageFrom": [
       "**/*.js",
