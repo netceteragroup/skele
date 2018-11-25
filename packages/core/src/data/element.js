@@ -4,6 +4,7 @@ import * as R from 'ramda'
 import invariant from 'invariant'
 import deprecated from '../log/deprecated'
 import { List, Seq, is, Iterable } from 'immutable'
+import memoize from '../registry/memoize'
 
 /**
  * Checks if a given object is of the provided kind.
@@ -18,8 +19,9 @@ export function isOfKindNonCurried(kind, element) {
   if (element == null) {
     return false
   }
-  const normalized = canonical(kind)
-  const elementKindNormalized = canonical(element.get('kind'))
+
+  const normalized = normalize(kind)
+  const elementKindNormalized = normalize(element.get('kind'))
 
   invariant(normalized != null, 'You must provide a valid element kind')
 
@@ -50,7 +52,7 @@ export function isElementRef(obj) {
  * @returns {*}
  */
 export const isExactlyOfKind = R.curry(function isExactlyOfKind(kind, element) {
-  if (element == null || kindOf(element) == null) {
+  if (element == null) {
     return false
   }
 
@@ -70,7 +72,7 @@ export function kindOf(element) {
   const kind = element.get('kind')
 
   if (kind != null) {
-    return canonical(kind)
+    return normalize(kind)
   }
 
   return null
@@ -96,7 +98,7 @@ export function isElement(obj) {
  * @returns {*}
  */
 export function ancestorKinds(ref) {
-  const cRef = canonical(ref)
+  const cRef = normalize(ref)
 
   invariant(cRef != null, 'you must provide a valid element reference')
 
@@ -124,9 +126,9 @@ export function canonical(ref) {
   return normalize(ref)
 }
 
-function normalize(kind) {
+function _normalize(kind) {
   if (typeof kind === 'string') {
-    return normalize([kind])
+    return List.of(kind)
   }
 
   if (Array.isArray(kind)) {
@@ -143,6 +145,8 @@ function normalize(kind) {
 
   return null
 }
+
+const normalize = memoize(_normalize)
 
 export function pathsToChildElements(element) {
   return childPositions(element).flatMap(childrenPath => {
