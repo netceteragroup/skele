@@ -26,7 +26,7 @@ describe('elementZipper walking benchmarks', () => {
     return el
   }
 
-  test.skip('alternative walking strategies', () => {
+  test('alternative walking strategies', () => {
     const testWithPostWalkFromZippa = cmsIds =>
       R.pipe(
         zip.elementZipper({}),
@@ -66,6 +66,12 @@ describe('elementZipper walking benchmarks', () => {
         console.log('Fastest is ' + this.filter('fastest').map('name'))
       })
       .run()
+
+    // On my machine:
+    // with zippa implementation x 14.75 ops/sec ±15.74% (45 runs sampled)
+    // with naive map walking x 54.38 ops/sec ±2.76% (61 runs sampled)
+    // with custom implementation x 22.18 ops/sec ±0.88% (41 runs sampled)
+    // Fastest is with naive map walking
   })
 })
 
