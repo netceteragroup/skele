@@ -14,13 +14,6 @@ import { List, Seq, is, Iterable } from 'immutable'
  */
 export const isOfKind = R.curry(isOfKindNonCurried)
 
-const sCurry = fn => (...args) =>
-  args.length >= fn.length
-    ? fn(...args)
-    : (...innerArgs) => fn(...args, ...innerArgs)
-
-export const isOfKindSimpleCurried = sCurry(isOfKindNonCurried)
-
 export function isOfKindNonCurried(kind, element) {
   if (element == null) {
     return false

@@ -5,7 +5,7 @@
 import { Suite } from 'benchmark'
 import I from 'immutable'
 
-import { isOfKind, isOfKindNonCurried, isOfKindSimpleCurried } from '../index'
+import { isOfKind, isOfKindNonCurried } from '../'
 
 describe('element benchmarks', () => {
   const detective = I.fromJS({
@@ -13,16 +13,13 @@ describe('element benchmarks', () => {
     name: 'Sherlock Holmes',
   })
 
-  test.skip('isOfKind', () => {
+  test.skip('isOfKind: curry vs non-curry', () => {
     new Suite()
       .add('isOfKind curried', () => {
         isOfKind(['detective'], detective)
       })
       .add('isOfKind non curried', () => {
         isOfKindNonCurried(['detective'], detective)
-      })
-      .add('isOfKind simple curry', () => {
-        isOfKindSimpleCurried(['detective'], detective)
       })
       .on('cycle', function(event) {
         console.log(event.target.toString())
