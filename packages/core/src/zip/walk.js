@@ -3,9 +3,10 @@
 import R from 'ramda'
 import * as zip from '.'
 
-const _postwalk = (f, zipper) => {
-  return _walk(_postwalk.bind(undefined, f), f, zipper)
-}
+const _postwalk = (f, zipper) => _walk(_postwalk.bind(undefined, f), f, zipper)
+
+// const _prewalk = (f, zipper) =>
+//   _walk(_prewalk.bind(undefined, f), a => a, f(zipper))
 
 function _walk(inner, outer, zipper) {
   if (zip.canGoDown(zipper)) {
@@ -19,8 +20,9 @@ function _walk(inner, outer, zipper) {
   }
 }
 
-// Alternative implementation, used for comparison in perf tests
-// eslint-disable-next-line no-unused-vars
+/** 
+ * Alternative implementation, used for comparison in perf tests.
+/*
 function _walkWithReplace(inner, outer, zipper) {
   if (zip.canGoDown(zipper)) {
     const first = zip.down(zipper)
@@ -45,5 +47,7 @@ function _walkWithReplace(inner, outer, zipper) {
     return zip.edit(outer, zipper)
   }
 }
+*/
 
 export const postWalk = R.curry(_postwalk)
+// export const preWalk = R.curry(_prewalk)
