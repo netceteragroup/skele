@@ -3,7 +3,7 @@
 import I from 'immutable'
 import R from 'ramda'
 
-import * as zip from '../'
+import * as zip from '..'
 
 const appStateDualPanel = {
   kind: 'app',

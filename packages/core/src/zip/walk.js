@@ -1,8 +1,7 @@
 'use strict'
 
 import R from 'ramda'
-import * as zip from '../zip'
-import * as data from '../data'
+import * as zip from '.'
 
 const _postwalk = (f, zipper) => {
   return _walk(_postwalk.bind(undefined, f), f, zipper)
@@ -14,19 +13,14 @@ function _walk(inner, outer, zipper) {
     while (zip.canGoRight(current)) {
       current = inner(zip.right(current))
     }
-
-    // this is pretty much the same :/
-    // const parent = current.up()
-    // if (data.isExactlyOfKind('@@skele/child-collection', parent.value())) {
-    //   return parent
-    // }
-    // return zip.edit(outer, parent)
     return zip.edit(outer, current.up())
   } else {
     return zip.edit(outer, zipper)
   }
 }
 
+// Alternative implementation, used for comparison in perf tests
+// eslint-disable-next-line no-unused-vars
 function _walkWithReplace(inner, outer, zipper) {
   if (zip.canGoDown(zipper)) {
     const first = zip.down(zipper)
