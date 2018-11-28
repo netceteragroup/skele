@@ -14,13 +14,13 @@ function _walk(inner, outer, zipper) {
     while (zip.canGoRight(current)) {
       current = inner(zip.right(current))
     }
-    return zip.edit(outer, current.up())
+    return zip.edit(outer, zip.up(current))
   } else {
     return zip.edit(outer, zipper)
   }
 }
 
-/** 
+/**
  * Alternative implementation, used for comparison in perf tests.
 /*
 function _walkWithReplace(inner, outer, zipper) {

@@ -29,12 +29,13 @@ export function right(zipper) {
 }
 
 /**
- * Moves location to the leftmost child.
- * If the current item is a leaf, returns null.
- *
+ * Returns a boolean indicating if the current location is not a leaf.
  * @param {Zipper} zipper
- * @returns {Zipper|null}
+ * @returns {boolean}
  */
+// function _isBranch(zipper) {
+//    return !!zipper && !!zipper.meta && !!zipper.meta.item
+// }
 
 export function down(zipper) {
   if (zipper && !!zipper.meta && !!zipper.meta.item) return null
@@ -66,19 +67,40 @@ export function down(zipper) {
  * @param {Zipper} zipper
  * @returns {Zipper|null}
  */
-export function up(zipper) {
-  const path = zipper.path
+// export function up(zipper) {
+//   const path = zipper.path
+//
+//   if (path === END || path.parentPath === TOP) return null
+//
+//   const pnodes = path.parentItems
+//   const pnode = pnodes.slice(-1)
+//
+//   if (!path.changed) return new vendor.Zipper(pnode, path.parentPath, zipper.meta)
+//
+//   const _lefts = path.left || []
+//   const _rights = path.right || []
+//   const newParent = zipper.meta.makeItem(zipper, pnode, [..._lefts, ..._rights])
+//
+//   return new vendor.Zipper(newParent, {...path.parentPath, changed: true}, zipper.meta)
+// }
 
-  if (path === END || path.parentPath === TOP) return null
-
-  const pnodes = path.parentItems
-  const pnode = pnodes.slice(-1)
-
-  if (!path.changed) return new vendor.Zipper(pnode, path.parentPath, zipper.meta)
-
-  const _lefts = path.left || []
-  const _rights = path.right || []
-  const newParent = zipper.meta.makeItem(zipper, pnode, [..._lefts, ..._rights])
-
-  return new vendor.Zipper(newParent, {...path.parentPath, changed: true}, zipper.meta)
+/**
+ * Returns a boolean indicating if the item at the current location
+ * is the rightmost sibling.
+ *
+ * Alias for {@link isRightmost}
+ * @param {Zipper} zipper
+ * @returns {boolean}
+ */
+export function canGoRight(zipper) {
+  return !!zipper.path && !!zipper.path.right && !!zipper.path.right.length
 }
+
+// export function canGoDown(zipper) {
+//    return !!zipper && !!zipper.path && !!zipper.path.right && !!zipper.path.right.length
+// }
+
+// canGoDown
+// edit
+
+//isBranch

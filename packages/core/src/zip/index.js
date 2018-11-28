@@ -13,7 +13,7 @@ export {
   isLeftmost,
   isRightmost,
   canGoLeft,
-  canGoRight,
+  up,
   leftmost,
   left,
   rightmost,
