@@ -19,7 +19,6 @@ export {
   rightmost,
   canGoDown,
   canGoUp,
-  up,
   root,
   next,
   prev,
