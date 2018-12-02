@@ -142,8 +142,8 @@ describe('element', function() {
   })
 
   it('properly normalizes element kinds', function() {
-    expect(canonical(null)).toEqual(null)
-    expect(canonical(true)).toEqual(null)
+    expect(canonical(null) == null).toBe(true)
+    expect(canonical(true) == null).toBe(true)
     expect(canonical('component')).toEqual(List.of('component'))
     expect(canonical(['component', 'test'])).toEqual(
       List.of('component', 'test')
