@@ -434,15 +434,10 @@ const _unchangedUp = converge(zipperFrom, [identity, getParent, getParentPath]);
 
 const itemsOnCurrentLevel = pipe(
     juxt([lefts, pipe(getItem, arrOf), rights]),
-    unnest  //
+    unnest
 );
 
 const makeParentItem = converge(_makeItem, [identity, getParent, itemsOnCurrentLevel]);
-// MAKE PARENT ITEM
-// 1. zipper
-// 2. zipper.path.parentItems.last
-// 3. [lefts, item, rights]
-// zipper.meta.makeItem(item, children)
 
 /**
  * Moves location to the parent, constructing a new parent

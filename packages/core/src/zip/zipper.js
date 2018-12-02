@@ -9,7 +9,7 @@ export function right(zipper) {
   const path = zipper.path
 
   if (path === END) return zipper
-  if (!path.right || !path.right.length) return null
+  //if (!path.right || !path.right.length) return null
 
   const item = zipper.item
   const _lefts = path.left || []
@@ -27,7 +27,7 @@ export function right(zipper) {
 const _isBranch = (zipper) => zipper.meta.isBranch(zipper.item)
 
 export function down(zipper) {
-  if (!_isBranch) return null
+  // if (!_isBranch) return null
 
   const item = zipper.item
   const path = zipper.path
@@ -62,44 +62,27 @@ export function up(zipper) {
   return new vendor.Zipper(newParent, {...path.parentPath, changed: true}, zipper.meta)
 }
 
-// MAKE PARENT ITEM
-// 1. zipper
-// 2. zipper.path.parentItems.last
-// 3. [lefts, item, rights]
-// zipper.meta.makeItem(2: item, 3: children)
+export function canGoRight(zipper) {
+  return !!zipper && !!zipper.path && !!zipper.path.right && !!zipper.path.right.length
+}
 
+export function _hasChildren(zipper) {
+  return !!zipper.meta && !!zipper.meta.getChildren && !!zipper.meta.getChildren.length
+}
 
-// const makeNode = R.curry((defaultChildPositions, element, children) => {
-//   if (isOfKind('@@skele/child-collection', element)) {
-//     return element.set('children', List(children))
-//   }
-//   return children.reduce(
-//     (el, childColl) =>
-//       el.set(
-//         childColl.get('propertyName'),
-//         singleChild(childColl)
-//           ? childColl.getIn(['children', 0])
-//           : childColl.get('children')
-//       ),
-//     element
-//   )
-// })
+export function canGoDown(zipper) {
+  return _isBranch(zipper) && _hasChildren(zipper)
+}
 
-// zupper
-// zipper.path.parentItems.
-// zupper.path.parentPath
-// export function zipperFrom(oldLoc, newItem, path, meta) {
-//   return new Zipper(newItem, path || getPath(oldLoc), meta || getMeta(oldLoc));
-// }
+export function edit(fn, zipper) {
+  const item = zipper.item
+  const newItem = fn(item)
 
-// const getParent = pipe(getPath, _parent);
-// const getParentPath = pipe(getPath, _parentPath);
-// const _unchangedUp = converge(zipperFrom, [identity, getParent, getParentPath]);
-// const _parentItemsFromPath = prop('parentItems');
-// const _parent = pipe(_parentItemsFromPath, last);
-// const _parentPath = prop('parentPath');
-// const getParentItems = pipe(
-//   getPath,
-//   when(equals(END), raise('Can\'t get parent items from end path.')),
-//   _parentItemsFromPath
-// );
+  if(item === newItem) return zipper
+
+  let newZipper = zipper
+  newZipper.item = newItem
+  newZipper.path.changed = true
+
+  return newZipper
+}
