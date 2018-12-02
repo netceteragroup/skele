@@ -3,6 +3,7 @@
 import * as vendor from '../vendor/zippa/zipper'
 
 const END = 'END'
+const TOP = null;
 
 export function right(zipper) {
   const path = zipper.path
@@ -15,11 +16,90 @@ export function right(zipper) {
   const _rights = path.right || []
   const [rightSibling, ...nextr] = _rights
   const newLeft = [..._lefts, ...[item]]
-  const newRight = nextr.slice(-1)
 
   return vendor.zipperFrom(zipper, rightSibling, {
     ...path,
     left: newLeft,
-    right: newRight,
+    right: nextr,
   })
 }
+
+const _isBranch = (zipper) => zipper.meta.isBranch(zipper.item)
+
+export function down(zipper) {
+  if (!_isBranch) return null
+
+  const item = zipper.item
+  const path = zipper.path
+
+  const children = zipper.meta.getChildren(zipper.item)
+  const [c, ...cnext] = children
+
+  return new vendor.Zipper(c, {
+      ...path,
+      left: [],
+      right: cnext,
+      parentItems: [path.parentItems, ...[item]],
+      parentPath: path,
+    },
+    zipper.meta
+  )
+}
+
+export function up(zipper) {
+  const path = zipper.path
+
+  if (path === END || path.parentPath === TOP) return null
+
+  const pnodes = path.parentItems || []
+  const pnode = pnodes[pnodes.length - 1]
+  if (!path.changed) return new vendor.Zipper(pnode, path.parentPath, zipper.meta)
+
+  const _lefts = path.left || []
+  const _rights = path.right || []
+  const newParent = zipper.meta.makeItem(pnode, [..._lefts, zipper.item, ..._rights])
+
+  return new vendor.Zipper(newParent, {...path.parentPath, changed: true}, zipper.meta)
+}
+
+// MAKE PARENT ITEM
+// 1. zipper
+// 2. zipper.path.parentItems.last
+// 3. [lefts, item, rights]
+// zipper.meta.makeItem(2: item, 3: children)
+
+
+// const makeNode = R.curry((defaultChildPositions, element, children) => {
+//   if (isOfKind('@@skele/child-collection', element)) {
+//     return element.set('children', List(children))
+//   }
+//   return children.reduce(
+//     (el, childColl) =>
+//       el.set(
+//         childColl.get('propertyName'),
+//         singleChild(childColl)
+//           ? childColl.getIn(['children', 0])
+//           : childColl.get('children')
+//       ),
+//     element
+//   )
+// })
+
+// zupper
+// zipper.path.parentItems.
+// zupper.path.parentPath
+// export function zipperFrom(oldLoc, newItem, path, meta) {
+//   return new Zipper(newItem, path || getPath(oldLoc), meta || getMeta(oldLoc));
+// }
+
+// const getParent = pipe(getPath, _parent);
+// const getParentPath = pipe(getPath, _parentPath);
+// const _unchangedUp = converge(zipperFrom, [identity, getParent, getParentPath]);
+// const _parentItemsFromPath = prop('parentItems');
+// const _parent = pipe(_parentItemsFromPath, last);
+// const _parentPath = prop('parentPath');
+// const getParentItems = pipe(
+//   getPath,
+//   when(equals(END), raise('Can\'t get parent items from end path.')),
+//   _parentItemsFromPath
+// );
