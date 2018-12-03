@@ -2,8 +2,8 @@
 
 import I from 'immutable'
 
-import { propNames } from '../../'
-import * as skeleZip from '../'
+import { propNames } from '../..'
+import * as skeleZip from '..'
 import * as zippa from '../../vendor/zippa'
 
 describe('zipper', () => {
@@ -19,6 +19,30 @@ describe('zipper', () => {
         {
           kind: 'scene',
           name: 'First Tab',
+          [propNames.children]: ['content'],
+          content: [
+            {
+              kind: 'header',
+              name: 'Header in First Tab',
+            },
+            {
+              kind: 'text',
+              name: 'Text One in First Tab',
+            },
+            {
+              kind: 'text',
+              name: 'Text Two in First Tab',
+            },
+            {
+              kind: 'image',
+              name: 'Image in First Tab',
+              uri: 'image-uri',
+            },
+          ],
+        },
+        {
+          kind: ['scene'],
+          name: 'Second Tab',
         },
       ],
     },
