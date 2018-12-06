@@ -26,7 +26,7 @@ describe('elementZipper walking benchmarks', () => {
     return el
   }
 
-  test('alternative walking strategies', () => {
+  test.skip('alternative walking strategies', () => {
     const testWithPostWalkFromZippa = cmsIds =>
       R.pipe(
         zip.elementZipper({}),
