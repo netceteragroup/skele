@@ -5,8 +5,8 @@ import * as zip from '.'
 
 const _postwalk = (f, zipper) => _walk(_postwalk.bind(undefined, f), f, zipper)
 
-// const _prewalk = (f, zipper) =>
-//   _walk(_prewalk.bind(undefined, f), a => a, f(zipper))
+const _prewalk = (f, zipper) =>
+  _walk(_prewalk.bind(undefined, f), a => a, zip.edit(f, zipper))
 
 function _walk(inner, outer, zipper) {
   if (zip.canGoDown(zipper)) {
@@ -50,4 +50,4 @@ function _walkWithReplace(inner, outer, zipper) {
 */
 
 export const postWalk = R.curry(_postwalk)
-// export const preWalk = R.curry(_prewalk)
+export const preWalk = R.curry(_prewalk)
