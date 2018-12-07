@@ -1,8 +1,8 @@
 'use strict'
 
 import I from 'immutable'
+import R from 'ramda'
 
-import { data } from '../../'
 import * as skeleZip from '..'
 import * as zippa from '../../vendor/zippa'
 
@@ -88,10 +88,126 @@ const app = {
   },
 }
 
+const tabs = I.fromJS(app).getIn(['children'])
+
 const zipperFor = app =>
   elementZipper({
     defaultChildPositions: ['children', 'content', 'tabs', 'main', 'sidebar'],
   })(I.fromJS(app))
+
+const test_down = (zip, zipperName) => {
+  const testName = 'zip.down'
+
+  // 1. child collection
+  test(`${zipperName}: ${testName}, first .down should get to @@skele/child-collection`, () => {
+    const result = R.pipe(
+      zipperFor,
+      zip.down,
+      zip.value
+    )
+    expect(result(app).get('kind')).toEqual('@@skele/child-collection')
+  })
+
+  // 2. tabs
+  test(`${zipperName}: ${testName}, twice .down from root should take us to tabs`, () => {
+    const result = R.pipe(
+      zipperFor,
+      zip.down,
+      zip.down,
+      zip.value
+    )
+    expect(result(app)).toEqual(tabs)
+  })
+
+  const headerInFirstTab = I.fromJS({
+    kind: 'header',
+    name: 'Header in First Tab',
+  })
+
+  // 3. first header
+  test(`${zipperName}: ${testName}, twice down from firstTab should take us to the Header (remember child-collection) `, () => {
+    const firstTab = I.fromJS(app)
+      .getIn(['children', 'tabs'])
+      .first()
+    const result = R.pipe(
+      zipperFor,
+      zip.down,
+      zip.down,
+      zip.value
+    )
+
+    expect(result(firstTab)).toEqual(I.fromJS(headerInFirstTab))
+  })
+
+  // 4. undefined
+  test(`${zipperName}: ${testName}, headerFirstTab (no children) .down should return undefined`, () => {
+    const result = R.pipe(
+      zipperFor,
+      zip.down,
+      zip.value
+    )
+    expect(result(headerInFirstTab)).toEqual(undefined)
+  })
+
+  // 5. error
+  test(`${zipperName}: ${testName}, .down of undefined should throw error`, () => {
+    expect(() => {
+      zip.down(undefined)
+    }).toThrow()
+  })
+}
+
+const test_right = (zip, zipperName) => {
+  const testName = 'zip.right'
+
+  test(`${zipperName}: ${testName}, .right form the root should be undefined`, () => {
+    const result = R.pipe(
+      zipperFor,
+      zip.right,
+      zip.value
+    )
+    expect(result).toEqual(undefined)
+  })
+}
+
+const test_up = (zip, zipperName) => {}
+
+const test_canGoRight = (zip, zipperName) => {
+  test(`${zipperName}: zip.canGoRight, false for app root`, () => {
+    expect(zip.canGoRight(zipperFor(app))).toEqual(false)
+  })
+
+  test(`${zipperName}: zip.canGoRight, true for first tab`, () => {
+    const firstTab = R.pipe(
+      zipperFor,
+      zip.down,
+      zip.down
+    )(tabs)
+
+    expect(zip.canGoRight(firstTab)).toEqual(true)
+  })
+
+  test(`${zipperName}: zip.canGoRight, false for second(last) tab`, () => {
+    const secondTab = R.pipe(
+      zipperFor,
+      zip.down,
+      zip.right
+    )(tabs)
+
+    expect(zip.canGoRight(secondTab)).toEqual(false)
+  })
+}
+
+const test_canGoDown = (zip, zipperName) => {
+  test(`${zipperName}: zip.canGoDown, true for app root`, () => {
+    expect(zip.canGoDown(zipperFor(app))).toEqual(true)
+  })
+
+  test(`${zipperName}: zip.canGoDown, false for empty header`, () => {
+    const emptyHeader = { kind: 'header', name: 'empty header' }
+    expect(zip.canGoDown(zipperFor(emptyHeader))).toEqual(false)
+  })
+}
 
 describe('zipper', () => {
   // we want all the tests to be excersized both zippa and our custom zipper implementation
@@ -104,6 +220,16 @@ describe('zipper', () => {
     const zipperName = zipper.name
     const zip = zipper.zip
 
-    test(`${zipperName}: down...`, () => {})
+    test_down(zip, zipperName)
+
+    test_right(zip, zipperName)
+
+    // test_up(zip, zipperName)
+
+    test_canGoDown
+
+    test_canGoRight(zip, zipperName)
+
+    // has children
   })
 })
