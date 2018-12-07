@@ -104,8 +104,8 @@ const test_down = (zip, zipperName) => {
       zipperFor,
       zip.down,
       zip.value
-    )
-    expect(result(app).get('kind')).toEqual('@@skele/child-collection')
+    )(app)
+    expect(result.get('kind')).toEqual('@@skele/child-collection')
   })
 
   // 2. tabs
@@ -115,8 +115,9 @@ const test_down = (zip, zipperName) => {
       zip.down,
       zip.down,
       zip.value
-    )
-    expect(result(app)).toEqual(tabs)
+    )(app)
+
+    expect(result).toEqual(tabs)
   })
 
   const headerInFirstTab = I.fromJS({
@@ -134,9 +135,9 @@ const test_down = (zip, zipperName) => {
       zip.down,
       zip.down,
       zip.value
-    )
+    )(firstTab)
 
-    expect(result(firstTab)).toEqual(I.fromJS(headerInFirstTab))
+    expect(result).toEqual(I.fromJS(headerInFirstTab))
   })
 
   // 4. undefined
@@ -145,8 +146,9 @@ const test_down = (zip, zipperName) => {
       zipperFor,
       zip.down,
       zip.value
-    )
-    expect(result(headerInFirstTab)).toEqual(undefined)
+    )(headerInFirstTab)
+
+    expect(result).toEqual(undefined)
   })
 
   // 5. error
@@ -165,8 +167,82 @@ const test_right = (zip, zipperName) => {
       zipperFor,
       zip.right,
       zip.value
-    )
+    )(app)
+
     expect(result).toEqual(undefined)
+  })
+
+  test(`${zipperName}: ${testName}, .right form the first tab should be the second`, () => {
+    const firstTab = R.pipe(
+      zipperFor,
+      zip.down,
+      zip.down
+    )(tabs)
+
+    const secondTab = {
+      kind: ['scene'],
+      name: 'Second Tab',
+      main: [
+        {
+          kind: ['header'],
+          name: 'Header in Second Tab Main',
+        },
+        {
+          kind: ['text'],
+          name: 'Text One in Second Tab Main',
+        },
+        {
+          kind: ['text'],
+          name: 'Text Two in Second Tab Main',
+        },
+        {
+          kind: ['image'],
+          name: 'Image in Second Tab Main',
+          uri: 'image-uri',
+        },
+      ],
+      sidebar: {
+        kind: 'overlay',
+        name: 'Sidebar in Second Tab',
+        content: [
+          {
+            kind: ['overlay', 'header'],
+            name: 'Header in Second Tab Sidebar',
+          },
+          {
+            kind: ['overlay', 'text'],
+            name: 'Text One in Second Tab Sidebar',
+          },
+          {
+            kind: ['overlay', 'text'],
+            name: 'Text Two in Second Tab Sidebar',
+          },
+          {
+            kind: ['overlay', 'image'],
+            name: 'Image in Second Tab Sidebar',
+            uri: 'image-uri',
+          },
+        ],
+      },
+    }
+
+    const result = R.pipe(
+      zip.right,
+      zip.value
+    )(firstTab)
+
+    expect(result).toEqual(I.fromJS(secondTab))
+  })
+
+  test(`${zipperName}: ${testName}, .right form the second tab should be null`, () => {
+    const secondTab = R.pipe(
+      zipperFor,
+      zip.down,
+      zip.right
+    )(tabs)
+
+    // todo: reciving an object instead of null, zip.value is undefined
+    expect(zip.right(secondTab)).toEqual(null)
   })
 }
 
