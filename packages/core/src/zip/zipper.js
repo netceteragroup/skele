@@ -24,10 +24,10 @@ export function right(zipper) {
   })
 }
 
-export const isBranch = zipper => zipper.meta.isBranch(zipper.item)
+const _isBranch = zipper => zipper.meta.isBranch(zipper.item)
 
 export function down(zipper) {
-  // if (!isBranch) return null
+  // if (!_isBranch) return null
 
   const item = zipper.item
   const path = zipper.path
@@ -79,7 +79,7 @@ export const canGoRight = zipper =>
 export const hasChildren = zipper =>
   !!zipper.meta && !!zipper.meta.getChildren && !!zipper.meta.getChildren.length
 
-export const canGoDown = zipper => isBranch(zipper) && hasChildren(zipper)
+export const canGoDown = zipper => _isBranch(zipper) && hasChildren(zipper)
 
 export function edit(fn, zipper) {
   const item = zipper.item
