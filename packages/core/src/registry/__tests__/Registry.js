@@ -2,7 +2,23 @@
 
 import { List } from 'immutable'
 
-import Registry from '../Registry'
+import Registry, { adaptKey } from '../Registry'
+
+describe('adaptKey', () => {
+  it('properly adapts keys', () => {
+    expect(adaptKey(null)).toEqual(null)
+    expect(adaptKey([])).toEqual([])
+    expect(adaptKey(List([]))).toEqual([])
+    expect(adaptKey(List.of('one', 'two', 'three'))).toEqual([
+      'one',
+      'two',
+      'three',
+    ])
+    expect(
+      adaptKey(List.of('one', 'two', 'three', 'four', 'five', 'six', 'seven'))
+    ).toEqual(['one', 'two', 'three', 'four', 'five', 'six', 'seven'])
+  })
+})
 
 describe('Registry', () => {
   const registry = new Registry()
