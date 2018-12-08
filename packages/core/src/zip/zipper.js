@@ -9,7 +9,7 @@ export function right(zipper) {
   const path = zipper.path
 
   if (path === END) return zipper
-  // if (!path.right || !path.right.length) return null
+  // if (!canGoRight(zipper) return null
 
   const item = zipper.item
   const _lefts = path.left || []
@@ -17,11 +17,15 @@ export function right(zipper) {
   const [rightSibling, ...nextr] = _rights
   const newLeft = [..._lefts, ...[item]]
 
-  return vendor.zipperFrom(zipper, rightSibling, {
-    ...path,
-    left: newLeft,
-    right: nextr,
-  })
+  return new vendor.Zipper(
+    rightSibling,
+    {
+      ...path,
+      left: newLeft,
+      right: nextr,
+    },
+    zipper.meta
+  )
 }
 
 const _isBranch = zipper => zipper.meta.isBranch(zipper.item)

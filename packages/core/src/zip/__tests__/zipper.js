@@ -290,6 +290,42 @@ const test_up = (zip, zipperName) => {
   })
 }
 
+const test_edit = (zip, zipperName) => {
+  const modify = el => el.set('name', 'modified')
+
+  test(`${zipperName}: zip.up observes and reflects the change that zip.edit does`, () => {
+    // immutable
+    const tabsValue = I.fromJS(app).getIn(['children'])
+    const tabsValueModified = modify(tabsValue)
+
+    // zipper
+    const tabs = R.pipe(
+      zipperFor,
+      zip.down,
+      zip.down
+    )(app)
+    const tabsModified = zip.edit(modify, tabs)
+
+    const result = R.pipe(
+      zip.up,
+      zip.down,
+      zip.value
+    )(tabsModified)
+
+    expect(result.toJS()).toEqual(tabsValueModified.toJS())
+  })
+
+  test(`${zipperName}: zip.edit, path.changed should be true for edited zipper`, () => {
+    const headerInFirstTab = zipperFor({
+      kind: 'header',
+      name: 'Header in First Tab',
+    })
+    const result = zip.edit(modify, headerInFirstTab)
+
+    expect(result.path.changed).toEqual(true)
+  })
+}
+
 const test_canGoRight = (zip, zipperName) => {
   test(`${zipperName}: zip.canGoRight, false for app root`, () => {
     expect(zip.canGoRight(zipperFor(app))).toEqual(false)
@@ -335,10 +371,13 @@ describe('zipper', () => {
   ]
 
   zippers.forEach(zipper =>
-    // zip.edit is best tested in __tests__/walk
-    R.juxt([test_down, test_right, test_up, test_canGoDown, test_canGoRight])(
-      zipper.zip,
-      zipper.name
-    )
+    R.juxt([
+      test_down,
+      test_right,
+      test_up,
+      test_edit,
+      test_canGoDown,
+      test_canGoRight,
+    ])(zipper.zip, zipper.name)
   )
 })
