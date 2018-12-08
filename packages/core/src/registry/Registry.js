@@ -4,8 +4,14 @@ import { List } from 'immutable'
 import Trie from './impl/Trie'
 
 export function adaptKey(key) {
+  // prettier-ignore
   if (key instanceof List) {
-    // cast
+    if (key.size === 0) return []
+    if (key.size === 1) return [key.get(0)]
+    if (key.size === 2) return [key.get(0), key.get(1)]
+    if (key.size === 3) return [key.get(0), key.get(1), key.get(2)]
+    if (key.size === 4) return [key.get(0), key.get(1), key.get(2), key.get(3)]
+    if (key.size === 5) return [key.get(0), key.get(1), key.get(2), key.get(3), key.get(4)]
     return key.toArray()
   }
   return key
