@@ -115,14 +115,6 @@ export function ancestorKinds(ref) {
   return Seq(subKinds())
 }
 
-/**
- * @param ref an element reference
- * @returns the canonical version for the reference kind
- */
-export function canonical(ref) {
-  return normalize(ref)
-}
-
 function _normalize(kind) {
   if (typeof kind === 'string') {
     return List.of(kind)
@@ -144,6 +136,11 @@ function _normalize(kind) {
 }
 
 const normalize = memoize(_normalize)
+
+/**
+ * @returns the canonical version for the reference kind
+ */
+export const canonical = normalize
 
 export function pathsToChildElements(element) {
   return childPositions(element).flatMap(childrenPath => {
