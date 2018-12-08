@@ -140,7 +140,23 @@ const test_down = (zip, zipperName) => {
     expect(result).toEqual(I.fromJS(headerInFirstTab))
   })
 
-  // 4. undefined
+  // 4. first header 2
+  test(`${zipperName}: ${testName}, 6x down from root should take us to the Header (remember child-collection) `, () => {
+    const result = R.pipe(
+      zipperFor,
+      zip.down,
+      zip.down,
+      zip.down,
+      zip.down,
+      zip.down,
+      zip.down,
+      zip.value
+    )(app)
+
+    expect(result).toEqual(I.fromJS(headerInFirstTab))
+  })
+
+  // 5. undefined
   test(`${zipperName}: ${testName}, headerFirstTab (no children) .down should return undefined`, () => {
     const result = R.pipe(
       zipperFor,
@@ -151,7 +167,7 @@ const test_down = (zip, zipperName) => {
     expect(result).toEqual(undefined)
   })
 
-  // 5. error
+  // 6. error
   test(`${zipperName}: ${testName}, .down of undefined should throw error`, () => {
     expect(() => {
       zip.down(undefined)
@@ -257,9 +273,9 @@ const test_up = (zip, zipperName) => {
     const up = R.pipe(
       zip.up,
       zip.value
-    )
+    )(down)
 
-    expect(up(down)).toEqual(I.fromJS(app))
+    expect(up).toEqual(I.fromJS(app))
   })
 
   test(`${zipperName}: ${testName}, what goes down x3 must come up x3`, () => {
@@ -275,9 +291,9 @@ const test_up = (zip, zipperName) => {
       zip.up,
       zip.up,
       zip.value
-    )
+    )(down)
 
-    expect(up(down)).toEqual(I.fromJS(app))
+    expect(up).toEqual(I.fromJS(app))
   })
 
   test.skip(`${zipperName}: ${testName}, .up form the root should be null`, () => {
@@ -304,15 +320,19 @@ const test_edit = (zip, zipperName) => {
       zip.down,
       zip.down
     )(app)
-    const tabsModified = zip.edit(modify, tabs)
+    const tabsEdited = zip.edit(modify, tabs)
 
     const result = R.pipe(
       zip.up,
       zip.down,
       zip.value
-    )(tabsModified)
+    )(tabsEdited)
 
-    expect(result.toJS()).toEqual(tabsValueModified.toJS())
+    // todo: different form zippa check up.path.parentPath
+    // const up = zip.up(tabsModified)
+    // expect(up.path.parentPath).toEqual('')
+
+    expect(result).toEqual(tabsValueModified)
   })
 
   test(`${zipperName}: zip.edit, path.changed should be true for edited zipper`, () => {

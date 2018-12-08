@@ -9,7 +9,7 @@ export function right(zipper) {
   const path = zipper.path
 
   if (path === END) return zipper
-  // if (!canGoRight(zipper) return null
+  // if (!canGoRight(zipper)) return null
 
   const item = zipper.item
   const _lefts = path.left || []
@@ -31,7 +31,7 @@ export function right(zipper) {
 const _isBranch = zipper => zipper.meta.isBranch(zipper.item)
 
 export function down(zipper) {
-  // if (!_isBranch) return null
+  // if (!_isBranch(zipper)) return null
 
   const item = zipper.item
   const path = zipper.path
