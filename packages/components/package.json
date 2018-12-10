@@ -1,6 +1,6 @@
 {
   "name": "@skele/components",
-  "version": "1.0.0-alpha.33",
+  "version": "1.0.0-alpha.34",
   "description": "Skele custom components for React and React Native.",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
