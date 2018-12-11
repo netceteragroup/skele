@@ -13,9 +13,7 @@ import deprecated from '../log/deprecated'
  * @param element the element
  * @returns {*}
  */
-export const isOfKind = R.curry(isOfKindNonCurried)
-
-export function isOfKindNonCurried(kind, element) {
+export const isOfKind = R.curry(function isOfKind(kind, element) {
   if (element == null) {
     return false
   }
@@ -30,7 +28,7 @@ export function isOfKindNonCurried(kind, element) {
   )
 
   return is(elementKindNormalized.take(normalized.count()), normalized)
-}
+})
 
 export function isElementRef(obj) {
   const isString = o => typeof o === 'string'
