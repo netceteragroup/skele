@@ -20,34 +20,5 @@ function _walk(inner, outer, zipper) {
   }
 }
 
-/**
- * Alternative implementation, used for comparison in perf tests.
-/*
-function _walkWithReplace(inner, outer, zipper) {
-  if (zip.canGoDown(zipper)) {
-    const first = zip.down(zipper)
-    const rest = []
-    let current = first
-    let canGoRight = zip.canGoRight(current)
-    while (canGoRight) {
-      current = current.right()
-      rest.push(current)
-      canGoRight = zip.canGoRight(current)
-    }
-    const children = [first, ...rest]
-
-    const changedChildren = children.map(inner)
-    const changedValue = zip.makeItem(
-      zipper,
-      zip.value(zipper),
-      R.map(zip.value, changedChildren)
-    )
-    return zip.replace(changedValue, zipper)
-  } else {
-    return zip.edit(outer, zipper)
-  }
-}
-*/
-
 export const postWalk = R.curry(_postwalk)
 export const preWalk = R.curry(_prewalk)

@@ -66,13 +66,12 @@ describe('elementZipper walking benchmarks', () => {
         console.log('Fastest is ' + this.filter('fastest').map('name'))
       })
       .run()
-
-    // On my machine:
-    // with zippa implementation x 14.75 ops/sec ±15.74% (45 runs sampled)
-    // with naive map walking x 54.38 ops/sec ±2.76% (61 runs sampled)
-    // with custom implementation x 22.18 ops/sec ±0.88% (41 runs sampled)
-    // Fastest is with naive map walking
   })
+  // 11.12.2018, 12:30, Andon Machine:
+  // with zippa implementation x 13.53 ops/sec ±20.76% (34 runs sampled)
+  // with naive map walking x 51.47 ops/sec ±5.86% (56 runs sampled)
+  // with custom implementation x 56.84 ops/sec ±5.48% (63 runs sampled)
+  // Fastest is with custom implementation
 })
 
 const postwalk = (f, struct) => {

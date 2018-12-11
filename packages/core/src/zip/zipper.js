@@ -16,6 +16,10 @@ export function Zipper(item, path, meta) {
   this.meta = meta
 }
 
+export function zipperFrom(oldLoc, newItem, path, meta) {
+  return new Zipper(newItem, path || oldLoc.path, meta || oldLoc.meta)
+}
+
 export const value = zipper => zipper.item
 
 export function makeZipper(_isBranch, _getChildren, _makeItem) {
@@ -43,15 +47,11 @@ export function right(zipper) {
   const [rightSibling, ...nextr] = _rights
   const newLeft = [..._lefts, ...[item]]
 
-  return new Zipper(
-    rightSibling,
-    {
-      ...path,
-      left: newLeft,
-      right: nextr,
-    },
-    zipper.meta
-  )
+  return zipperFrom(zipper, rightSibling, {
+    ...path,
+    left: newLeft,
+    right: nextr,
+  })
 }
 
 const _isBranch = zipper => zipper.meta.isBranch(zipper.item)
@@ -67,17 +67,13 @@ export function down(zipper) {
   const children = getChildren(zipper)
   const [c, ...cnext] = children
 
-  return new Zipper(
-    c,
-    {
-      ...path,
-      left: [],
-      right: cnext,
-      parentItems: [path.parentItems, ...[item]],
-      parentPath: path,
-    },
-    zipper.meta
-  )
+  return zipperFrom(zipper, c, {
+    ...path,
+    left: [],
+    right: cnext,
+    parentItems: [path.parentItems, ...[item]],
+    parentPath: path,
+  })
 }
 
 export function up(zipper) {
@@ -87,7 +83,7 @@ export function up(zipper) {
 
   const pnodes = path.parentItems || []
   const pnode = pnodes[pnodes.length - 1]
-  if (!path.changed) return new Zipper(pnode, path.parentPath, zipper.meta)
+  if (!path.changed) return zipperFrom(zipper, pnode, path.parentPath)
 
   const _lefts = path.left || []
   const _rights = path.right || []
@@ -97,11 +93,7 @@ export function up(zipper) {
     ..._rights,
   ])
 
-  return new Zipper(
-    newParent,
-    { ...path.parentPath, changed: true },
-    zipper.meta
-  )
+  return zipperFrom(zipper, newParent, { ...path.parentPath, changed: true })
 }
 
 export const canGoRight = zipper =>

@@ -78,14 +78,14 @@ const singleChild = childColl =>
  * Creates an element zipper with the specified config
  * The function is hard-curried: (config) => (tree) => rootLocation
  *
- * @param config, configuration for the object, currently cupports o
- *  only the `defaultChildPositions` proprty
+ * @param config, configuration for the object, currently supports only the `defaultChildPositions` property
  */
 export default function elementZipper(config) {
-  const { defaultChildPositions } = config
+  const { defaultChildPositions, makeZipperOverride } = config
   const dcp = asList(defaultChildPositions)
 
-  const ElementZipperType = makeZipper(
+  const makeZipperFn = makeZipperOverride || makeZipper
+  const ElementZipperType = makeZipperFn(
     isBranch(dcp),
     getChildren(dcp),
     makeNode(dcp)

@@ -1,10 +1,12 @@
 'use strict'
 
 import I from 'immutable'
-import R from 'ramda'
+import * as R from 'ramda'
 
 import * as skeleZip from '..'
 import * as zippa from '../../vendor/zippa'
+
+import { flow } from '../../data'
 
 const { elementZipper } = skeleZip
 
@@ -90,9 +92,10 @@ const app = {
 
 const tabs = I.fromJS(app).getIn(['children'])
 
-const zipperFor = app =>
+const zipperFor = ({ app, zip }) =>
   elementZipper({
     defaultChildPositions: ['children', 'content', 'tabs', 'main', 'sidebar'],
+    makeZipperOverride: zip.makeZipper,
   })(I.fromJS(app))
 
 const test_down = (zip, zipperName) => {
@@ -100,22 +103,24 @@ const test_down = (zip, zipperName) => {
 
   // 1. child collection
   test(`${zipperName}: ${testName}, first .down should get to @@skele/child-collection`, () => {
-    const result = R.pipe(
+    const result = flow(
+      { app, zip },
       zipperFor,
       zip.down,
       zip.value
-    )(app)
+    )
     expect(result.get('kind')).toEqual('@@skele/child-collection')
   })
 
   // 2. tabs
   test(`${zipperName}: ${testName}, twice .down from root should take us to tabs`, () => {
-    const result = R.pipe(
+    const result = flow(
+      { app, zip },
       zipperFor,
       zip.down,
       zip.down,
       zip.value
-    )(app)
+    )
 
     expect(result).toEqual(tabs)
   })
@@ -130,19 +135,21 @@ const test_down = (zip, zipperName) => {
     const firstTab = I.fromJS(app)
       .getIn(['children', 'tabs'])
       .first()
-    const result = R.pipe(
+    const result = flow(
+      { app: firstTab, zip },
       zipperFor,
       zip.down,
       zip.down,
       zip.value
-    )(firstTab)
+    )
 
     expect(result).toEqual(I.fromJS(headerInFirstTab))
   })
 
   // 4. first header 2
   test(`${zipperName}: ${testName}, 6x down from root should take us to the Header (remember child-collection) `, () => {
-    const result = R.pipe(
+    const result = flow(
+      { app, zip },
       zipperFor,
       zip.down,
       zip.down,
@@ -151,18 +158,19 @@ const test_down = (zip, zipperName) => {
       zip.down,
       zip.down,
       zip.value
-    )(app)
+    )
 
     expect(result).toEqual(I.fromJS(headerInFirstTab))
   })
 
   // 5. undefined
-  test(`${zipperName}: ${testName}, headerFirstTab (no children) .down should return undefined`, () => {
-    const result = R.pipe(
+  test.skip(`${zipperName}: ${testName}, headerFirstTab (no children) .down should return undefined`, () => {
+    const result = flow(
+      { app: headerInFirstTab, zip },
       zipperFor,
       zip.down,
       zip.value
-    )(headerInFirstTab)
+    )
 
     expect(result).toEqual(undefined)
   })
@@ -178,21 +186,23 @@ const test_down = (zip, zipperName) => {
 const test_right = (zip, zipperName) => {
   const testName = 'zip.right'
 
-  test.skip(`${zipperName}: ${testName}, .right form the root should be null`, () => {
-    const result = R.pipe(
+  test(`${zipperName}: ${testName}, .right form the root should be null`, () => {
+    const result = flow(
+      { app, zip },
       zipperFor,
       zip.right
-    )(app)
+    )
 
     expect(result).toEqual(null)
   })
 
   test(`${zipperName}: ${testName}, .right form the first tab should be the second`, () => {
-    const firstTab = R.pipe(
+    const firstTab = flow(
+      { app: tabs, zip },
       zipperFor,
       zip.down,
       zip.down
-    )(tabs)
+    )
 
     const secondTab = {
       kind: ['scene'],
@@ -241,21 +251,23 @@ const test_right = (zip, zipperName) => {
       },
     }
 
-    const result = R.pipe(
+    const result = flow(
+      firstTab,
       zip.right,
       zip.value
-    )(firstTab)
+    )
 
     expect(result).toEqual(I.fromJS(secondTab))
   })
 
   // todo: receiving an object instead of null, zip.value is undefined
   test.skip(`${zipperName}: ${testName}, .right form the second tab should be null`, () => {
-    const secondTab = R.pipe(
+    const secondTab = flow(
+      { app: tabs, zip },
       zipperFor,
       zip.down,
       zip.right
-    )(tabs)
+    )
 
     expect(zip.right(secondTab)).toEqual(null)
   })
@@ -265,42 +277,47 @@ const test_up = (zip, zipperName) => {
   const testName = 'zip.up'
 
   test(`${zipperName}: ${testName}, what goes down must come up`, () => {
-    const down = R.pipe(
+    const down = flow(
+      { app, zip },
       zipperFor,
       zip.down
-    )(app)
+    )
 
-    const up = R.pipe(
+    const up = flow(
+      down,
       zip.up,
       zip.value
-    )(down)
+    )
 
     expect(up).toEqual(I.fromJS(app))
   })
 
   test(`${zipperName}: ${testName}, what goes down x3 must come up x3`, () => {
-    const down = R.pipe(
+    const down = flow(
+      { app, zip },
       zipperFor,
       zip.down,
       zip.down,
       zip.down
-    )(app)
+    )
 
-    const up = R.pipe(
+    const up = flow(
+      down,
       zip.up,
       zip.up,
       zip.up,
       zip.value
-    )(down)
+    )
 
     expect(up).toEqual(I.fromJS(app))
   })
 
-  test.skip(`${zipperName}: ${testName}, .up form the root should be null`, () => {
-    const result = R.pipe(
+  test(`${zipperName}: ${testName}, .up form the root should be null`, () => {
+    const result = flow(
+      { app, zip },
       zipperFor,
       zip.up
-    )(app)
+    )
 
     expect(result).toEqual(null)
   })
@@ -315,18 +332,20 @@ const test_edit = (zip, zipperName) => {
     const tabsValueModified = modify(tabsValue)
 
     // zipper
-    const tabs = R.pipe(
+    const tabs = flow(
+      { app, zip },
       zipperFor,
       zip.down,
       zip.down
-    )(app)
+    )
     const tabsEdited = zip.edit(modify, tabs)
 
-    const result = R.pipe(
+    const result = flow(
+      tabsEdited,
       zip.up,
       zip.down,
       zip.value
-    )(tabsEdited)
+    )
 
     // todo: different form zippa check up.path.parentPath
     // const up = zip.up(tabsModified)
@@ -337,8 +356,11 @@ const test_edit = (zip, zipperName) => {
 
   test(`${zipperName}: zip.edit, path.changed should be true for edited zipper`, () => {
     const headerInFirstTab = zipperFor({
-      kind: 'header',
-      name: 'Header in First Tab',
+      app: {
+        kind: 'header',
+        name: 'Header in First Tab',
+      },
+      zip,
     })
     const result = zip.edit(modify, headerInFirstTab)
 
@@ -348,25 +370,27 @@ const test_edit = (zip, zipperName) => {
 
 const test_canGoRight = (zip, zipperName) => {
   test(`${zipperName}: zip.canGoRight, false for app root`, () => {
-    expect(zip.canGoRight(zipperFor(app))).toEqual(false)
+    expect(zip.canGoRight(zipperFor({ app, zip }))).toEqual(false)
   })
 
   test(`${zipperName}: zip.canGoRight, true for first tab`, () => {
-    const firstTab = R.pipe(
+    const firstTab = flow(
+      { app: tabs, zip },
       zipperFor,
       zip.down,
       zip.down
-    )(tabs)
+    )
 
     expect(zip.canGoRight(firstTab)).toEqual(true)
   })
 
   test(`${zipperName}: zip.canGoRight, false for second(last) tab`, () => {
-    const secondTab = R.pipe(
+    const secondTab = flow(
+      { app: tabs, zip },
       zipperFor,
       zip.down,
       zip.right
-    )(tabs)
+    )
 
     expect(zip.canGoRight(secondTab)).toEqual(false)
   })
@@ -374,12 +398,12 @@ const test_canGoRight = (zip, zipperName) => {
 
 const test_canGoDown = (zip, zipperName) => {
   test(`${zipperName}: zip.canGoDown, true for app root`, () => {
-    expect(zip.canGoDown(zipperFor(app))).toEqual(true)
+    expect(zip.canGoDown(zipperFor({ app, zip }))).toEqual(true)
   })
 
   test(`${zipperName}: zip.canGoDown, false for empty header`, () => {
     const emptyHeader = { kind: 'header', name: 'empty header' }
-    expect(zip.canGoDown(zipperFor(emptyHeader))).toEqual(false)
+    expect(zip.canGoDown(zipperFor({ app: emptyHeader, zip }))).toEqual(false)
   })
 }
 
@@ -390,15 +414,14 @@ describe('zipper', () => {
     { name: 'Zippa Zip', zip: zippa },
   ]
 
-  // todo : tests are not ready since we need different elementZipper for skele and zippa
-  // zippers.forEach(zipper =>
-  //   R.juxt([
-  //     test_down,
-  //     test_right,
-  //     test_up,
-  //     test_edit,
-  //     test_canGoDown,
-  //     test_canGoRight,
-  //   ])(zipper.zip, zipper.name)
-  // )
+  zippers.forEach(zipper =>
+    R.juxt([
+      test_down,
+      test_right,
+      test_up,
+      test_edit,
+      test_canGoDown,
+      test_canGoRight,
+    ])(zipper.zip, zipper.name)
+  )
 })
