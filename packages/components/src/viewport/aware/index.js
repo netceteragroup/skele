@@ -88,9 +88,12 @@ export default WrappedComponent => {
     render() {
       return (
         <WrappedComponent
-          ref={ref => (this.nodeHandle = findNodeHandle(ref))}
           {...this.props}
           inViewport={this.state.inViewport}
+          ref={ref => {
+            this.nodeHandle = findNodeHandle(ref)
+            this.props.innerRef && this.props.innerRef(ref)
+          }}
         />
       )
     }
@@ -99,6 +102,7 @@ export default WrappedComponent => {
       preTriggerRatio: PropTypes.number,
       onViewportEnter: PropTypes.func,
       onViewportLeave: PropTypes.func,
+      innerRef: PropTypes.func,
     }
 
     static contextTypes = {

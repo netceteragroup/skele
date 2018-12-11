@@ -2,8 +2,9 @@
 
 import * as R from 'ramda'
 import invariant from 'invariant'
-import deprecated from '../log/deprecated'
 import { List, Seq, is, Iterable } from 'immutable'
+import memoize from '../registry/memoize'
+import deprecated from '../log/deprecated'
 
 /**
  * Checks if a given object is of the provided kind.
@@ -50,7 +51,7 @@ export function isElementRef(obj) {
  * @returns {*}
  */
 export const isExactlyOfKind = R.curry(function isExactlyOfKind(kind, element) {
-  if (element == null || kindOf(element) == null) {
+  if (element == null) {
     return false
   }
 
@@ -116,17 +117,9 @@ export function ancestorKinds(ref) {
   return Seq(subKinds())
 }
 
-/**
- * @param ref an element reference
- * @returns the canonical version for the reference kind
- */
-export function canonical(ref) {
-  return normalize(ref)
-}
-
-function normalize(kind) {
+function _normalize(kind) {
   if (typeof kind === 'string') {
-    return normalize([kind])
+    return List.of(kind)
   }
 
   if (Array.isArray(kind)) {
@@ -143,6 +136,13 @@ function normalize(kind) {
 
   return null
 }
+
+const normalize = memoize(_normalize)
+
+/**
+ * @returns the canonical version for the reference kind
+ */
+export const canonical = normalize
 
 export function pathsToChildElements(element) {
   return childPositions(element).flatMap(childrenPath => {
