@@ -60,7 +60,7 @@ const TOPPATH = {
  * @class Zipper
  * @namespace Zipper
  */
-export function Zipper(item, path, meta) {
+function Zipper(item, path, meta) {
     this.item = item;
     this.path = path;
     this.meta = meta;

@@ -1,15 +1,41 @@
 'use strict'
 
-import * as vendor from '../vendor/zippa/zipper'
-
 const END = 'END'
 const TOP = null
+const TOPPATH = {
+  left: [],
+  right: [],
+  parentItems: TOP,
+  parentPath: TOP,
+  changed: false,
+}
+
+export function Zipper(item, path, meta) {
+  this.item = item
+  this.path = path
+  this.meta = meta
+}
+
+export const value = zipper => zipper.item
+
+export function makeZipper(_isBranch, _getChildren, _makeItem) {
+  function makeConcreteZipper(item) {
+    return new Zipper(item, TOPPATH, {
+      isBranch: _isBranch,
+      getChildren: _getChildren,
+      makeItem: _makeItem,
+    })
+  }
+
+  makeConcreteZipper.from = makeConcreteZipper
+  return makeConcreteZipper
+}
 
 export function right(zipper) {
   const path = zipper.path
 
   if (path === END) return zipper
-  // if (!canGoRight(zipper)) return null
+  if (!canGoRight(zipper)) return null
 
   const item = zipper.item
   const _lefts = path.left || []
@@ -17,7 +43,7 @@ export function right(zipper) {
   const [rightSibling, ...nextr] = _rights
   const newLeft = [..._lefts, ...[item]]
 
-  return new vendor.Zipper(
+  return new Zipper(
     rightSibling,
     {
       ...path,
@@ -30,16 +56,18 @@ export function right(zipper) {
 
 const _isBranch = zipper => zipper.meta.isBranch(zipper.item)
 
+export const getChildren = zipper => zipper.meta.getChildren(zipper.item)
+
 export function down(zipper) {
-  // if (!_isBranch(zipper)) return null
+  if (!_isBranch(zipper)) return null
 
   const item = zipper.item
   const path = zipper.path
 
-  const children = zipper.meta.getChildren(zipper.item)
+  const children = getChildren(zipper)
   const [c, ...cnext] = children
 
-  return new vendor.Zipper(
+  return new Zipper(
     c,
     {
       ...path,
@@ -59,8 +87,7 @@ export function up(zipper) {
 
   const pnodes = path.parentItems || []
   const pnode = pnodes[pnodes.length - 1]
-  if (!path.changed)
-    return new vendor.Zipper(pnode, path.parentPath, zipper.meta)
+  if (!path.changed) return new Zipper(pnode, path.parentPath, zipper.meta)
 
   const _lefts = path.left || []
   const _rights = path.right || []
@@ -70,7 +97,7 @@ export function up(zipper) {
     ..._rights,
   ])
 
-  return new vendor.Zipper(
+  return new Zipper(
     newParent,
     { ...path.parentPath, changed: true },
     zipper.meta
@@ -78,12 +105,13 @@ export function up(zipper) {
 }
 
 export const canGoRight = zipper =>
-  !!zipper.path && !!zipper.path.right && !!zipper.path.right.length
+  !!zipper && !!zipper.path && !!zipper.path.right && !!zipper.path.right.length
 
 export const hasChildren = zipper =>
   !!zipper.meta && !!zipper.meta.getChildren && !!zipper.meta.getChildren.length
 
-export const canGoDown = zipper => _isBranch(zipper) && hasChildren(zipper)
+export const canGoDown = zipper =>
+  !!zipper && _isBranch(zipper) && hasChildren(zipper)
 
 export function edit(fn, zipper) {
   const item = zipper.item

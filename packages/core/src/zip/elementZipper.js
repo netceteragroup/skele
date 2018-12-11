@@ -1,6 +1,6 @@
 'use strict'
 
-import { makeZipper } from '../vendor/zippa'
+import { makeZipper } from '../zip'
 import { Iterable, List, Map } from 'immutable'
 import * as R from 'ramda'
 import {

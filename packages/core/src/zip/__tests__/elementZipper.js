@@ -1,5 +1,6 @@
 'use strict'
 
+import R from 'ramda'
 import { fromJS } from 'immutable'
 import * as zip from '..'
 import * as data from '../../data'
@@ -28,57 +29,61 @@ describe('Zipper', () => {
   it('zipper should correctly navigate up and down', () => {
     const zipper = elementZipper(fromJS(singleChild), 'children')
 
-    expect(zipper.value().get('kind')).toEqual('parent')
-    expect(data.isOfKind(childCollectionKind, zipper.down().value())).toBe(true)
+    expect(zip.value(zipper).get('kind')).toEqual('parent')
     expect(
-      zipper
-        .down()
-        .down()
-        .value()
-        .get('kind')
+      data.isOfKind(childCollectionKind, zip.value(zip.down(zipper)))
+    ).toBe(true)
+    expect(
+      R.pipe(
+        zip.down,
+        zip.down,
+        zip.value
+      )(zipper).get('kind')
     ).toEqual('lvl1')
     expect(
       data.isOfKind(
         childCollectionKind,
-        zipper
-          .down()
-          .down()
-          .down()
-          .value()
+        R.pipe(
+          zip.down,
+          zip.down,
+          zip.down,
+          zip.value
+        )(zipper)
       )
     ).toBe(true)
     expect(
-      zipper
-        .down()
-        .down()
-        .down()
-        .down()
-        .value()
-        .get('kind')
+      R.pipe(
+        zip.down,
+        zip.down,
+        zip.down,
+        zip.down,
+        zip.value
+      )(zipper).get('kind')
     ).toEqual('lvl2')
     expect(
-      zipper
-        .down()
-        .down()
-        .down()
-        .down()
-        .down()
+      R.pipe(
+        zip.down,
+        zip.down,
+        zip.down,
+        zip.down,
+        zip.down
+      )(zipper)
     ).toBeNull()
     expect(
-      zipper
-        .down()
-        .up()
-        .value()
-        .get('kind')
+      R.pipe(
+        zip.down,
+        zip.up,
+        zip.value
+      )(zipper).get('kind')
     ).toEqual('parent')
     expect(
-      zipper
-        .down()
-        .down()
-        .down()
-        .up()
-        .value()
-        .get('kind')
+      R.pipe(
+        zip.down,
+        zip.down,
+        zip.down,
+        zip.up,
+        zip.value
+      )(zipper).get('kind')
     ).toEqual('lvl1')
   })
 
@@ -134,66 +139,69 @@ describe('Zipper', () => {
   it('zipper should correctly navigate up down left and right', () => {
     const zipper = elementZipper(fromJS(multipleChildren), 'children')
 
-    expect(zipper.value().get('id')).toEqual(1)
-    expect(data.isOfKind(childCollectionKind, zipper.down().value())).toBe(true)
+    expect(zip.value(zipper).get('id')).toEqual(1)
     expect(
-      zipper
-        .down()
-        .down()
-        .value()
-        .get('id')
+      data.isOfKind(childCollectionKind, zip.value(zip.down(zipper)))
+    ).toBe(true)
+    expect(
+      R.pipe(
+        zip.down,
+        zip.down,
+        zip.value
+      )(zipper).get('id')
     ).toEqual(2)
     expect(
-      zipper
-        .down()
-        .down()
-        .right()
-        .value()
-        .get('id')
+      R.pipe(
+        zip.down,
+        zip.down,
+        zip.right,
+        zip.value
+      )(zipper).get('id')
     ).toEqual(5)
     expect(
-      zipper
-        .down()
-        .down()
-        .right()
-        .right()
-        .value()
-        .get('id')
+      R.pipe(
+        zip.down,
+        zip.down,
+        zip.right,
+        zip.right,
+        zip.value
+      )(zipper).get('id')
     ).toEqual(8)
     expect(
-      zipper
-        .down()
-        .down()
-        .right()
-        .right()
-        .left()
-        .value()
-        .get('id')
+      R.pipe(
+        zip.down,
+        zip.down,
+        zip.right,
+        zip.right,
+        zip.left,
+        zip.value
+      )(zipper).get('id')
     ).toEqual(5)
     expect(
       data.isOfKind(
         childCollectionKind,
-        zipper
-          .down()
-          .down()
-          .right()
-          .right()
-          .left()
-          .up()
-          .value()
+        R.pipe(
+          zip.down,
+          zip.down,
+          zip.right,
+          zip.right,
+          zip.left,
+          zip.up,
+          zip.value
+        )(zipper)
       )
     ).toBe(true)
     expect(
-      zipper
-        .down()
-        .down()
-        .right()
-        .right()
-        .left()
-        .up()
-        .up()
-        .value()
-        .get('id')
+      R.pipe(
+        zip.down,
+        zip.down,
+        zip.right,
+        zip.right,
+        zip.left,
+        zip.up,
+        zip.up,
+        zip.value
+      )(zipper).get('id')
     ).toEqual(1)
   })
 
@@ -224,45 +232,45 @@ describe('Zipper', () => {
       'right',
     ])
 
-    expect(zipper.value().get('id')).toEqual(1)
+    expect(zip.value(zipper).get('id')).toEqual(1)
     expect(
-      zipper
-        .down()
-        .value()
-        .get('propertyName')
+      R.pipe(
+        zip.down,
+        zip.value
+      )(zipper).get('propertyName')
     ).toEqual('left')
 
     expect(
-      zipper
-        .down()
-        .right()
-        .value()
-        .get('propertyName')
+      R.pipe(
+        zip.down,
+        zip.right,
+        zip.value
+      )(zipper).get('propertyName')
     ).toEqual('right')
 
     expect(
-      zipper
-        .down()
-        .down()
-        .value()
-        .get('id')
+      R.pipe(
+        zip.down,
+        zip.down,
+        zip.value
+      )(zipper).get('id')
     ).toEqual(2)
     expect(
-      zipper
-        .down()
-        .right()
-        .down()
-        .value()
-        .get('id')
+      R.pipe(
+        zip.down,
+        zip.right,
+        zip.down,
+        zip.value
+      )(zipper).get('id')
     ).toEqual(3)
     expect(
-      zipper
-        .down()
-        .right()
-        .down()
-        .right()
-        .value()
-        .get('id')
+      R.pipe(
+        zip.down,
+        zip.right,
+        zip.down,
+        zip.right,
+        zip.value
+      )(zipper).get('id')
     ).toEqual(4)
   })
 
@@ -292,45 +300,45 @@ describe('Zipper', () => {
   it('supports the @@skele/children hint for child positions', () => {
     const zipper = elementZipper(fromJS(withChildrenPositions))
 
-    expect(zipper.value().get('id')).toEqual(1)
+    expect(zip.value(zipper).get('id')).toEqual(1)
     expect(
-      zipper
-        .down()
-        .value()
-        .get('propertyName')
+      R.pipe(
+        zip.down,
+        zip.value
+      )(zipper).get('propertyName')
     ).toEqual('left')
 
     expect(
-      zipper
-        .down()
-        .right()
-        .value()
-        .get('propertyName')
+      R.pipe(
+        zip.down,
+        zip.right,
+        zip.value
+      )(zipper).get('propertyName')
     ).toEqual('right')
 
     expect(
-      zipper
-        .down()
-        .down()
-        .value()
-        .get('id')
+      R.pipe(
+        zip.down,
+        zip.down,
+        zip.value
+      )(zipper).get('id')
     ).toEqual(2)
     expect(
-      zipper
-        .down()
-        .right()
-        .down()
-        .value()
-        .get('id')
+      R.pipe(
+        zip.down,
+        zip.right,
+        zip.down,
+        zip.value
+      )(zipper).get('id')
     ).toEqual(3)
     expect(
-      zipper
-        .down()
-        .right()
-        .down()
-        .right()
-        .value()
-        .get('id')
+      R.pipe(
+        zip.down,
+        zip.right,
+        zip.down,
+        zip.right,
+        zip.value
+      )(zipper).get('id')
     ).toEqual(4)
   })
 })

@@ -2,11 +2,9 @@
 
 export {
   whilst,
-  value,
   zipperFrom,
   isBranch,
   isLeaf,
-  getChildren,
   isEnd,
   isTop,
   isNotTop,
@@ -21,7 +19,6 @@ export {
   next,
   prev,
   remove,
-  makeZipper,
   insertLeft,
   insertRight,
   insertChild,
