@@ -5,7 +5,7 @@ import * as R from 'ramda'
 import { data, zip, registry } from '@skele/core'
 const memoize = registry.memoize
 
-const { postWalk, root, value } = zip
+const { postWalk, root } = zip
 const { flow, kindOf } = data
 
 export function transformer(registry, elementZipper) {
@@ -22,7 +22,6 @@ export function transformer(registry, elementZipper) {
       el,
       elementZipper,
       postWalk(transform(context)),
-      root,
-      value
+      root
     )
 }

@@ -20,12 +20,7 @@ const isBranch = R.curry((defaultChildPositions, element) => {
     return children && children.count() > 0
   }
   const positions = childPositions(defaultChildPositions, element)
-  // console.log(
-  //   'Child positions for: ',
-  //   element.get('kind'),
-  //   ' == ',
-  //   positions.toJS()
-  // )
+
   return positions.some(pos => element.get(pos))
 })
 
@@ -36,7 +31,7 @@ const getChildren = R.curry((defaultChildPositions, element) => {
   // at a children collection level
   const positions = childPositions(defaultChildPositions, element)
 
-  return positions
+  const children = positions
     .reduce(
       (children, p) =>
         element.get(p)
@@ -45,6 +40,8 @@ const getChildren = R.curry((defaultChildPositions, element) => {
       List()
     )
     .toArray()
+
+  return children
 })
 
 const makeChildCollection = (p, children) =>

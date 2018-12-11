@@ -248,11 +248,6 @@ const appPostWalked = {
   },
 }
 
-const zipperFor = app =>
-  elementZipper({
-    defaultChildPositions: ['children', 'content', 'tabs', 'main', 'sidebar'],
-  })(I.fromJS(app))
-
 const countedTransformer = () => {
   let counter = 0
   return el => {
@@ -271,6 +266,12 @@ describe('zipper', () => {
     { name: 'Zippa Zip', zip: zippa },
   ]
 
+  const zipperFor = (app, zip) =>
+    elementZipper({
+      defaultChildPositions: ['children', 'content', 'tabs', 'main', 'sidebar'],
+      makeZipperOverride: zip.makeZipper,
+    })(I.fromJS(app))
+
   zippers.forEach(zipper => {
     const zipperName = zipper.name
     const zip = zipper.zip
@@ -278,7 +279,7 @@ describe('zipper', () => {
     test(`${zipperName}: postWalk`, () => {
       expect(zip.postWalk).toBeDefined()
       const result = data.flow(
-        zipperFor(app),
+        zipperFor(app, zip),
         zip.postWalk(countedTransformer()),
         zip.value
       )
@@ -288,7 +289,7 @@ describe('zipper', () => {
     test(`${zipperName}: preWalk`, () => {
       expect(zip.preWalk).toBeDefined()
       const result = data.flow(
-        zipperFor(app),
+        zipperFor(app, zip),
         zip.preWalk(countedTransformer()),
         zip.value
       )
