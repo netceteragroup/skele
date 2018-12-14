@@ -9,7 +9,11 @@ import R from 'ramda'
 import * as zip from '..'
 import * as data from '../../data'
 
-import { postWalk as zippaPostWalk } from '../../vendor/zippa/walk'
+import {
+  postWalk as zippaPostWalk,
+  value as zippaValue,
+  makeZipper as zippaMakeZipper,
+} from 'zippa'
 
 import navigation from './fixture/navigation.json'
 
@@ -26,12 +30,12 @@ describe('elementZipper walking benchmarks', () => {
     return el
   }
 
-  test.skip('alternative walking strategies', () => {
+  test('alternative walking strategies', () => {
     const testWithPostWalkFromZippa = cmsIds =>
       R.pipe(
-        zip.elementZipper({}),
+        zip.elementZipper({ makeZipperOverride: zippaMakeZipper }),
         zippaPostWalk(update(cmsIds)),
-        zip.value
+        zippaValue
       )
 
     const testWithNaiveImmutableMapPostWalk = cmsIds =>
