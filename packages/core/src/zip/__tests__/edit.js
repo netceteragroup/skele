@@ -65,7 +65,7 @@ describe('Editing a Zipper', () => {
     )
 
     // then
-    expect(zip.value(result)).toEqualI(
+    expect(zip.node(result)).toEqualI(
       fromJS({
         kind: 'pm',
         name: 'alex',

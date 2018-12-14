@@ -30,7 +30,7 @@ describe('elementZipper walking benchmarks', () => {
     return el
   }
 
-  test('alternative walking strategies', () => {
+  test.skip('alternative walking strategies', () => {
     const testWithPostWalkFromZippa = cmsIds =>
       R.pipe(
         zip.elementZipper({ makeZipperOverride: zippaMakeZipper }),
@@ -50,7 +50,7 @@ describe('elementZipper walking benchmarks', () => {
       R.pipe(
         zip.elementZipper({}),
         zip.postWalk(update(cmsIds)),
-        zip.value
+        zip.node
       )
 
     new Suite()

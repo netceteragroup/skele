@@ -4,7 +4,7 @@ import { fromJS, List } from 'immutable'
 import * as zip from '..'
 import * as data from '../../data'
 
-describe.skip('Reducing a Zipper', () => {
+describe('Reducing a Zipper', () => {
   const organization = {
     kind: 'pm',
     name: 'alex',

@@ -29,15 +29,15 @@ describe('Zipper', () => {
   it('zipper should correctly navigate up and down', () => {
     const zipper = elementZipper(fromJS(singleChild), 'children')
 
-    expect(zip.value(zipper).get('kind')).toEqual('parent')
-    expect(
-      data.isOfKind(childCollectionKind, zip.value(zip.down(zipper)))
-    ).toBe(true)
+    expect(zip.node(zipper).get('kind')).toEqual('parent')
+    expect(data.isOfKind(childCollectionKind, zip.node(zip.down(zipper)))).toBe(
+      true
+    )
     expect(
       R.pipe(
         zip.down,
         zip.down,
-        zip.value
+        zip.node
       )(zipper).get('kind')
     ).toEqual('lvl1')
     expect(
@@ -47,7 +47,7 @@ describe('Zipper', () => {
           zip.down,
           zip.down,
           zip.down,
-          zip.value
+          zip.node
         )(zipper)
       )
     ).toBe(true)
@@ -57,7 +57,7 @@ describe('Zipper', () => {
         zip.down,
         zip.down,
         zip.down,
-        zip.value
+        zip.node
       )(zipper).get('kind')
     ).toEqual('lvl2')
     expect(
@@ -73,7 +73,7 @@ describe('Zipper', () => {
       R.pipe(
         zip.down,
         zip.up,
-        zip.value
+        zip.node
       )(zipper).get('kind')
     ).toEqual('parent')
     expect(
@@ -82,7 +82,7 @@ describe('Zipper', () => {
         zip.down,
         zip.down,
         zip.up,
-        zip.value
+        zip.node
       )(zipper).get('kind')
     ).toEqual('lvl1')
   })
@@ -139,15 +139,15 @@ describe('Zipper', () => {
   it.skip('zipper should correctly navigate up down left and right', () => {
     const zipper = elementZipper(fromJS(multipleChildren), 'children')
 
-    expect(zip.value(zipper).get('id')).toEqual(1)
-    expect(
-      data.isOfKind(childCollectionKind, zip.value(zip.down(zipper)))
-    ).toBe(true)
+    expect(zip.node(zipper).get('id')).toEqual(1)
+    expect(data.isOfKind(childCollectionKind, zip.node(zip.down(zipper)))).toBe(
+      true
+    )
     expect(
       R.pipe(
         zip.down,
         zip.down,
-        zip.value
+        zip.node
       )(zipper).get('id')
     ).toEqual(2)
     expect(
@@ -155,7 +155,7 @@ describe('Zipper', () => {
         zip.down,
         zip.down,
         zip.right,
-        zip.value
+        zip.node
       )(zipper).get('id')
     ).toEqual(5)
     expect(
@@ -164,7 +164,7 @@ describe('Zipper', () => {
         zip.down,
         zip.right,
         zip.right,
-        zip.value
+        zip.node
       )(zipper).get('id')
     ).toEqual(8)
     expect(
@@ -174,7 +174,7 @@ describe('Zipper', () => {
         zip.right,
         zip.right,
         // zip.left, FIXME
-        zip.value
+        zip.node
       )(zipper).get('id')
     ).toEqual(5)
     expect(
@@ -187,7 +187,7 @@ describe('Zipper', () => {
           zip.right,
           // zip.left, FIXME
           zip.up,
-          zip.value
+          zip.node
         )(zipper)
       )
     ).toBe(true)
@@ -200,7 +200,7 @@ describe('Zipper', () => {
         // zip.left, FIXME
         zip.up,
         zip.up,
-        zip.value
+        zip.node
       )(zipper).get('id')
     ).toEqual(1)
   })
@@ -232,11 +232,11 @@ describe('Zipper', () => {
       'right',
     ])
 
-    expect(zip.value(zipper).get('id')).toEqual(1)
+    expect(zip.node(zipper).get('id')).toEqual(1)
     expect(
       R.pipe(
         zip.down,
-        zip.value
+        zip.node
       )(zipper).get('propertyName')
     ).toEqual('left')
 
@@ -244,7 +244,7 @@ describe('Zipper', () => {
       R.pipe(
         zip.down,
         zip.right,
-        zip.value
+        zip.node
       )(zipper).get('propertyName')
     ).toEqual('right')
 
@@ -252,7 +252,7 @@ describe('Zipper', () => {
       R.pipe(
         zip.down,
         zip.down,
-        zip.value
+        zip.node
       )(zipper).get('id')
     ).toEqual(2)
     expect(
@@ -260,7 +260,7 @@ describe('Zipper', () => {
         zip.down,
         zip.right,
         zip.down,
-        zip.value
+        zip.node
       )(zipper).get('id')
     ).toEqual(3)
     expect(
@@ -269,7 +269,7 @@ describe('Zipper', () => {
         zip.right,
         zip.down,
         zip.right,
-        zip.value
+        zip.node
       )(zipper).get('id')
     ).toEqual(4)
   })
@@ -300,11 +300,11 @@ describe('Zipper', () => {
   it('supports the @@skele/children hint for child positions', () => {
     const zipper = elementZipper(fromJS(withChildrenPositions))
 
-    expect(zip.value(zipper).get('id')).toEqual(1)
+    expect(zip.node(zipper).get('id')).toEqual(1)
     expect(
       R.pipe(
         zip.down,
-        zip.value
+        zip.node
       )(zipper).get('propertyName')
     ).toEqual('left')
 
@@ -312,7 +312,7 @@ describe('Zipper', () => {
       R.pipe(
         zip.down,
         zip.right,
-        zip.value
+        zip.node
       )(zipper).get('propertyName')
     ).toEqual('right')
 
@@ -320,7 +320,7 @@ describe('Zipper', () => {
       R.pipe(
         zip.down,
         zip.down,
-        zip.value
+        zip.node
       )(zipper).get('id')
     ).toEqual(2)
     expect(
@@ -328,7 +328,7 @@ describe('Zipper', () => {
         zip.down,
         zip.right,
         zip.down,
-        zip.value
+        zip.node
       )(zipper).get('id')
     ).toEqual(3)
     expect(
@@ -337,7 +337,7 @@ describe('Zipper', () => {
         zip.right,
         zip.down,
         zip.right,
-        zip.value
+        zip.node
       )(zipper).get('id')
     ).toEqual(4)
   })
