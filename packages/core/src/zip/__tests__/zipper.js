@@ -4,7 +4,7 @@ import I from 'immutable'
 import * as R from 'ramda'
 
 import * as skeleZip from '..'
-import * as zippa from '../../vendor/zippa'
+import * as zippa from 'zippa'
 
 import { flow } from '../../data'
 

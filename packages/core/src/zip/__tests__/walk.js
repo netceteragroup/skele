@@ -4,7 +4,7 @@ import I from 'immutable'
 
 import { data } from '../../'
 import * as skeleZip from '..'
-import * as zippa from '../../vendor/zippa'
+import * as zippa from 'zippa'
 
 const { elementZipper } = skeleZip
 
