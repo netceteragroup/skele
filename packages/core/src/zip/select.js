@@ -3,13 +3,15 @@
 import I from 'immutable'
 import R from 'ramda'
 
+import * as zip from './impl'
+
 import { isOfKind, flow } from '../data'
 
-export const isStringArray = obj =>
-  flow(
-    obj,
-    R.allPass([R.is(Array), R.or(R.all(R.is(String)), R.propEq('length', 0))])
-  )
+export const isStringArray = R.allPass([
+  R.is(Array),
+  R.or(R.all(R.is(String)), R.propEq('length', 0)),
+])
+
 const isImm = I.Iterable.isIterable
 const areImm = (...vals) =>
   flow(
@@ -18,32 +20,30 @@ const areImm = (...vals) =>
   )
 const isTrue = R.allPass([R.is(Boolean), R.equals(true)])
 const isLocation = loc =>
-  loc &&
-  loc.meta &&
-  loc.meta.isBranch &&
-  loc.meta.getChildren &&
-  loc.meta.makeItem
-export const isLocationArray = obj =>
-  flow(
-    obj,
-    R.allPass([R.is(Array), R.complement(R.isEmpty), R.all(isLocation)])
-  )
+  loc && loc.meta && loc.meta.isBranch && loc.meta.children && loc.meta.makeNode
+export const isLocationArray = R.allPass([
+  R.is(Array),
+  R.complement(R.isEmpty),
+  R.all(isLocation),
+])
+
 const isNotChildCollection = R.complement(isOfKind('@@skele/child-collection'))
 
 // child :: String -> Location -> Location
 export const child = R.curry((key, loc) => {
-  if (loc.canGoDown()) {
-    let childLoc = loc.down()
-    const child = childLoc.value()
+  let childLoc = zip.down(loc)
+  if (childLoc != null) {
+    const child = zip.node(childLoc)
     if (child.get('propertyName') === key) {
-      return childLoc.down()
+      return zip.down(childLoc)
     }
-    while (childLoc.canGoRight()) {
-      childLoc = childLoc.right()
-      const child = childLoc.value()
+    childLoc = zip.right(childLoc)
+    while (childLoc != null) {
+      const child = zip.node(childLoc)
       if (child.get('propertyName') === key) {
-        return childLoc.down()
+        return zip.down(childLoc)
       }
+      childLoc = zip.right(childLoc)
     }
   }
   return null
@@ -56,40 +56,41 @@ export const children = loc => childrenFor(null, loc)
 // childrenFor :: Key -> Location -> [Location]
 export const childrenFor = R.curry((key, loc) => {
   const result = []
-  if (loc.canGoDown()) {
-    let childLoc = loc.down()
-    const child = childLoc.value()
+  let childLoc = zip.down(loc)
+  if (childLoc != null) {
+    const child = zip.node(childLoc)
     if (
       R.isNil(key) ||
       (isStringArray(key) && R.contains(child.get('propertyName'), key)) ||
       (R.is(String)(key) && child.get('propertyName') === key)
     ) {
       if (child.get('isSingle')) {
-        result.push(childLoc.down())
+        result.push(zip.down(childLoc))
       } else {
-        let currentChild = childLoc.down()
+        let currentChild = zip.down(childLoc)
         result.push(currentChild)
-        if (currentChild.canGoRight()) {
-          currentChild = currentChild.right()
+        // TODO andon: shouldn't we go to the rightmost?
+        currentChild = zip.right(currentChild)
+        if (currentChild != null) {
           result.push(currentChild)
         }
       }
     }
-    while (childLoc.canGoRight()) {
-      childLoc = childLoc.right()
-      const child = childLoc.value()
+    while ((childLoc = zip.right(childLoc)) != null) {
+      const child = zip.node(childLoc)
       if (
         R.isNil(key) ||
         (isStringArray(key) && R.contains(child.get('propertyName'), key)) ||
         (R.is(String)(key) && child.get('propertyName') === key)
       ) {
         if (child.get('isSingle')) {
-          result.push(childLoc.down())
+          result.push(zip.down(childLoc))
         } else {
-          let currentChild = childLoc.down()
+          let currentChild = zip.down(childLoc)
           result.push(currentChild)
-          if (currentChild.canGoRight()) {
-            currentChild = currentChild.right()
+          // TODO andon: shouldn't we go to the rightmost?
+          currentChild = zip.right(currentChild)
+          if (currentChild != null) {
             result.push(currentChild)
           }
         }
@@ -100,15 +101,14 @@ export const childrenFor = R.curry((key, loc) => {
 })
 
 // ofKind :: String -> Location -> Boolean
-export const ofKind = R.curry((kind, loc) => isOfKind(kind, loc.value()))
+export const ofKind = R.curry((kind, loc) => isOfKind(kind, zip.node(loc)))
 
 // ancestors :: () -> Location -> [Location]
 export const ancestors = loc => {
   const result = []
   let currentLoc = loc
-  while (currentLoc.canGoUp()) {
-    currentLoc = currentLoc.up()
-    if (isNotChildCollection(currentLoc.value())) {
+  while ((currentLoc = zip.up(currentLoc)) != null) {
+    if (isNotChildCollection(zip.node(currentLoc))) {
       result.push(currentLoc)
     }
   }
@@ -119,17 +119,16 @@ export const ancestors = loc => {
 export const descendants = loc => _descendants(loc)
 
 const _descendants = (loc, collector = []) => {
-  if (loc.canGoDown()) {
-    const current = loc.down()
+  let current = null
+  if ((current = zip.down(loc)) != null) {
     _descendants(current, collector)
-    if (isNotChildCollection(current.value())) {
+    if (isNotChildCollection(zip.node(current))) {
       collector.push(current)
     }
   }
-  if (loc.canGoRight()) {
-    const current = loc.right()
+  if ((current = zip.right(loc)) != null) {
     _descendants(current, collector)
-    if (isNotChildCollection(current.value())) {
+    if (isNotChildCollection(zip.node(current))) {
       collector.push(current)
     }
   }
@@ -138,7 +137,7 @@ const _descendants = (loc, collector = []) => {
 
 // propEq :: (String, Any) -> Location -> Boolean
 export const propEq = R.curry((key, value, loc) => {
-  const valueFromLoc = loc.value().get(key)
+  const valueFromLoc = zip.node(loc).get(key)
   if (areImm(value, valueFromLoc)) {
     return value.equals(valueFromLoc)
   } else {
@@ -154,7 +153,7 @@ export const select = (...predicates) => location => {
     if (R.is(String)(pred)) {
       result = result.map(loc => child(pred)(loc)).filter(l => !!l)
     } else if (isStringArray(pred)) {
-      result = result.filter(loc => isOfKind(pred, loc.value()))
+      result = result.filter(loc => isOfKind(pred, zip.node(loc)))
     } else if (R.is(Function)(pred)) {
       result = R.chain(loc => {
         const res = pred(loc)

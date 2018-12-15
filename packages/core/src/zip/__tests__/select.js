@@ -72,7 +72,6 @@ describe('zip.select', () => {
       expect(isStringArray(undefined)).toEqual(false)
     })
     test('isLocationArray', () => {
-      expect(isLocationArray()).toEqual(false)
       expect(isLocationArray(null)).toEqual(false)
       expect(isLocationArray(undefined)).toEqual(false)
       expect(isLocationArray([])).toEqual(false)
@@ -105,7 +104,7 @@ describe('zip.select', () => {
       const settings = flow(
         root,
         child('settings'),
-        zip.value
+        zip.node
       )
       expect(isElement(settings)).toEqual(true)
       expect(settings.get('title')).toEqual('Martha Wells')
@@ -114,7 +113,7 @@ describe('zip.select', () => {
       const firstTab = flow(
         root,
         child('tabs'),
-        zip.value
+        zip.node
       )
       expect(isElement(firstTab)).toEqual(true)
       expect(firstTab.get('title')).toEqual('Murder Bot')
@@ -130,7 +129,7 @@ describe('zip.select', () => {
         flow(
           kids,
           R.path([0]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('Murder Bot')
@@ -138,7 +137,7 @@ describe('zip.select', () => {
         flow(
           kids,
           R.path([1]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('Dr Mensah')
@@ -146,7 +145,7 @@ describe('zip.select', () => {
         flow(
           kids,
           R.path([2]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('Martha Wells')
@@ -161,7 +160,7 @@ describe('zip.select', () => {
         flow(
           newKidsOnTheBlock,
           R.path([3]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('Alien')
@@ -198,7 +197,7 @@ describe('zip.select', () => {
       expect(
         flow(
           settings,
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('Martha Wells')
@@ -217,27 +216,27 @@ describe('zip.select', () => {
       expect(mensahChildren.length).toEqual(3)
 
       const deeplinkLoc = R.find(
-        loc => isOfKind('link', loc.value()),
+        loc => isOfKind('link', zip.node(loc)),
         mensahChildren
       )
       expect(
         flow(
           deeplinkLoc,
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('goodreads')
 
       const robotLoc = R.find(
         loc =>
-          isOfKind('element', loc.value()) &&
-          loc.value().get('title') === 'robot',
+          isOfKind('element', zip.node(loc)) &&
+          zip.node(loc).get('title') === 'robot',
         mensahChildren
       )
       expect(
         flow(
           robotLoc,
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('robot')
@@ -248,7 +247,7 @@ describe('zip.select', () => {
         flow(
           robotAncestors,
           R.path([0]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('Dr Mensah')
@@ -256,7 +255,7 @@ describe('zip.select', () => {
         flow(
           robotAncestors,
           R.path([1]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('App')
@@ -267,7 +266,7 @@ describe('zip.select', () => {
         flow(
           deeplinkAncestors,
           R.path([0]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('Dr Mensah')
@@ -275,7 +274,7 @@ describe('zip.select', () => {
         flow(
           deeplinkAncestors,
           R.path([1]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('App')
@@ -286,7 +285,7 @@ describe('zip.select', () => {
         flow(
           settingsAncestors,
           R.path([0]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('App')
@@ -308,7 +307,7 @@ describe('zip.select', () => {
         flow(
           mensahDescendants,
           R.path([0]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('human')
@@ -316,7 +315,7 @@ describe('zip.select', () => {
         flow(
           mensahDescendants,
           R.path([1]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('robot')
@@ -324,7 +323,7 @@ describe('zip.select', () => {
         flow(
           mensahDescendants,
           R.path([2]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('goodreads')
@@ -335,7 +334,7 @@ describe('zip.select', () => {
         flow(
           all,
           R.path([0]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('human')
@@ -343,7 +342,7 @@ describe('zip.select', () => {
         flow(
           all,
           R.path([1]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('robot')
@@ -351,7 +350,7 @@ describe('zip.select', () => {
         flow(
           all,
           R.path([2]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('goodreads')
@@ -359,7 +358,7 @@ describe('zip.select', () => {
         flow(
           all,
           R.path([3]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('Dr Mensah')
@@ -367,7 +366,7 @@ describe('zip.select', () => {
         flow(
           all,
           R.path([4]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('Murder Bot')
@@ -375,7 +374,7 @@ describe('zip.select', () => {
         flow(
           all,
           R.path([5]),
-          zip.value,
+          zip.node,
           iprop('title')
         )
       ).toEqual('Martha Wells')
@@ -397,9 +396,9 @@ describe('zip.select', () => {
           root,
           select(),
           R.path([0]),
-          zip.value
+          zip.node
         )
-      ).toEqualI(root.value())
+      ).toEqualI(zip.value(root))
     })
 
     it('should give proper result for combinations of predicates', () => {
