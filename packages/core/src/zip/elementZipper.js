@@ -1,6 +1,6 @@
 'use strict'
 
-import { makeZipper } from '../vendor/zippa'
+import { makeZipper } from '../zip'
 import { Iterable, List, Map } from 'immutable'
 import * as R from 'ramda'
 import {
@@ -20,12 +20,7 @@ const isBranch = R.curry((defaultChildPositions, element) => {
     return children && children.count() > 0
   }
   const positions = childPositions(defaultChildPositions, element)
-  // console.log(
-  //   'Child positions for: ',
-  //   element.get('kind'),
-  //   ' == ',
-  //   positions.toJS()
-  // )
+
   return positions.some(pos => element.get(pos))
 })
 
@@ -36,7 +31,7 @@ const getChildren = R.curry((defaultChildPositions, element) => {
   // at a children collection level
   const positions = childPositions(defaultChildPositions, element)
 
-  return positions
+  const children = positions
     .reduce(
       (children, p) =>
         element.get(p)
@@ -45,6 +40,8 @@ const getChildren = R.curry((defaultChildPositions, element) => {
       List()
     )
     .toArray()
+
+  return children
 })
 
 const makeChildCollection = (p, children) =>
@@ -78,14 +75,14 @@ const singleChild = childColl =>
  * Creates an element zipper with the specified config
  * The function is hard-curried: (config) => (tree) => rootLocation
  *
- * @param config, configuration for the object, currently cupports o
- *  only the `defaultChildPositions` proprty
+ * @param config, configuration for the object, currently supports only the `defaultChildPositions` property
  */
 export default function elementZipper(config) {
-  const { defaultChildPositions } = config
+  const { defaultChildPositions, makeZipperOverride } = config
   const dcp = asList(defaultChildPositions)
 
-  const ElementZipperType = makeZipper(
+  const makeZipperFn = makeZipperOverride || makeZipper
+  const ElementZipperType = makeZipperFn(
     isBranch(dcp),
     getChildren(dcp),
     makeNode(dcp)

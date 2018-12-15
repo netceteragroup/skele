@@ -22,32 +22,32 @@ export function enricher(config) {
   })
 
   async function postWalk(loc, context) {
-    if (zip.canGoDown(loc)) {
-      const changedChildren = await Promise.all(
-        // prettier-ignore
-        data.flow(
-          zip.getChildren(loc),
-          R.map(R.pipe(elementZipper, loc => postWalk(loc, context)))
+    if (zip.isBranch(loc)) {
+      const children = zip.children(loc)
+      if (children != null) {
+        const changedChildren = await Promise.all(
+          // prettier-ignore
+          data.flow(
+            children,
+            R.map(R.pipe(elementZipper, loc => postWalk(loc, context)))
+          )
         )
-      )
-      const changedValue = zip.makeItem(
-        loc,
-        zip.value(loc),
-        R.map(zip.value, changedChildren)
-      )
-
-      loc = zip.replace(changedValue, loc)
+        loc = zip.replace(
+          zip.makeNode(loc, zip.node(loc), R.map(zip.node, changedChildren)),
+          loc
+        )
+      }
     }
 
     const elEnricher = data.flow(
       loc,
-      zip.value,
+      zip.node,
       data.kindOf,
       elementEnricher
     )
 
     if (elEnricher != null) {
-      const changedValue = await elEnricher(zip.value(loc), context)
+      const changedValue = await elEnricher(zip.node(loc), context)
 
       loc = zip.replace(changedValue, loc)
     }
@@ -56,5 +56,5 @@ export function enricher(config) {
   }
 
   return async (el, context = {}) =>
-    zip.value(await postWalk(elementZipper(el), context))
+    zip.node(await postWalk(elementZipper(el), context))
 }

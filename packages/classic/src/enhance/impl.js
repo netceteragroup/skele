@@ -34,7 +34,7 @@ function compressUpdates(updates, elementZipper) {
         R.pipe(
           elementZipper,
           zip.editCond(concatAll(slice)),
-          zip.value
+          zip.node
         ),
       ]
     ),

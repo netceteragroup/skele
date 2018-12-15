@@ -27,5 +27,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "zippa": "^0.3.1"
   }
 }
