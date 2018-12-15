@@ -171,7 +171,7 @@ export const left = loc => {
   const { node, path } = loc
 
   if (path) {
-    const { l, r } = loc
+    const { l, r } = path
     if (l && l.length > 0) {
       return {
         node: l[l.length - 1],

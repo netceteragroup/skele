@@ -136,7 +136,7 @@ describe('Zipper', () => {
     ],
   }
 
-  it.skip('zipper should correctly navigate up down left and right', () => {
+  it('zipper should correctly navigate up down left and right', () => {
     const zipper = elementZipper(fromJS(multipleChildren), 'children')
 
     expect(zip.node(zipper).get('id')).toEqual(1)
@@ -173,7 +173,7 @@ describe('Zipper', () => {
         zip.down,
         zip.right,
         zip.right,
-        // zip.left, FIXME
+        zip.left,
         zip.node
       )(zipper).get('id')
     ).toEqual(5)
@@ -185,7 +185,7 @@ describe('Zipper', () => {
           zip.down,
           zip.right,
           zip.right,
-          // zip.left, FIXME
+          zip.left,
           zip.up,
           zip.node
         )(zipper)
@@ -197,7 +197,7 @@ describe('Zipper', () => {
         zip.down,
         zip.right,
         zip.right,
-        // zip.left, FIXME
+        zip.left,
         zip.up,
         zip.up,
         zip.node
