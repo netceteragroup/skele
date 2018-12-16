@@ -88,13 +88,18 @@ test('core.zip interface', () => {
   expect(zip.edit).toEqual(anyFunction)
   expect(zip.getChildren).toEqual(anyFunction)
 
+  // motions
+  expect(zip.elementChild).toEqual(anyFunction)
+
+  // predicates
+  expect(zip.ofKind).toEqual(anyFunction)
+  expect(zip.propEq).toEqual(anyFunction)
+
   // select?
-  expect(zip.child).toEqual(anyFunction)
   expect(zip.ancestors).toEqual(anyFunction)
   expect(zip.descendants).toEqual(anyFunction)
   expect(zip.children).toEqual(anyFunction)
   expect(zip.childrenFor).toEqual(anyFunction)
-  expect(zip.propEq).toEqual(anyFunction)
   expect(zip.select).toEqual(anyFunction)
 })
 

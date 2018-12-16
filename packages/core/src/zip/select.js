@@ -5,19 +5,15 @@ import R from 'ramda'
 
 import * as zip from './impl'
 
-import { isOfKind, flow } from '../data'
+import { elementChild } from './motion'
+
+import { isOfKind } from '../data'
 
 export const isStringArray = R.allPass([
   R.is(Array),
   R.or(R.all(R.is(String)), R.propEq('length', 0)),
 ])
 
-const isImm = I.Iterable.isIterable
-const areImm = (...vals) =>
-  flow(
-    vals,
-    R.all(isImm)
-  )
 const isTrue = R.allPass([R.is(Boolean), R.equals(true)])
 const isLocation = loc =>
   loc && loc.meta && loc.meta.isBranch && loc.meta.children && loc.meta.makeNode
@@ -28,26 +24,6 @@ export const isLocationArray = R.allPass([
 ])
 
 const isNotChildCollection = R.complement(isOfKind('@@skele/child-collection'))
-
-// child :: String -> Location -> Location
-export const child = R.curry((key, loc) => {
-  let childLoc = zip.down(loc)
-  if (childLoc != null) {
-    const child = zip.node(childLoc)
-    if (child.get('propertyName') === key) {
-      return zip.down(childLoc)
-    }
-    childLoc = zip.right(childLoc)
-    while (childLoc != null) {
-      const child = zip.node(childLoc)
-      if (child.get('propertyName') === key) {
-        return zip.down(childLoc)
-      }
-      childLoc = zip.right(childLoc)
-    }
-  }
-  return null
-})
 
 // children :: Location -> [Location]
 export const children = loc => childrenFor(null, loc)
@@ -100,9 +76,6 @@ export const childrenFor = R.curry((key, loc) => {
   return result
 })
 
-// ofKind :: String -> Location -> Boolean
-export const ofKind = R.curry((kind, loc) => isOfKind(kind, zip.node(loc)))
-
 // ancestors :: () -> Location -> [Location]
 export const ancestors = loc => {
   const result = []
@@ -135,23 +108,13 @@ const _descendants = (loc, collector = []) => {
   return collector
 }
 
-// propEq :: (String, Any) -> Location -> Boolean
-export const propEq = R.curry((key, value, loc) => {
-  const valueFromLoc = zip.node(loc).get(key)
-  if (areImm(value, valueFromLoc)) {
-    return value.equals(valueFromLoc)
-  } else {
-    return R.equals(value, valueFromLoc)
-  }
-})
-
 // Predicate = String | [String] | Function :: Location -> Boolean | Location | [Location]
 // select :: [Predicate] -> Location -> [Location]
 export const select = (...predicates) => location => {
   let result = [location]
   for (let pred of predicates) {
     if (R.is(String)(pred)) {
-      result = result.map(loc => child(pred)(loc)).filter(l => !!l)
+      result = result.map(loc => elementChild(pred)(loc)).filter(l => !!l)
     } else if (isStringArray(pred)) {
       result = result.filter(loc => isOfKind(pred, zip.node(loc)))
     } else if (R.is(Function)(pred)) {

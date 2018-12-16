@@ -5,12 +5,12 @@ export * from './reduce'
 export * from './edit'
 export * from './walk'
 export * from './impl'
+export * from './motion'
+export * from './predicate'
 export {
-  child,
   ancestors,
   descendants,
   // children,
   childrenFor,
-  propEq,
   select,
 } from './select'

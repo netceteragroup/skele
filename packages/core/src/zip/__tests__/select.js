@@ -4,19 +4,19 @@ import I from 'immutable'
 import R from 'ramda'
 
 import * as zip from '../'
-import { childrenProperty, isElement, isOfKind, flow } from '../../data'
+import { childrenProperty, isOfKind, flow } from '../../data'
+
+import { elementChild } from '../motion'
+import { ofKind, propEq } from '../predicate'
 
 import {
   isStringArray,
   isLocationArray,
-  child,
   ancestors,
   descendants,
   children,
   childrenFor,
-  propEq,
   select,
-  ofKind,
 } from '../select'
 
 const iprop = R.invoker(1, 'get')
@@ -91,34 +91,6 @@ describe('zip.select', () => {
   })
 
   describe('predicates', () => {
-    test('child', () => {
-      const root = zipper(I.fromJS(data))
-
-      const storage = flow(
-        root,
-        child('storage')
-      )
-      expect(storage).toBeNull()
-
-      // child pointing to a non-collection element
-      const settings = flow(
-        root,
-        child('settings'),
-        zip.node
-      )
-      expect(isElement(settings)).toEqual(true)
-      expect(settings.get('title')).toEqual('Martha Wells')
-
-      // child positioning to the first element of a collection
-      const firstTab = flow(
-        root,
-        child('tabs'),
-        zip.node
-      )
-      expect(isElement(firstTab)).toEqual(true)
-      expect(firstTab.get('title')).toEqual('Murder Bot')
-    })
-
     test('children', () => {
       const root = zipper(I.fromJS(data))
 
@@ -166,33 +138,12 @@ describe('zip.select', () => {
       ).toEqual('Alien')
     })
 
-    test('propEq', () => {
-      const root = zipper(I.fromJS(data))
-
-      expect(
-        flow(
-          root,
-          propEq(
-            'settings',
-            I.fromJS({ kind: ['settings'], title: 'Martha Wells' })
-          )
-        )
-      ).toBeTruthy()
-      expect(
-        flow(
-          root,
-          child('settings'),
-          propEq('title', 'Martha Wells')
-        )
-      ).toBeTruthy()
-    })
-
     test('ancestors', () => {
       const root = zipper(I.fromJS(data))
 
       const settings = flow(
         root,
-        child('settings')
+        elementChild('settings')
       )
       expect(
         flow(
@@ -296,7 +247,7 @@ describe('zip.select', () => {
 
       const settings = flow(
         root,
-        child('settings')
+        elementChild('settings')
       )
       expect(descendants(settings).length).toEqual(0)
 
