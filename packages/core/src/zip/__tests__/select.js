@@ -8,16 +8,13 @@ import { childrenProperty, isOfKind, flow } from '../../data'
 
 import { elementChild } from '../motion'
 import { ofKind, propEq } from '../predicate'
-
 import {
-  isStringArray,
-  isLocationArray,
   ancestors,
   descendants,
-  children,
-  childrenFor,
-  select,
-} from '../select'
+  elementChildren,
+  elementChildrenFor,
+} from '../selector'
+import { isStringArray, isLocationArray, select } from '../select'
 
 const iprop = R.invoker(1, 'get')
 
@@ -91,10 +88,10 @@ describe('zip.select', () => {
   })
 
   describe('predicates', () => {
-    test('children', () => {
+    test('elementChildren', () => {
       const root = zipper(I.fromJS(data))
 
-      const kids = children(root)
+      const kids = elementChildren(root)
 
       expect(kids.length).toEqual(3)
       expect(
@@ -126,7 +123,7 @@ describe('zip.select', () => {
         .updateIn([childrenProperty], children => children.push('world'))
         .set('world', I.List.of(I.fromJS({ kind: ['world'], title: 'Alien' })))
 
-      const newKidsOnTheBlock = children(zipper(extendedData))
+      const newKidsOnTheBlock = elementChildren(zipper(extendedData))
       expect(newKidsOnTheBlock.length).toEqual(4)
       expect(
         flow(
@@ -155,14 +152,14 @@ describe('zip.select', () => {
 
       const tabs = flow(
         root,
-        childrenFor('tabs')
+        elementChildrenFor('tabs')
       )
       expect(tabs.length).toEqual(2)
 
       const mensahChildren = flow(
         tabs,
         R.path([1]),
-        children
+        elementChildren
       )
       expect(mensahChildren.length).toEqual(3)
 
@@ -251,7 +248,7 @@ describe('zip.select', () => {
       )
       expect(descendants(settings).length).toEqual(0)
 
-      const tabs = childrenFor('tabs')(root)
+      const tabs = elementChildrenFor('tabs')(root)
       const mensahDescendants = descendants(tabs[1])
       expect(mensahDescendants.length).toEqual(3)
       expect(

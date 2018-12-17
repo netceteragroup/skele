@@ -7,10 +7,5 @@ export * from './walk'
 export * from './impl'
 export * from './motion'
 export * from './predicate'
-export {
-  ancestors,
-  descendants,
-  // children,
-  childrenFor,
-  select,
-} from './select'
+export * from './selector'
+export { select } from './select'

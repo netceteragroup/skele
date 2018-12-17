@@ -14,7 +14,12 @@ const areImm = (...vals) =>
     R.all(isImm)
   )
 
-// propEq :: (String, Any) -> Location -> Boolean
+// Predicate fns
+// - A predicate fn has the signature: (...args, loc) => boolean
+// - It takes a number of arguments that determine its behavior
+// - a zipper location at the end
+// - and will return a bool indicating if the location should be filtered or not
+
 export const propEq = R.curry((key, value, loc) => {
   const valueFromLoc = zip.node(loc).get(key)
   if (areImm(value, valueFromLoc)) {
@@ -24,5 +29,4 @@ export const propEq = R.curry((key, value, loc) => {
   }
 })
 
-// ofKind :: String -> Location -> Boolean
 export const ofKind = R.curry((kind, loc) => isOfKind(kind, zip.node(loc)))
