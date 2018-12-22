@@ -36,9 +36,7 @@ export const elementChildrenFor = R.curry((key, loc) => {
       } else {
         let currentChild = zip.down(childLoc)
         result.push(currentChild)
-        // TODO andon: shouldn't we go to the rightmost?
-        currentChild = zip.right(currentChild)
-        if (currentChild != null) {
+        while ((currentChild = zip.right(currentChild)) != null) {
           result.push(currentChild)
         }
       }
@@ -55,9 +53,7 @@ export const elementChildrenFor = R.curry((key, loc) => {
         } else {
           let currentChild = zip.down(childLoc)
           result.push(currentChild)
-          // TODO andon: shouldn't we go to the rightmost?
-          currentChild = zip.right(currentChild)
-          if (currentChild != null) {
+          while ((currentChild = zip.right(currentChild)) != null) {
             result.push(currentChild)
           }
         }
