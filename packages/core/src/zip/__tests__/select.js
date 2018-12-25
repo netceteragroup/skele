@@ -6,14 +6,10 @@ import R from 'ramda'
 import * as zip from '../'
 import { childrenProperty, isOfKind, flow } from '../../data'
 
-import { elementChild } from '../motion'
+import { childAt } from '../skele/motion'
 import { ofKind, propEq } from '../predicate'
-import {
-  ancestors,
-  descendants,
-  elementChildren,
-  elementChildrenFor,
-} from '../selector'
+import { ancestors, descendants } from '../selector'
+import { children, childrenAt } from '../skele/selector'
 import { isStringArray, isLocationArray, select } from '../select'
 
 const iprop = R.invoker(1, 'get')
@@ -88,10 +84,10 @@ describe('zip.select', () => {
   })
 
   describe('predicates', () => {
-    test('elementChildren', () => {
+    test('children', () => {
       const root = zipper(I.fromJS(data))
 
-      const kids = elementChildren(root)
+      const kids = children(root)
 
       expect(kids.length).toEqual(3)
       expect(
@@ -123,7 +119,7 @@ describe('zip.select', () => {
         .updateIn([childrenProperty], children => children.push('world'))
         .set('world', I.List.of(I.fromJS({ kind: ['world'], title: 'Alien' })))
 
-      const newKidsOnTheBlock = elementChildren(zipper(extendedData))
+      const newKidsOnTheBlock = children(zipper(extendedData))
       expect(newKidsOnTheBlock.length).toEqual(4)
       expect(
         flow(
@@ -140,7 +136,7 @@ describe('zip.select', () => {
 
       const settings = flow(
         root,
-        elementChild('settings')
+        childAt('settings')
       )
       expect(
         flow(
@@ -152,14 +148,14 @@ describe('zip.select', () => {
 
       const tabs = flow(
         root,
-        elementChildrenFor('tabs')
+        childrenAt('tabs')
       )
       expect(tabs.length).toEqual(2)
 
       const mensahChildren = flow(
         tabs,
         R.path([1]),
-        elementChildren
+        children
       )
       expect(mensahChildren.length).toEqual(3)
 
@@ -244,11 +240,11 @@ describe('zip.select', () => {
 
       const settings = flow(
         root,
-        elementChild('settings')
+        childAt('settings')
       )
       expect(descendants(settings).length).toEqual(0)
 
-      const tabs = elementChildrenFor('tabs')(root)
+      const tabs = childrenAt('tabs')(root)
       const mensahDescendants = descendants(tabs[1])
       expect(mensahDescendants.length).toEqual(5)
       expect(

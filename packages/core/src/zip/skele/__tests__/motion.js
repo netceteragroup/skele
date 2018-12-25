@@ -2,10 +2,10 @@
 
 import I from 'immutable'
 
-import * as zip from '../'
-import { childrenProperty, isElement, flow } from '../../data'
+import * as zip from '../..'
+import { childrenProperty, isElement, flow } from '../../../data'
 
-import { elementChild } from '../motion'
+import { childAt } from '../motion'
 
 const zipper = data => zip.elementZipper({})(data)
 
@@ -45,19 +45,19 @@ const data = {
 }
 
 describe('zipper motions', () => {
-  test('elementChild', () => {
+  test('childAt', () => {
     const root = zipper(I.fromJS(data))
 
     const storage = flow(
       root,
-      elementChild('storage')
+      childAt('storage')
     )
     expect(storage).toBeNull()
 
     // child pointing to a non-collection element
     const settings = flow(
       root,
-      elementChild('settings'),
+      childAt('settings'),
       zip.node
     )
     expect(isElement(settings)).toEqual(true)
@@ -66,7 +66,7 @@ describe('zipper motions', () => {
     // child positioning to the first element of a collection
     const firstTab = flow(
       root,
-      elementChild('tabs'),
+      childAt('tabs'),
       zip.node
     )
     expect(isElement(firstTab)).toEqual(true)

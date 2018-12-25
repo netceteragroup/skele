@@ -5,7 +5,8 @@ import * as R from 'ramda'
 
 import { propNames, data } from '../../'
 
-import * as zip from '../index'
+import * as zip from '../'
+import * as skeleZip from '../skele'
 
 describe('selectors', () => {
   const nba = zip.elementZipper({})(
@@ -87,11 +88,11 @@ describe('selectors', () => {
       ],
     })
   )
-  describe('elementChildrenFor', () => {
+  describe('skele.childrenAt', () => {
     test('w/o key', () => {
       const elements = data.flow(
         nba,
-        zip.elementChildrenFor(null)
+        skeleZip.childrenAt(null)
       )
 
       expect(elements.length).toBe(6)
@@ -116,7 +117,7 @@ describe('selectors', () => {
     test('w/ key', () => {
       const teams = data.flow(
         nba,
-        zip.elementChildrenFor('teams')
+        skeleZip.childrenAt('teams')
       )
 
       expect(teams.length).toBe(3)
@@ -124,7 +125,7 @@ describe('selectors', () => {
 
       const stats = data.flow(
         nba,
-        zip.elementChildrenFor('stats')
+        skeleZip.childrenAt('stats')
       )
 
       expect(stats.length).toBe(3)

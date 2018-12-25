@@ -4,7 +4,7 @@ import R from 'ramda'
 
 import * as zip from './impl'
 
-import { elementChild } from './motion'
+import { childAt } from './skele/motion'
 
 import { isOfKind } from '../data'
 
@@ -28,7 +28,7 @@ export const select = (...predicates) => location => {
   let result = [location]
   for (let pred of predicates) {
     if (R.is(String)(pred)) {
-      result = result.map(loc => elementChild(pred)(loc)).filter(l => !!l)
+      result = result.map(loc => childAt(pred)(loc)).filter(l => !!l)
     } else if (isStringArray(pred)) {
       result = result.filter(loc => isOfKind(pred, zip.node(loc)))
     } else if (R.is(Function)(pred)) {

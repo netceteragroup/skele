@@ -2,7 +2,7 @@
 
 import R from 'ramda'
 
-import * as zip from './impl'
+import * as zip from '../impl'
 
 // Motion fns
 // - A motion fn has the signature: (...args, loc) => loc
@@ -15,7 +15,7 @@ import * as zip from './impl'
  *
  * @param {*} propertyName of the child
  */
-export const elementChild = R.curry((propertyName, loc) => {
+export const childAt = R.curry((propertyName, loc) => {
   let childLoc = zip.down(loc)
   if (childLoc != null) {
     const child = zip.node(childLoc)

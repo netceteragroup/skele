@@ -5,7 +5,7 @@ import I from 'immutable'
 import * as zip from '../'
 import { childrenProperty, flow } from '../../data'
 
-import { elementChild } from '../motion'
+import { childAt } from '../skele/motion'
 
 import { propEq } from '../predicate'
 
@@ -62,7 +62,7 @@ describe('zipper predicates', () => {
     expect(
       flow(
         root,
-        elementChild('settings'),
+        childAt('settings'),
         propEq('title', 'Martha Wells')
       )
     ).toBeTruthy()
