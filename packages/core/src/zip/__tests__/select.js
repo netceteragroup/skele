@@ -190,11 +190,11 @@ describe('zip.select', () => {
       ).toEqual('robot')
 
       const robotAncestors = ancestors(robotLoc)
-      expect(robotAncestors.length).toEqual(2)
+      expect(robotAncestors.length).toEqual(4)
       expect(
         flow(
           robotAncestors,
-          R.path([0]),
+          R.path([1]),
           zip.node,
           iprop('title')
         )
@@ -202,22 +202,14 @@ describe('zip.select', () => {
       expect(
         flow(
           robotAncestors,
-          R.path([1]),
+          R.path([3]),
           zip.node,
           iprop('title')
         )
       ).toEqual('App')
 
       const deeplinkAncestors = ancestors(deeplinkLoc)
-      expect(deeplinkAncestors.length).toEqual(2)
-      expect(
-        flow(
-          deeplinkAncestors,
-          R.path([0]),
-          zip.node,
-          iprop('title')
-        )
-      ).toEqual('Dr Mensah')
+      expect(deeplinkAncestors.length).toEqual(4)
       expect(
         flow(
           deeplinkAncestors,
@@ -225,14 +217,22 @@ describe('zip.select', () => {
           zip.node,
           iprop('title')
         )
+      ).toEqual('Dr Mensah')
+      expect(
+        flow(
+          deeplinkAncestors,
+          R.path([3]),
+          zip.node,
+          iprop('title')
+        )
       ).toEqual('App')
 
       const settingsAncestors = ancestors(settings)
-      expect(settingsAncestors.length).toEqual(1)
+      expect(settingsAncestors.length).toEqual(2)
       expect(
         flow(
           settingsAncestors,
-          R.path([0]),
+          R.path([1]),
           zip.node,
           iprop('title')
         )
@@ -250,7 +250,7 @@ describe('zip.select', () => {
 
       const tabs = elementChildrenFor('tabs')(root)
       const mensahDescendants = descendants(tabs[1])
-      expect(mensahDescendants.length).toEqual(3)
+      expect(mensahDescendants.length).toEqual(5)
       expect(
         flow(
           mensahDescendants,
@@ -277,7 +277,7 @@ describe('zip.select', () => {
       ).toEqual('goodreads')
 
       const all = descendants(root)
-      expect(all.length).toEqual(6)
+      expect(all.length).toEqual(10)
       expect(
         flow(
           all,
@@ -305,7 +305,7 @@ describe('zip.select', () => {
       expect(
         flow(
           all,
-          R.path([3]),
+          R.path([5]),
           zip.node,
           iprop('title')
         )
@@ -313,7 +313,7 @@ describe('zip.select', () => {
       expect(
         flow(
           all,
-          R.path([4]),
+          R.path([6]),
           zip.node,
           iprop('title')
         )
@@ -321,7 +321,7 @@ describe('zip.select', () => {
       expect(
         flow(
           all,
-          R.path([5]),
+          R.path([7]),
           zip.node,
           iprop('title')
         )

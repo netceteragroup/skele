@@ -14,8 +14,6 @@ import { isStringArray } from './select'
 // - a zipper location at the end
 // - and will return a an array of locations that have been selected by its execution
 
-const isNotChildCollection = R.complement(isOfKind('@@skele/child-collection'))
-
 // children :: Location -> [Location]
 export const elementChildren = loc => elementChildrenFor(null, loc)
 
@@ -63,34 +61,28 @@ export const elementChildrenFor = R.curry((key, loc) => {
   return result
 })
 
-// ancestors :: () -> Location -> [Location]
+// ancestors :: Location -> [Location]
 export const ancestors = loc => {
   const result = []
   let currentLoc = loc
   while ((currentLoc = zip.up(currentLoc)) != null) {
-    if (isNotChildCollection(zip.node(currentLoc))) {
-      result.push(currentLoc)
-    }
+    result.push(currentLoc)
   }
   return result
 }
 
-// descendants :: () -> Location -> [Location]
+// descendants :: Location -> [Location]
 export const descendants = loc => _descendants(loc)
 
 const _descendants = (loc, collector = []) => {
   let current = null
   if ((current = zip.down(loc)) != null) {
     _descendants(current, collector)
-    if (isNotChildCollection(zip.node(current))) {
-      collector.push(current)
-    }
+    collector.push(current)
   }
   if ((current = zip.right(loc)) != null) {
     _descendants(current, collector)
-    if (isNotChildCollection(zip.node(current))) {
-      collector.push(current)
-    }
+    collector.push(current)
   }
   return collector
 }
