@@ -3,6 +3,7 @@
 import * as data from './data'
 import * as registry from './registry'
 import * as zip from './zip'
+import skeleZip from './zip/skele'
 import * as log from './log'
 import * as propNames from './propNames'
 import Cursor from './vendor/cursor'
@@ -16,6 +17,7 @@ export default {
   data,
   registry,
   zip,
+  skeleZip,
   log,
   propNames,
   internal,
