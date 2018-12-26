@@ -11,7 +11,7 @@ import Cursor from './vendor/cursor'
 const internal = {
   Cursor,
 }
-export { data, registry, zip, log, propNames, internal }
+export { data, registry, zip, skeleZip, log, propNames, internal }
 
 export default {
   data,

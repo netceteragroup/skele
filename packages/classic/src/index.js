@@ -4,7 +4,7 @@ import * as Subsystem from './subsystem'
 import * as Kernel from './kernel'
 
 import core, { defaultSubsystems } from './core'
-import { data, zip } from '@skele/core'
+import { data, zip, skeleZip } from '@skele/core'
 import * as action from './action'
 import * as registry from './registry'
 import * as propNames from './propNames'
@@ -38,6 +38,7 @@ export {
   enhance,
   data,
   zip,
+  skeleZip,
   actions,
   Engine,
   EntryPoint,
@@ -52,6 +53,7 @@ export default {
   ...core,
   data,
   zip,
+  skeleZip,
   actions,
   Engine,
   EntryPoint,
