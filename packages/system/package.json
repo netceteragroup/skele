@@ -1,7 +1,7 @@
 {
   "name": "@skele/system",
-  "version": "1.0.0-alpha.27",
-  "description": "A small framework managing the lifecycle and dependencies of software componenes (sub-systems)/",
+  "version": "1.0.0-alpha.38",
+  "description": "A small framework managing the lifecycle and dependencies of software comnponents.",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
   "repository": {
