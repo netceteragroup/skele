@@ -1,6 +1,6 @@
 {
   "name": "@skele/core",
-  "version": "1.0.0-alpha.37",
+  "version": "1.0.0-alpha.38",
   "description": "Core package of the Skele framework. Element definitions, registrations and traversal.",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
