@@ -1,7 +1,10 @@
 'use strict'
 
-import { kindOf } from '../data'
+import { kindOf, flow } from '../data'
 import { postWalk } from '../zip'
+import * as zip from './impl'
+import { curry } from 'ramda'
+
 import Registry from '../registry/Registry'
 
 export const editCond = (patterns, loc) => {
@@ -29,3 +32,20 @@ export const editCond = (patterns, loc) => {
 
   return typeof loc === 'undefined' ? editFn : editFn(loc)
 }
+
+export const editAt = curry((motion, f, loc) => {
+  const rootLoc = zip.zipper(
+    loc.meta.isBranch,
+    loc.meta.children,
+    loc.meta.makeNode,
+    zip.node(loc)
+  )
+
+  return flow(
+    rootLoc,
+    motion,
+    zip.edit.bind(undefined, f),
+    zip.root,
+    newVal => zip.replace(newVal, loc)
+  )
+})
