@@ -10,7 +10,7 @@ import { childAt } from '../skele/motion'
 import { ofKind, propEq } from '../predicate'
 import { ancestors, descendants } from '../selector'
 import { children, childrenAt } from '../skele/selector'
-import { isStringArray, isLocationArray, select } from '../select'
+import { isStringArray, isLocationSeq, select } from '../select'
 
 const iprop = R.invoker(1, 'get')
 
@@ -64,17 +64,17 @@ describe('zip.select', () => {
       expect(isStringArray(null)).toEqual(false)
       expect(isStringArray(undefined)).toEqual(false)
     })
-    test('isLocationArray', () => {
-      expect(isLocationArray(null)).toEqual(false)
-      expect(isLocationArray(undefined)).toEqual(false)
-      expect(isLocationArray([])).toEqual(false)
-      expect(isLocationArray(['test'])).toEqual(false)
-      expect(isLocationArray([zipper(I.fromJS(data))])).toEqual(true)
+    test('isLocationSeq', () => {
+      expect(isLocationSeq(null)).toEqual(false)
+      expect(isLocationSeq(undefined)).toEqual(false)
+      expect(isLocationSeq(I.Seq())).toEqual(false)
+      expect(isLocationSeq(I.Seq.of('test'))).toEqual(false)
+      expect(isLocationSeq(I.Seq.of(zipper(I.fromJS(data))))).toEqual(true)
       expect(
-        isLocationArray([zipper(I.fromJS(data)), zipper(I.fromJS(data))])
+        isLocationSeq(I.Seq.of(zipper(I.fromJS(data)), zipper(I.fromJS(data))))
       ).toEqual(true)
       expect(
-        isLocationArray([
+        isLocationSeq([
           zipper(I.fromJS(data)),
           'Not a Zipper',
           zipper(I.fromJS(data)),
@@ -185,7 +185,7 @@ describe('zip.select', () => {
         )
       ).toEqual('robot')
 
-      const robotAncestors = ancestors(robotLoc)
+      const robotAncestors = [...ancestors(robotLoc)]
       expect(robotAncestors.length).toEqual(4)
       expect(
         flow(
@@ -204,7 +204,7 @@ describe('zip.select', () => {
         )
       ).toEqual('App')
 
-      const deeplinkAncestors = ancestors(deeplinkLoc)
+      const deeplinkAncestors = [...ancestors(deeplinkLoc)]
       expect(deeplinkAncestors.length).toEqual(4)
       expect(
         flow(
@@ -223,7 +223,7 @@ describe('zip.select', () => {
         )
       ).toEqual('App')
 
-      const settingsAncestors = ancestors(settings)
+      const settingsAncestors = [...ancestors(settings)]
       expect(settingsAncestors.length).toEqual(2)
       expect(
         flow(
@@ -242,10 +242,10 @@ describe('zip.select', () => {
         root,
         childAt('settings')
       )
-      expect(descendants(settings).length).toEqual(0)
+      expect([...descendants(settings)].length).toEqual(0)
 
       const tabs = childrenAt('tabs')(root)
-      const mensahDescendants = descendants(tabs[1])
+      const mensahDescendants = [...descendants(tabs[1])]
       expect(mensahDescendants.length).toEqual(5)
       expect(
         flow(
@@ -272,7 +272,7 @@ describe('zip.select', () => {
         )
       ).toEqual('goodreads')
 
-      const all = descendants(root)
+      const all = [...descendants(root)]
       expect(all.length).toEqual(10)
       expect(
         flow(
@@ -329,16 +329,10 @@ describe('zip.select', () => {
     const root = zipper(I.fromJS(data))
 
     it('should return array with given location for no predicates', () => {
+      expect(flow([...select([], root)].length)).toEqual(1)
       expect(
         flow(
-          root,
-          select()
-        ).length
-      ).toEqual(1)
-      expect(
-        flow(
-          root,
-          select(),
+          [...select([], root)],
           R.path([0]),
           zip.node
         )
@@ -348,43 +342,42 @@ describe('zip.select', () => {
     it('should give proper result for combinations of predicates', () => {
       expect(
         flow(
-          root,
-          select(descendants, propEq('title', 'goodreads')),
+          [...select([descendants, propEq('title', 'goodreads')], root)],
           R.prop('length')
         )
       ).toEqual(1)
       expect(
         flow(
-          root,
-          select(descendants, ofKind('element')),
+          [...select([descendants, ofKind('element')], root)],
           R.prop('length')
         )
       ).toEqual(2)
       expect(
         flow(
-          root,
-          select(descendants, ofKind('tab'), propEq('title', 'Murder Bot')),
+          [
+            ...select(
+              [descendants, ofKind('tab'), propEq('title', 'Murder Bot')],
+              root
+            ),
+          ],
           R.prop('length')
         )
       ).toEqual(1)
       expect(
         flow(
-          root,
-          select(descendants, ['link']),
+          [...select([descendants, ['link']], root)],
           R.prop('length')
         )
       ).toEqual(1)
       expect(
         flow(
-          root,
-          select(descendants, ['tab']),
+          [...select([descendants, ['tab']], root)],
           R.prop('length')
         )
       ).toEqual(2)
       expect(
         flow(
-          root,
-          select(descendants, ['tab'], 'deeplink'),
+          [...select([descendants, ['tab'], 'deeplink'], root)],
           R.prop('length')
         )
       ).toEqual(1)
@@ -393,17 +386,23 @@ describe('zip.select', () => {
     it('should hanlde gracefully in case unknown predicate creaps in', () => {
       expect(
         flow(
-          root,
-          select(descendants, loc => ({
-            loc,
-          })),
+          [
+            ...select(
+              [
+                descendants,
+                loc => ({
+                  loc,
+                }),
+              ],
+              root
+            ),
+          ],
           R.prop('length')
         )
       ).toEqual(0)
       expect(
         flow(
-          root,
-          select(descendants, { prop: 'test' }),
+          [...select([descendants, { prop: 'test' }], root)],
           R.prop('length')
         )
       ).toEqual(0)
