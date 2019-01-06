@@ -1,6 +1,6 @@
 {
   "name": "@skele/classic",
-  "version": "1.0.0-alpha.35",
+  "version": "1.0.0-alpha.38",
   "description": "Skele is an architectural framework that assists with building data-driven apps with React or React Native.",
   "react-native": "src/index.js",
   "main": "dist/es5/index.js",
@@ -21,7 +21,7 @@
   },
   "homepage": "https://netcetera.gitbooks.io/skele/",
   "dependencies": {
-    "@skele/core": "^1.0.0-alpha.35",
+    "@skele/core": "^1.0.0-alpha.38",
     "immutable": "^3.8.1",
     "invariant": "^2.2.2",
     "ramda": "^0.25.0",

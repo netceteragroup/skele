@@ -1,6 +1,7 @@
 'use strict'
 
 import { makeZipper } from '../zip'
+import deprecated from '../log/deprecated'
 import { Iterable, List, Map } from 'immutable'
 import * as R from 'ramda'
 import {
@@ -77,7 +78,7 @@ const singleChild = childColl =>
  *
  * @param config, configuration for the object, currently supports only the `defaultChildPositions` property
  */
-export default function elementZipper(config) {
+function elementZipper(config) {
   const { defaultChildPositions, makeZipperOverride } = config
   const dcp = asList(defaultChildPositions)
 
@@ -90,3 +91,8 @@ export default function elementZipper(config) {
 
   return ElementZipperType.from.bind(ElementZipperType)
 }
+
+export default deprecated(
+  'elementZipper is deprecated, use `skeleZip` instead',
+  elementZipper
+)

@@ -2,6 +2,7 @@
 
 import { fromJS } from 'immutable'
 import * as zip from '..'
+import * as R from 'ramda'
 
 describe('Editing a Zipper', () => {
   const organization = {
@@ -48,7 +49,7 @@ describe('Editing a Zipper', () => {
       defaultChildPositions: 'children',
     })(fromJS(organization))
 
-  it('can be done using conditions (zip.editCond)', () => {
+  test('editCond() -- conditional editing of nodes in an entire tree', () => {
     // given
     const elementZipper = createElementZipper()
 
@@ -105,5 +106,52 @@ describe('Editing a Zipper', () => {
         ],
       })
     )
+  })
+
+  test('editAt()', () => {
+    const root = createElementZipper()
+    const f = e => e.set('name', 'Filip')
+    const z = zip.down(zip.down(root))
+
+    const zEdited = zip.editAt(
+      R.pipe(
+        zip.down,
+        zip.down,
+        zip.right
+      ),
+      f,
+      z
+    )
+
+    expect(
+      zip.root(zEdited).getIn(['children', 0, 'children', 1, 'name'])
+    ).toEqual('Filip')
+
+    expect(() => {
+      zip.editAt(zip.up, f, z) // not allowed
+    }).toThrow()
+
+    expect(() => {
+      zip.editAt(zip.left, f, z) // not allowed
+    }).toThrow()
+
+    expect(() => {
+      zip.editAt(zip.right, f, z) // not allowed
+    }).toThrow()
+
+    expect(() => {
+      zip.editAt(zip.right, f, z) // not allowed
+    }).toThrow()
+
+    expect(() => {
+      zip.editAt(
+        R.pipe(
+          zip.down,
+          zip.right
+        ),
+        f,
+        z
+      ) // not allowed
+    }).toThrow()
   })
 })
