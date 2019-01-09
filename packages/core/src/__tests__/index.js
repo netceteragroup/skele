@@ -63,6 +63,7 @@ test('core.zip interface', () => {
 
   // edit
   expect(zip.editCond).toEqual(anyFunction)
+  expect(zip.editAt).toEqual(anyFunction)
 
   // walk
   expect(zip.preWalk).toEqual(anyFunction)
@@ -87,9 +88,6 @@ test('core.zip interface', () => {
   expect(zip.replace).toEqual(anyFunction)
   expect(zip.edit).toEqual(anyFunction)
   expect(zip.getChildren).toEqual(anyFunction)
-
-  // motions (skele)
-  expect(skeleZip.childAt).toEqual(anyFunction)
 
   // predicates
   expect(zip.ofKind).toEqual(anyFunction)

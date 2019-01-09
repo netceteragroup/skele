@@ -5,8 +5,6 @@ import I from 'immutable'
 import * as zip from '../'
 import { childrenProperty, flow } from '../../data'
 
-import { childAt } from '../skele/motion'
-
 import { propEq } from '../predicate'
 
 const zipper = data => zip.elementZipper({})(data)
@@ -49,7 +47,6 @@ const data = {
 describe('zipper predicates', () => {
   test('propEq', () => {
     const root = zipper(I.fromJS(data))
-
     expect(
       flow(
         root,
@@ -57,13 +54,6 @@ describe('zipper predicates', () => {
           'settings',
           I.fromJS({ kind: ['settings'], title: 'Martha Wells' })
         )
-      )
-    ).toBeTruthy()
-    expect(
-      flow(
-        root,
-        childAt('settings'),
-        propEq('title', 'Martha Wells')
       )
     ).toBeTruthy()
   })

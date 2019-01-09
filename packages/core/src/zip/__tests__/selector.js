@@ -90,10 +90,12 @@ describe('selectors', () => {
   )
   describe('skele.childrenAt', () => {
     test('w/o key', () => {
-      const elements = data.flow(
-        nba,
-        skeleZip.childrenAt(null)
-      )
+      const elements = [
+        ...data.flow(
+          nba,
+          skeleZip.childrenAt(null)
+        ),
+      ]
 
       expect(elements.length).toBe(6)
 
@@ -115,18 +117,22 @@ describe('selectors', () => {
     })
 
     test('w/ key', () => {
-      const teams = data.flow(
-        nba,
-        skeleZip.childrenAt('teams')
-      )
+      const teams = [
+        ...data.flow(
+          nba,
+          skeleZip.childrenAt('teams')
+        ),
+      ]
 
       expect(teams.length).toBe(3)
       expect(zip.node(teams[1]).get('name')).toBe('dallas')
 
-      const stats = data.flow(
-        nba,
-        skeleZip.childrenAt('stats')
-      )
+      const stats = [
+        ...data.flow(
+          nba,
+          skeleZip.childrenAt('stats')
+        ),
+      ]
 
       expect(stats.length).toBe(3)
       expect(zip.node(stats[1]).get('name')).toBe('ass')

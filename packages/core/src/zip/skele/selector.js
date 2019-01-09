@@ -1,24 +1,26 @@
 'use strict'
 
 import R from 'ramda'
+import I from 'immutable'
 
 import * as zip from '../impl'
 
 import { isStringArray } from '../select'
 
 // Selector fns
-// - A selector fn has the signature: (...args, loc) => [loc]
+// - A selector fn has the signature: (...args, loc) => Iterable(Location)
 // - It takes a number of arguments that determine its behavior
 // - a zipper location at the end
-// - and will return a an array of locations that have been selected by its execution
+// - and will return an iterable of locations that have been selected by its execution
 
-// children :: Location -> [Location]
+// children :: Location -> Iterable(Location)
 export const children = loc => childrenAt(null, loc)
 
 // Key = String | [String]
-// childrenAt :: Key -> Location -> [Location]
-export const childrenAt = R.curry((key, loc) => {
-  const result = []
+// childrenAt :: Key -> Location -> Iterable(Location)
+export const childrenAt = R.curry((key, loc) => I.Seq(_childrenAt(key, loc)))
+
+const _childrenAt = function*(key, loc) {
   let childLoc = zip.down(loc)
   if (childLoc != null) {
     const child = zip.node(childLoc)
@@ -28,12 +30,12 @@ export const childrenAt = R.curry((key, loc) => {
       (R.is(String)(key) && child.get('propertyName') === key)
     ) {
       if (child.get('isSingle')) {
-        result.push(zip.down(childLoc))
+        yield zip.down(childLoc)
       } else {
         let currentChild = zip.down(childLoc)
-        result.push(currentChild)
+        yield currentChild
         while ((currentChild = zip.right(currentChild)) != null) {
-          result.push(currentChild)
+          yield currentChild
         }
       }
     }
@@ -45,16 +47,15 @@ export const childrenAt = R.curry((key, loc) => {
         (R.is(String)(key) && child.get('propertyName') === key)
       ) {
         if (child.get('isSingle')) {
-          result.push(zip.down(childLoc))
+          yield zip.down(childLoc)
         } else {
           let currentChild = zip.down(childLoc)
-          result.push(currentChild)
+          yield currentChild
           while ((currentChild = zip.right(currentChild)) != null) {
-            result.push(currentChild)
+            yield currentChild
           }
         }
       }
     }
   }
-  return result
-})
+}
