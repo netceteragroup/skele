@@ -1,6 +1,6 @@
 'use strict'
 
-import { data, log, registry, zip, propNames } from '../'
+import { data, log, registry, zip, skeleZip, propNames } from '../'
 
 const anyFunction = expect.any(Function)
 const anyString = expect.any(String)
@@ -63,6 +63,7 @@ test('core.zip interface', () => {
 
   // edit
   expect(zip.editCond).toEqual(anyFunction)
+  expect(zip.editAt).toEqual(anyFunction)
 
   // walk
   expect(zip.preWalk).toEqual(anyFunction)
@@ -87,6 +88,21 @@ test('core.zip interface', () => {
   expect(zip.replace).toEqual(anyFunction)
   expect(zip.edit).toEqual(anyFunction)
   expect(zip.getChildren).toEqual(anyFunction)
+
+  // predicates
+  expect(zip.ofKind).toEqual(anyFunction)
+  expect(zip.propEq).toEqual(anyFunction)
+
+  // selectors
+  expect(zip.ancestors).toEqual(anyFunction)
+  expect(zip.descendants).toEqual(anyFunction)
+
+  // selectors (skele)
+  expect(skeleZip.children).toEqual(anyFunction)
+  expect(skeleZip.childrenAt).toEqual(anyFunction)
+
+  // select
+  expect(zip.select).toEqual(anyFunction)
 })
 
 test('core.log interface', () => {
