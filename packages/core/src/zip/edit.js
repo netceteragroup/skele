@@ -5,10 +5,10 @@ import { postWalk } from '../zip'
 import * as zip from './impl'
 import { curry } from 'ramda'
 
-import Registry from '../registry/Registry'
+import MultivalueRegistry from '../registry/MultivalueRegistry'
 
 export const editCond = (patterns, loc) => {
-  const kinds = new Registry()
+  const kinds = new MultivalueRegistry()
   const preds = []
 
   patterns.forEach(([pred, f]) => {
@@ -22,9 +22,7 @@ export const editCond = (patterns, loc) => {
   const editFn = l =>
     postWalk(el => {
       const kind = kindOf(el)
-      const f = kind != null && kinds.get(kind)
-
-      if (f != null) el = f(el)
+      el = kinds.get(kind).reduce((el, f) => f(el), el)
 
       const after = preds.reduce((el, [pred, f]) => (pred(el) ? f(el) : el), el)
       return after

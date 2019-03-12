@@ -28,7 +28,7 @@ describe('Editing a Zipper', () => {
         name: 'andon',
         children: [
           {
-            kind: 'tm',
+            kind: ['tm', 'yoga'],
             name: 'blagoja',
           },
           {
@@ -60,6 +60,7 @@ describe('Editing a Zipper', () => {
           item => item.get('name') === 'andon',
           item => item.set('name', 'sikavica'),
         ],
+        [['tm', 'yoga'], item => item.update('name', name => `yoga-${name}`)],
         ['tm', item => item.update('name', name => `member-${name}`)],
       ],
       elementZipper
@@ -90,8 +91,8 @@ describe('Editing a Zipper', () => {
             name: 'sikavica', // changed
             children: [
               {
-                kind: 'tm',
-                name: 'member-blagoja', // changed
+                kind: ['tm', 'yoga'],
+                name: 'yoga-member-blagoja', // changed
               },
               {
                 kind: 'tm',
