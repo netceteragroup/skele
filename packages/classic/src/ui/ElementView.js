@@ -12,13 +12,16 @@ import memoizeOne from '../impl/memoize-one'
 export default R.curry((kind, Component, runtime) => {
   const { uiFor: globalUIFor, system } = runtime
 
+  const interactive = action => ({
+    ...action,
+    interactive: action.hasOwnProperty('interative') ? action.interative : true,
+  })
+
   const dispatchFor = memoizeOne(element => {
     const focused = system.focusOn(element._keyPath)
     const dispatch = focused.dispatch.bind(focused)
-    return action => {
-      console.log('action', action)
-      dispatch(action)
-    }
+
+    return action => dispatch(interactive(action))
   })
 
   return class extends React.Component {
