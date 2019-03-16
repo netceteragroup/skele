@@ -11,6 +11,17 @@ import { ActionRegistry, findParentEntry } from '../registry/ActionRegistry'
 const updateStateAction = '@@skele/_effects.updateState'
 const { error } = log
 
+const nonInteractive = action => {
+  const meta = actions.actionMeta(action)
+  return {
+    ...action,
+    [actions.actionMetaProperty]: {
+      ...meta,
+      interactive:
+        meta && meta.hasOwnProperty('interactive') ? meta.interactive : false,
+    },
+  }
+}
 export const middleware = config => {
   const { kernel, effectsRegistry } = config
 
@@ -26,7 +37,7 @@ export const middleware = config => {
 
     const key = ActionRegistry.keyFromAction(action)
     let effect = effectFor(key)
-    let context = kernel.focusOn(actionMeta.keyPath)
+    let context = kernel.focusOn(actionMeta.keyPath, action)
 
     if (effect == null && action.type.startsWith('.')) {
       // global action
@@ -35,12 +46,12 @@ export const middleware = config => {
       if (entry != null) {
         const { element, entry: eff } = entry
         effect = eff
-        context = kernel.focusOn(element._keyPath)
+        context = kernel.focusOn(element._keyPath, action)
       }
     }
 
     if (effect != null) {
-      const result = effect(context, action)
+      const result = effect(context, nonInteractive(action))
 
       if (result && typeof result.then === 'function') {
         result
