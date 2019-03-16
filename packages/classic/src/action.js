@@ -18,5 +18,8 @@ export const atCursor = R.curry((cursor, action) => {
   const keyPath = cursor._keyPath
   const kind = data.kindOf(cursor)
 
-  return { ...action, [actionMetaProperty]: { keyPath, kind } }
+  return {
+    ...action,
+    [actionMetaProperty]: { ...actionMeta(action), keyPath, kind },
+  }
 })

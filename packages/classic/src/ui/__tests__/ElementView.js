@@ -12,6 +12,8 @@ import { EntryPoint } from '../../engine'
 
 import { defaultSubsystems } from '../../core'
 
+import { actionMeta } from '../../action'
+
 describe('ElementView', () => {
   const app = Subsystem.create(() => ({
     name: 'app',
@@ -69,8 +71,8 @@ describe('ElementView', () => {
     // expect that the dispatched action has interactive flag set to true
     // the action is the second argument in the update function
     expect(capitalize.mock.calls.length).toBe(1)
-    expect(capitalize.mock.calls[0][1].interactive).toBeDefined()
-    expect(capitalize.mock.calls[0][1].interactive).toBe(true)
+    expect(actionMeta(capitalize.mock.calls[0][1]).interactive).toBeDefined()
+    expect(actionMeta(capitalize.mock.calls[0][1]).interactive).toBe(true)
   })
 
   test('dispatched actions from kernel do not have interactivity defined', () => {
@@ -84,6 +86,6 @@ describe('ElementView', () => {
 
     // expect that the dispatched action does not have the interactive flag
     expect(capitalize.mock.calls.length).toBe(1)
-    expect(capitalize.mock.calls[0][1].interactive).toBeUndefined()
+    expect(actionMeta(capitalize.mock.calls[0][1]).interactive).toBeUndefined()
   })
 })
