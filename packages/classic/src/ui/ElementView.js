@@ -14,7 +14,11 @@ export default R.curry((kind, Component, runtime) => {
 
   const dispatchFor = memoizeOne(element => {
     const focused = system.focusOn(element._keyPath)
-    return focused.dispatch.bind(focused)
+    const dispatch = focused.dispatch.bind(focused)
+    return action => {
+      console.log('action', action)
+      dispatch(action)
+    }
   })
 
   return class extends React.Component {
