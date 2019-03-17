@@ -138,12 +138,12 @@ describe('effects API', function() {
 
         expect(specificEffect3).toHaveBeenCalled()
 
-        // assert originalAction preservation
+        // assert cause (originalAction) preservation
         const action = specificEffect3.mock.calls[0][1]
         const actionMeta = actions.actionMeta(action)
-        const originalAction = actionMeta.originalAction
-        expect(originalAction).toBeDefined()
-        expect(originalAction.type).toBe('fireOnSub')
+        const { cause } = actionMeta
+        expect(cause).toBeDefined()
+        expect(cause.type).toBe('fireOnSub')
         expect(action.type).toBe('toggle3')
       })
     })

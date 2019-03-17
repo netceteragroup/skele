@@ -111,7 +111,7 @@ class Kernel {
           self.dispatch(
             actions.atCursor(self.query(path), {
               ...action,
-              [actions.actionMetaProperty]: { ...meta, originalAction },
+              [actions.actionMetaProperty]: { ...meta, cause: originalAction },
             })
           )
         } else {
