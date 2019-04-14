@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 import { fromJS } from 'immutable'
 import * as zip from '../..'
 import skeleZip from '..'

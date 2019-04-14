@@ -1,7 +1,7 @@
 'use strict'
 
 import I from 'immutable'
-import R from 'ramda'
+import * as R from 'ramda'
 
 import * as zip from '../'
 import { childrenProperty, isOfKind, flow } from '../../data'
