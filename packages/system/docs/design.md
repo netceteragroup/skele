@@ -184,6 +184,96 @@ export SubSystem({
 })
 ```
 
+### Option C: Redefine Unit as a collection of extensions (or even a single extenison)
+
+The unit could also be redefined as _just a colleciton of extensions_ that is
+managed togeteher.
+
+In this case the actual unit factory method (the one taking dependencies and
+returning a startable / stoppable boject) is just another extension.
+
+```javascript
+const slots = {
+  runtime: Symbol('runtime'),
+}
+
+const runtime = (factoryFn) => { /* extension for the runtime slot */ }
+
+const r = runtime(() => {
+  start() {
+
+  }
+
+  stop() {
+
+  }
+})
+const ui = flow(ui(app), forKind(['app']))
+
+// now the system
+const s = Subsystem({
+  u1: Unit([runtime, ui])
+})
+```
+
+But then the question is, what happens with dependency injection? If we examine
+the case of (effects)[../../classic/src/effects/index.js] we can spot the
+following:
+
+- The unit exposes an extension slot called `effect`
+- All it does with it is collect all contributed effects and then provides
+  another extension (middleware) to another unit (the kernel)
+
+We would need to express this somehow.
+
+Another concern is that often an extension needs access to another unit or
+runtime (for querying or message sending). For example:
+
+- an ap-wide store subsystem would need to expose querying the current state
+  which would be kept in a runitme somewhere
+- a bookmarking subsystem would need to expose the ability to add or remove
+  bookmarks, also to query them
+
+This approach would need to redefine the dependency management. Though it
+simiplifies the core model (everythign is an extension) it might make practical
+use more cumbersome.
+
+It does give and alternative to the _context_ problem for various types of
+extensions, e.g.
+
+- `uiFor`, `theme`, custom ui contexts (like text resources) become just
+  dependencies of a _ui_ extension (though hooks in the ui may be better for
+  this)
+- injecting other subsystems into _reads_ avoids the context problem again
+
+We would like to be able to define ui simply as:
+
+```javascript
+export default ui((props =>
+  <View>
+  </View>))
+
+// but also allow for dependencies on a compositional way:
+
+export default ui(
+  ({dispatch, uiFor}) =>
+    props =>
+      <View>
+      </View>)
+```
+
+But then how do we make system composition not cumbersome? Do we ask that for
+every conctribution, we specify the dependencies?
+
+Or perhaps some default `contributions` config.... Worth thinking about...
+
+Also, the curried form of contributions perhaps cumboerson (see redux). Maybe on
+the DSL level we would hide it and have:
+
+```javascript
+export default ui(({ dispatch, uiFor }, props) => <View />)
+```
+
 ### Other Opts?
 
 ## Structuring a unit-package
