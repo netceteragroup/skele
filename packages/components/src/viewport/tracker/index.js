@@ -12,8 +12,10 @@ export default class ViewportTracker extends WithEvents(
 ) {
   constructor(props, context) {
     super(props, context)
+    this._viewportWidth = 0
     this._viewportHeight = 0
-    this._viewportOffset = 0
+    this._viewportOffsetX = 0
+    this._viewportOffsetY = 0
   }
 
   _onRef = ref => {
@@ -26,6 +28,7 @@ export default class ViewportTracker extends WithEvents(
     const childOnLayout = React.Children.only(this.props.children).props
       .onLayout
     childOnLayout && childOnLayout(event)
+    this._viewportWidth = event.nativeEvent.layout.width
     this._viewportHeight = event.nativeEvent.layout.height
     this._onViewportChange()
   }
@@ -42,16 +45,20 @@ export default class ViewportTracker extends WithEvents(
     const childOnScroll = React.Children.only(this.props.children).props
       .onScroll
     childOnScroll && childOnScroll(event)
-    this._viewportOffset = event.nativeEvent.contentOffset.y
+    this._viewportOffsetX = event.nativeEvent.contentOffset.x
+    this._viewportOffsetY = event.nativeEvent.contentOffset.y
     this._onViewportChange(false)
   }
 
   _onViewportChange = (shouldMeasureLayout = true) => {
     this.nodeHandle &&
+      this._viewportWidth > 0 &&
       this._viewportHeight > 0 &&
       this.notifyViewportListeners({
         parentHandle: this.nodeHandle,
-        viewportOffset: this._viewportOffset,
+        viewportOffsetX: this._viewportOffsetX,
+        viewportOffsetY: this._viewportOffsetY,
+        viewportWidth: this._viewportWidth,
         viewportHeight: this._viewportHeight,
         shouldMeasureLayout,
       })
