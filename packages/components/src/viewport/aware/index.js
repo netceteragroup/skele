@@ -10,7 +10,9 @@ export default WrappedComponent => {
     constructor(props, context) {
       super(props, context)
       this.state = {
-        componentOffset: null,
+        componentOffsetX: null,
+        componentOffsetY: null,
+        componentWidth: null,
         componentHeight: null,
         inViewport: false,
       }
@@ -35,7 +37,9 @@ export default WrappedComponent => {
       if (!this.nodeHandle) return
       if (
         info.shouldMeasureLayout ||
-        this.state.componentOffset == null ||
+        this.state.componentOffsetX == null ||
+        this.state.componentOffsetY == null ||
+        this.state.componentWidth == null ||
         this.state.componentHeight == null
       ) {
         if (!this._isMounted) return
@@ -45,29 +49,47 @@ export default WrappedComponent => {
           () => {},
           (offsetX, offsetY, width, height) => {
             if (!this._isMounted) return
-            const inViewport = Utils.isInViewport(
-              info.viewportOffset,
+            const inVerticalViewport = Utils.isInViewport(
+              info.viewportOffsetY,
               info.viewportHeight,
               offsetY,
               height,
               this.props.preTriggerRatio
             )
+            const inHorizontalViewport = Utils.isInViewport(
+              info.viewportOffsetX,
+              info.viewportWidth,
+              offsetX,
+              width,
+              this.props.preTriggerRatio
+            )
+            const inViewport = inVerticalViewport && inHorizontalViewport
             this._checkViewportEnterOrLeave(inViewport)
             this.setState({
-              componentOffset: offsetY,
+              componentOffsetY: offsetY,
+              componentOffsetX: offsetX,
               componentHeight: height,
+              componentWidth: width,
               inViewport,
             })
           }
         )
       } else {
-        const inViewport = Utils.isInViewport(
-          info.viewportOffset,
+        const inVerticalViewport = Utils.isInViewport(
+          info.viewportOffsetY,
           info.viewportHeight,
-          this.state.componentOffset,
+          this.state.componentOffsetY,
           this.state.componentHeight,
           this.props.preTriggerRatio
         )
+        const inHorizontalViewport = Utils.isInViewport(
+          info.viewportOffsetX,
+          info.viewportWidth,
+          this.state.componentOffsetX,
+          this.state.componentWidth,
+          this.props.preTriggerRatio
+        )
+        const inViewport = inVerticalViewport && inHorizontalViewport
         if (this._checkViewportEnterOrLeave(inViewport)) {
           this.setState({ inViewport })
         }

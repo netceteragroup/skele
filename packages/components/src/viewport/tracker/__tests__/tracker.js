@@ -29,8 +29,10 @@ describe('ViewportTracker', () => {
 
     expect(cb).toHaveBeenLastCalledWith({
       parentHandle: 42,
-      viewportOffset: 0,
+      viewportOffsetX: 0,
+      viewportOffsetY: 0,
       viewportHeight: 40,
+      viewportWidth: 10,
       shouldMeasureLayout: true,
     })
 
@@ -45,7 +47,9 @@ describe('ViewportTracker', () => {
 
     expect(cb).toHaveBeenLastCalledWith({
       parentHandle: 42,
-      viewportOffset: 15,
+      viewportOffsetX: 10,
+      viewportOffsetY: 15,
+      viewportWidth: 10,
       viewportHeight: 40,
       shouldMeasureLayout: false,
     })
