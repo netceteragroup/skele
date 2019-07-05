@@ -2,19 +2,19 @@
 
 export const isInViewport = (
   viewportOffset,
-  viewportHeight,
+  viewportSize,
   elementOffset,
-  elementHeight,
+  elementSize,
   preTriggerRatio
 ) => {
   let inViewport = true
   const preTriggerAreaSize = preTriggerRatio
-    ? preTriggerRatio * viewportHeight
+    ? preTriggerRatio * viewportSize
     : 0
-  const elementEnd = elementOffset + elementHeight
-  const viewportEnd = viewportOffset + viewportHeight
-  const isViewportOffsetAboveElement = viewportOffset <= elementOffset
-  if (isViewportOffsetAboveElement) {
+  const elementEnd = elementOffset + elementSize
+  const viewportEnd = viewportOffset + viewportSize
+  const isViewportOffsetBeforeElement = viewportOffset <= elementOffset
+  if (isViewportOffsetBeforeElement) {
     inViewport = elementOffset - preTriggerAreaSize <= viewportEnd
   } else {
     inViewport = elementEnd + preTriggerAreaSize >= viewportOffset
