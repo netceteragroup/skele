@@ -11,10 +11,10 @@ To facilitate this, the goals for the pacakge are:
   declare _extension slots_, places that other Units can loosly contribute
   extensions.
 - [3] Be friendly with code splitting, `React.lazy`, Metro bunidler,
-- [4] enable idiomatic declaration of contributions, e.g. collocate the kind of the
-  element with the ui. This should take into account the to reduce the cogintive
-  overhead related to having to switch between too many editors to be able to
-  read the intention of a certain extension.
+- [4] enable good idioms for the declaration of contributions, e.g. collocate
+  the kind of the element with the ui. This should take into account the to
+  reduce the cogintive overhead related to having to switch between too many
+  editors to be able to read the intention of a certain extension.
 
 # Extension Mechanism
 
@@ -40,23 +40,28 @@ slightly deviates from this as we want the extenisons to be declared fluidly in 
 ### Extension
 
 In a completely denormalized form, an extension is an object consiting of at
-least two important properties:
+least three important properties:
 
 ```javascript
 const extension = {
-  '@@skele/ext': '<extension-point>',
-  '@@skele/ext-by': '<unit-def>',
-  '@@skele/ext-payload': ' ... ', // the extension's payload
-  '
+  '@@skele/extOf': '<extension-slot>',
+  '@@skele/ext': ' ... ', // the extension's factory fn
+  '@skele/deps': {},
   // ...
 }
 ```
 
-I.e. the extension says a) which slot is it extending, and b) whcih unit is the
-contributor. The rest of the object is the contribution itself.
+- `@@skele/extOf` contains the symbol that identifies the
+- `@@skele/ext` contains the extension itself. It is a _factory function_
+  that takes the extension's dependencies and produces the extension itself
+- `@@skele/deps` contains a mapping from names to _contribution queries_ that is
+  used to find the extensions to be used when calling the factory fn.
+
+I.e. the extension says a) which slot is it extending.
 
 The extenison can also have additional metdata properties (e.g. `kind`) that
-further classify the extension.
+further classify the extension. These properties can be used when building the
+contribution queries later on.
 
 ### Extension slot
 
@@ -67,23 +72,64 @@ said slot. It is usually just a `Symbol` (or a unique string).
 const ui = Symbol('ui') // this the extension
 ```
 
-### Extenisons
+### Contribution Query
 
-A unit _contributes_ a number of _extensions_ to the running system. Within a
-running system, the extensions are represented as simply a list of _extensions_.
-All extensions from whole system are collected into a single list, respecting te
-initialiation order of the
+A contribution query is a an object int he form:
 
 ```javascript
-import { slots } from 'ui'
-const extensions = [
-  {
-    '@@skele/ext': slots.ui,
-    '@@skele/extBy': 'af3232....',
-    '@@skele/extPayload': ' .... ',
-  },
-]
+const q = {
+  '@@skele/ext': aSymbol,
+  '@@skele/qFilter': predicateFn, // optional
+  '@@skele/one': boolean, // optional, defaults to false
+}
 ```
+
+Where:
+
+There is a _terse_ form of the query :
+
+```javascript
+const ui = Symbol('ui') // ext slot
+
+const q1 = ui  // means get the one extension contributed to the slot 'ui'
+const q2 = [ui] // means get all the extensions contributed to the slot 'ui'
+const q3 = [ui, e => e.tag === 'foo'] // same above, but filtered with predicated pred
+
+expect(q1).toBeEquivalentQueryTo({
+  '@@skele/ext': ui,
+  '@@skele/one': true
+})
+
+expect(q2).toBeEquivalentQueryTo({
+  '@@skele/ext': ui,
+  '@@skele/one': false
+})
+
+expect(q2).toBeEquivalentQueryTo({
+  '@@skele/ext': ui,
+  '@@skele/one': false
+  '@@skele/qFilter': e => e.tag === 'foo',
+})
+```
+
+### Unit, System
+
+A unit is simply a list of extensions that make sense together (as a
+unit). These extensions are have already preconfigured contribution queries.
+
+- [x] Do we allow overriding contribution queries of extensions in an included
+      unit? **Let's try with no.**
+
+Units can include other units, which effectively adds the contributions from the
+included unit into the including one.
+
+A system is, again, a just list of extensions.
+
+### Dependencies and Ordering
+
+Since we are working with lists of extensions, or possibly trees of units (which
+themselves contain ordered lists of extensioin and/or other units) The order in
+which extensions are made avallable is naturally given.
 
 ## DSLs
 
@@ -139,6 +185,8 @@ We can see that there there are two types of methods in this example:
   some metadata
 
 ## Attaching Extensions to a unit
+
+We go with option C.
 
 ### Option A: special unit brings in extensions
 
@@ -283,7 +331,6 @@ export default ui(({ dispatch, uiFor }, props) => <View />)
   that are extenison slot identifiers
 - For each slot, the package should provide DSL methods that allow contributors
   to construct extensions for this slot as well as extension combnators
-- NEW: Extensions unit -- clarify
 
 ## Code splitting friendliness
 
@@ -315,6 +362,4 @@ the extension definition.
 [rntoplevel]: https://github.com/facebook/react-native/blob/master/Libraries/react-native/react-native-implementation.js
 [rambundles]: https://facebook.github.io/react-native/docs/0.59/performance#ram-bundles-inline-requires
 
-```
 ### Discuss React.lazy / create-react-app
-```

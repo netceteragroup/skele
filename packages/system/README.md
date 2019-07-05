@@ -10,11 +10,11 @@
 
 The aims of the framework are the following:
 
-* allow for application systems that offer ready-made functionality that can be
+- allow for application systems that offer ready-made functionality that can be
   altered and customized easily in a defined way, by means of
-  * allowing for better _separation of concerns_ by allowing the grouping together of related
+  - allowing for better _separation of concerns_ by allowing the grouping together of related
     system behavior into separate coarse components -- called **Units**
-  * allowing for defining loose coupled interfaces between the Units -- called
+  - allowing for defining loose coupled interfaces between the Units -- called
     **extensions**
 
 Within the context of this framework, a **Unit** is a collection of functions and
@@ -134,7 +134,7 @@ const hello = Unit({
   /* ... from previous examlle */
 })
 const example = Unit({
-  /* also */
+nt 
 })
 
 // the subsystem is defined just like a system
@@ -330,6 +330,52 @@ A typical usecase for this would be a **router** Unit that can dispatch on any
 number of contributed **routes**. Let's examine it.
 
 ```javascript
+const updateDSL = DSL({
+  define: (kind, action, fn) => ({ kind, action, fn }),
+})
+
+
+const groupBy = DSLHelper((group, dsl) => { // would be cool if we don't need to supply methods
+  [group]: (arg, body) => {
+    const wr = {}
+    const result = []
+    for (const m of dsl.methods()) {
+        wr[m] = (...args) => result.push(dsl[m](arg, ...args))
+      }
+
+      body(wr)
+      return result
+  },
+})
+
+const updateSlot = DSL.compose(groupBy('forKind'), updateDSL)
+
+const update = updateSlot()
+
+update.define('foo', 'press', fn)
+update.forKind('foo', upds => {
+  upds.define('press2', fn )
+})
+
+const WithPhase = DSLHelper((phase), dsl) => {
+  forPhase: (phase, body) {
+    const wr = {}
+    const result = []
+
+    for (const m of dsl.methods()) {
+      wr[m] = (...args) => result.push({ phase, ...dsl[m](...args)})
+    }
+  }
+}
+
+xform.forPhase('fetching', fetching => {
+  fetching.forKind(['foo'], foo => {
+    foo.register(xform)
+  })
+})
+```
+
+```javascript
 import { Unit, ExtensionSlot } from '@skele/system'
 
 // We define an extesnion slot by providing a function that
@@ -370,7 +416,7 @@ const findRoute = (routes, url) =>
 
 export default Router
 ```
-
+AppDelegate
 The extension slot definition takes a function that produces a new **extension** for that
 slot, everytime it is called (it will be called for every Unit that wants to provide
 extensions to that slot).
@@ -430,14 +476,14 @@ the `collect()` method on Units that contrbute and pass them on as a dependency.
 
 When nesting Subsystems, the follwing rules apply:
 
-* The extensions defined in the surounding subsystem will propageate into the encapsulated one.
+- The extensions defined in the surounding subsystem will propageate into the encapsulated one.
   In other words units in the outer subsystem can contribute to units in the encapsulated one.
-* The extensions defined in the encapsulated subsystem _will not_ propagate to the outer one
+- The extensions defined in the encapsulated subsystem _will not_ propagate to the outer one
   In other words, including a subsystem doesn't into another doesn't risk unwanted
   altering of the behavior of the the outer one.
-* Subsystems that wish to explicitly "export" contributions to surrounding subsystems should
-  * either define them on the subsystem object
-  * or use the `exportExtensions` feature
+- Subsystems that wish to explicitly "export" contributions to surrounding subsystems should
+  - either define them on the subsystem object
+  - or use the `exportExtensions` feature
 
 ## Ordering of Units (and extensions)
 

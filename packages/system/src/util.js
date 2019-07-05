@@ -2,10 +2,12 @@
 
 import invariant from 'invariant'
 
-export const partial = (f, ...args) => f.bind(null, ...args)
+export const partial = (f, ...args) => (...rest) => f(...args, ...rest)
+
 export const complement = f => (...args) => !f(...args)
 
 export const prop = (p, obj) => obj[p]
+export const propg = p => obj => obj[p]
 export const propd = (p, dflt, obj) => (obj[p] != null ? obj[p] : dflt)
 export const path = (path, obj) => {
   let c = obj
@@ -19,7 +21,16 @@ export const path = (path, obj) => {
 }
 
 export const map = f => coll => coll.map(f)
+export const mapObjVals = f => obj => {
+  let ret = {}
+  for (const k in obj) {
+    ret[k] = f(obj[k])
+  }
+
+  return ret
+}
 export const assoc = (p, value, obj) => ({ ...obj, [p]: value })
+export const merge = (a, b) => ({ ...a, ...b })
 export const update = (p, fn, obj) => assoc(p, fn(prop(p, obj)), obj)
 
 export const reject = (pred, coll) => coll.filter(complement(pred))
@@ -32,6 +43,12 @@ export const identity = x => x
 
 export const pipe = (...fs) => x => fs.reduce((r, f) => f(r), x)
 
+export const isEmpty = coll =>
+  coll == null ? true : Array.isArray(coll) ? coll.length > 0 : true
+
+export const isSymbol = x => typeof x === 'symbol'
+
+export const first = coll => (isEmpty(coll) ? undefined : coll[0])
 export const flow = (value, ...fns) => {
   let v = value
   fns.forEach(f => {
