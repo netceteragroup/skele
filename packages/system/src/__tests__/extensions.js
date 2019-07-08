@@ -1,6 +1,6 @@
 'use strict'
 
-import { props, ext, modify, using } from '../extensions'
+import { props, ext, modify, using, named } from '../extensions'
 
 describe('Extension', () => {
   const s = Symbol('s')
@@ -9,15 +9,20 @@ describe('Extension', () => {
     describe('ext', () => {
       test('basic building block of an extension', () => {
         const s = Symbol('s')
+        const n = Symbol('n')
+
         const f = () => ({})
 
-        expect(() => ext()).toThrow()
-        expect(() => ext(s)).toThrow()
         expect(() => ext('foo', 1)).toThrow()
         expect(() => ext(s, 1)).toThrow()
 
         expect(ext(s, f)).toEqual({
           [props.extOf]: s,
+          [props.ext]: f,
+        })
+
+        expect(ext([s, n], f)).toEqual({
+          [props.extOf]: [s, n],
           [props.ext]: f,
         })
       })
@@ -67,6 +72,30 @@ describe('Extension', () => {
           [props.one]: false,
         },
       })
+    })
+
+    test('named', () => {
+      const name = Symbol('name')
+      const f = () => ({})
+
+      const x = ext(s, f)
+      const x2 = ext(s, f)
+
+      expect(named(name, x)).toEqual({
+        [props.extOf]: [s, name],
+        [props.ext]: f,
+      })
+
+      expect(named(name, [x, x2])).toEqual([
+        {
+          [props.extOf]: [s, name],
+          [props.ext]: f,
+        },
+        {
+          [props.extOf]: [s, name],
+          [props.ext]: f,
+        },
+      ])
     })
   })
 })

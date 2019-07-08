@@ -2,38 +2,45 @@
 
 import invariant from 'invariant'
 
+export function curry(fn, args = []) {
+  return (..._args) =>
+    (rest => (rest.length >= fn.length ? fn(...rest) : curry(fn, rest)))([
+      ...args,
+      ..._args,
+    ])
+}
 export const partial = (f, ...args) => (...rest) => f(...args, ...rest)
 
 export const complement = f => (...args) => !f(...args)
 
-export const prop = (p, obj) => obj[p]
-export const propg = p => obj => obj[p]
-export const propd = (p, dflt, obj) => (obj[p] != null ? obj[p] : dflt)
-export const path = (path, obj) => {
+export const prop = curry((p, obj) => obj[p])
+export const propd = curry((p, dflt, obj) => (obj[p] != null ? obj[p] : dflt))
+export const path = curry((ps, obj) => {
   let c = obj
 
-  for (const prop of path) {
+  for (const prop of ps) {
     c = c[prop]
     if (c == null) return undefined
   }
 
   return c
-}
+})
 
-export const map = f => coll => coll.map(f)
-export const mapObjVals = f => obj => {
+export const map = curry((f, coll) => coll.map(f))
+export const mapObjVals = curry((f, obj) => {
   let ret = {}
   for (const k in obj) {
     ret[k] = f(obj[k])
   }
 
   return ret
-}
-export const assoc = (p, value, obj) => ({ ...obj, [p]: value })
-export const merge = (a, b) => ({ ...a, ...b })
-export const update = (p, fn, obj) => assoc(p, fn(prop(p, obj)), obj)
+})
 
-export const reject = (pred, coll) => coll.filter(complement(pred))
+export const assoc = curry((p, value, obj) => ({ ...obj, [p]: value }))
+export const merge = curry((a, b) => ({ ...a, ...b }))
+export const update = curry((p, fn, obj) => assoc(p, fn(prop(p, obj)), obj))
+
+export const reject = curry((pred, coll) => coll.filter(complement(pred)))
 export const flatten = coll =>
   coll.length <= 1 ? coll : coll[0].concat(...coll.slice(1))
 
@@ -56,6 +63,8 @@ export const flow = (value, ...fns) => {
   })
   return v
 }
+
+export const when = (test, f) => x => (test(x) ? f(x) : x)
 
 export const splitWhen = (pred, list) => {
   var idx = 0

@@ -3,13 +3,15 @@
 import invariant from 'invariant'
 import * as u from './util'
 
+//
+// TODO think about what's curried and what not
 /**
  * @namespace
  *
  * Use these props ffor name s
  */
 export const props = {
-  /** Property name identifying a reference to a slot */
+  /** Property name identifying a reference to a slot or slots. */
   extOf: '@@skele/extOf',
   /** Property name identifying a the extension factory */
   ext: '@@skele/ext',
@@ -27,7 +29,8 @@ export const props = {
  * Extension objects are central to skele/system. They declare a contribution to
  * an extension slot.
  *
- * @property {symbol} @@skele/extOf - the extenson slot for this extension
+ * @property {symbol|[symbol]} @@skele/extOf - the extenson slot (or slots) for
+ * extension. Multiple slots are usually used to **name** an extesnion.
  * @property {ExtensionFactory} @@skele/ext - the factory function that is
  * used to produce the extension
  * @property {Deps} [@@skele/deps] - the depedency declearationffor
@@ -91,17 +94,23 @@ export const props = {
  *
  * Tis is the most basic DSL for creating an extension object.
  *
- * @param {symbol} slot the slot this extension contributes to
+ * @function
+ * @param {symbol|[symbol]} slot the slot this extension contributes to
  * @param {ExtensionFactory} factory the factory-fn used to build the extensions
  */
-export const ext = (slot, factory) => {
+export const ext = u.curry((slot, factory) => {
   invariant(typeof factory === 'function', 'The factory must be a function')
+  invariant(
+    u.isSymbol(slot) ||
+      (Array.isArray(slot) && slot.length > 0 && u.isSymbol(slot[0])),
+    'Extension slot must be symbol|[symbols]'
+  )
 
   return {
     [props.extOf]: slot,
     [props.ext]: factory,
   }
-}
+})
 /**
  * @callback UpdateFn
  * @param {*} v
@@ -140,12 +149,30 @@ export const modify = (prop, notFound, f, exts) => {
 
 /**
  * Adds a set of deps to the provided ext (or exts)
+ * @function
  * @param {Deps} deps the set of deps to be added
  * @param {Extension[]|Extension} exts the extenison(s) to be modified
  */
-export const using = (deps, exts) =>
+export const using = u.curry((deps, exts) =>
   modify(props.deps, {}, ds => ({ ...ds, ...parseDeps(deps) }), exts)
+)
 
+/**
+ * Adds an additional extension slot to the ext (or exts). This additional slot
+ * is usually used as a name for the extension.
+ *
+ * @function
+ * @param {symbol} name - the name applied
+ * @param {Extension[]|Extension} - extensions
+ */
+export const named = u.curry((name, exts) =>
+  modify(
+    props.extOf,
+    [],
+    s => (Array.isArray(s) ? [...s, name] : [s, name]),
+    exts
+  )
+)
 // queries
 const every = () => true
 
@@ -194,22 +221,28 @@ export const parseDeps = u.mapObjVals(parseQuery)
  * @param {Extension} - the extension
  * @returns {Deps}
  */
-export const deps = u.propg(props.deps)
+export const deps = u.prop(props.deps)
 
 /**
- * Gets the extension slot to which the ext is pointing to.
+ * Gets the extension slots to which the ext is pointing to.
+ *
  * @function
  * @param {Extension} ext - the extesion
- * @returns {symbol} the extension slot
+ * @returns {[symbol]} the extension slot
  */
-export const extSlot = u.propg(props.extOf)
+export const extSlots = u.pipe(
+  u.prop(props.extOf),
+  u.when(u.isSymbol, s => [s]),
+  u.when(u.isEmpty, () => [])
+)
+
 /**
  * Gets the extension factory for the specified ext.
  * @function
  * @param {Extension} ext - the extension
  * @returns {ExtensionFactory}
  */
-export const extFactory = u.propg(props.ext)
+export const extFactory = u.prop(props.ext)
 
 export const select = (query, exts) => {
   invariant(
