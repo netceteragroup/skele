@@ -65,7 +65,7 @@ export const props = {
  * The terse query format is the one normally used by end users to specify a
  * query. It can have the following forms:
  * - sym   - meaning "the only extensions contributed to the slot sym". If more
- *   than one are found, an error is raised during construction of the extension.
+ *   than one are found, the last one contributed is taken (allowing for overrides).
  * - [sym] - meaning "all extensions contributed to the extension slot sym"
  * - [sym, pred] - meaining "all extensions contributed to the extension slot
  *   sym that match the predicate pred"
@@ -86,7 +86,7 @@ export const props = {
  * @property {symbol} @@skele/extOf - the symbol identifying the extenson slot
  * @property {QFilter} @@skele/qFilter - the predicate filtering the list of predicates
  * @property {boolean} @@skele/one - a property signifuying whether the query is
- * looking for just one extension
+ * looking for just one extension (the last one contributed)
  */
 
 /**
