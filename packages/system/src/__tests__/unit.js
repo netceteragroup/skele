@@ -1,124 +1,51 @@
 'use strict'
 
-import Unit, { start, stop, unitMeta, updateUnitMeta } from '../unit'
+import Unit, { unitDesc, iterate, unitDescriptor } from '../unit'
+import * as E from '../extensions'
+
+const makeExt = s => E.ext(s, () => ({}))
 
 describe('Unit', () => {
-  describe('defining units', () => {
-    test('Using an object definition', () => {
-      const def = Unit({
-        hello: 'world',
-      })
+  test('Unit definition', () => {
+    const s = Symbol('s')
+    const ex1 = makeExt(s)
+    const ex2 = makeExt(s)
 
-      const inst = def()
+    const u = Unit(ex1, ex2)
+    expect(Array.isArray(u)).toBeTruthy()
+    expect(u).toContain(ex1)
+    expect(u).toContain(ex2)
+    expect(u.length).toEqual(2)
+    expect(unitDesc(u)).toEqual(null)
 
-      expect(inst.hello).toEqual('world')
-    })
-
-    test('Using function definition', () => {
-      const def = Unit(() => ({
-        hello: 'world',
-      }))
-
-      const inst = def()
-      expect(inst.hello).toEqual('world')
-    })
+    const u2 = Unit('Sample unit', ex1, ex2)
+    expect(u2).toContain(ex1)
+    expect(u2).toContain(ex2)
+    expect(u2.length).toEqual(2)
+    expect(unitDesc(u2)).toEqual('Sample unit')
   })
 
-  describe('lifecycle', () => {
-    test('starting', () => {
-      const def = Unit({
-        start: jest.fn(),
-      })
+  test('Iteration', () => {
+    const s = Symbol('s')
+    const ex1 = makeExt(s)
+    const ex2 = makeExt(s)
 
-      const inst = def()
-      start(inst)
+    const u = Unit('Top', ex1, ex2, Unit('Inner', makeExt(s)))
 
-      expect(inst.start).toHaveBeenCalled()
-    })
-
-    test('start method optional', () => {
-      const def = Unit({
-        hello: jest.fn(),
-      })
-
-      const inst = def()
-      expect(() => {
-        start(inst)
-      }).not.toThrow()
-    })
-
-    test('starting (and stopping)', () => {
-      const def = Unit({
-        start: jest.fn(),
-        stop: jest.fn(),
-      })
-
-      const inst = def()
-      start(inst)
-
-      expect(inst.start).toHaveBeenCalled()
-
-      stop(inst)
-
-      expect(inst.stop).toHaveBeenCalled()
-    })
-
-    test('start/stop method optional', () => {
-      const def = Unit({
-        hello: jest.fn(),
-      })
-
-      const inst = def()
-      expect(() => {
-        start(inst)
-      }).not.toThrow()
-
-      expect(() => {
-        stop(inst)
-      }).not.toThrow()
-    })
-  })
-
-  describe('dependencies', () => {
-    test('dependecies with non/fn unit are ignore', () => {
-      const def = Unit({
-        hello: 'world',
-      })
-
-      let inst
-      expect(() => {
-        inst = def({ dependency: 'string' })
-      }).not.toThrow()
-
-      expect(inst.hello).toEqual('world')
-    })
-
-    test('are passed in as named props of the first argument', () => {
-      const def = Unit(({ dependency }) => ({
-        hello: () => `Hello ${dependency}`,
-      }))
-
-      const inst = def({ dependency: 'World' })
-
-      expect(inst.hello()).toEqual('Hello World')
-    })
-  })
-
-  describe('metadata', () => {
-    test('edge cases', () => {
-      expect(unitMeta(null)).toEqual({})
-      expect(unitMeta(undefined)).toEqual({})
-      expect(unitMeta([])).toEqual({})
-      expect(unitMeta({})).toEqual({})
-    })
-
-    test('reading and writing', () => {
-      const s = Unit({})
-
-      updateUnitMeta(m => ({ ...m, instance: true }), s)
-      expect(unitMeta(s)).toEqual({
-        instance: true,
-      })
-    })
+    const exts = Array.from(iterate(u))
+    expect(exts).toMatchObject([
+      {
+        [E.props.extOf]: s,
+        [unitDescriptor]: ['Top'],
+      },
+      {
+        [E.props.extOf]: s,
+        [unitDescriptor]: ['Top'],
+      },
+      {
+        [E.props.extOf]: s,
+        [unitDescriptor]: ['Top', 'Inner'],
+      },
+    ])
   })
 })

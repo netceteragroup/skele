@@ -36,6 +36,21 @@ export const mapObjVals = curry((f, obj) => {
   return ret
 })
 
+export const flatMap = curry((f, coll) => {
+  let res = []
+  coll.forEach((v, i) => {
+    Array.prototype.push.apply(res, f(v, i))
+  })
+  return res
+})
+
+export const every = curry((f, coll) => {
+  for (constx of coll) {
+    if (!f(x)) return false
+  }
+  return true
+})
+
 export const assoc = curry((p, value, obj) => ({ ...obj, [p]: value }))
 export const merge = curry((a, b) => ({ ...a, ...b }))
 export const update = curry((p, fn, obj) => assoc(p, fn(prop(p, obj)), obj))
