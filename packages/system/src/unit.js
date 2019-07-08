@@ -62,7 +62,6 @@ export const unitDesc = U.prop(unitDescriptor)
 export function* iterate(unit, descStack = []) {
   const desc = compoundDesc(unit, descStack)
   for (const u of unit) {
-    console.log('iterating', u)
     if (Array.isArray(u)) {
       yield* iterate(u, desc)
     } else {

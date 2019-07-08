@@ -1,6 +1,6 @@
 'use strict'
 
-import invariant from 'invariant'
+import invariant from './invariant'
 import * as u from './util'
 
 //
@@ -101,8 +101,9 @@ export const props = {
 export const ext = u.curry((slot, factory) => {
   invariant(typeof factory === 'function', 'The factory must be a function')
   invariant(
-    u.isSymbol(slot) ||
-      (Array.isArray(slot) && slot.length > 0 && u.isSymbol(slot[0])),
+    () =>
+      u.isSymbol(slot) ||
+      (Array.isArray(slot) && slot.length > 0 && u.every(u.isSymbol, slot)),
     'Extension slot must be symbol|[symbols]'
   )
 
@@ -204,7 +205,7 @@ export const parseQuery = q => {
     return q
   }
 
-  invariant(`Invalid query ${q}`, true)
+  invariant(false, `Invalid query ${q}`)
 }
 /**
  * Parses a Deps object's queries into their canonical version.
@@ -246,7 +247,7 @@ export const extFactory = u.prop(props.ext)
 
 export const select = (query, exts) => {
   invariant(
-    Array.isArray(query) && query.length === 2,
+    () => Array.isArray(query) && query.length === 2,
     'The query must be a tuple'
   )
   const [ext, pred] = query

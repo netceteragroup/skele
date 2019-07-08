@@ -45,7 +45,7 @@ export const flatMap = curry((f, coll) => {
 })
 
 export const every = curry((f, coll) => {
-  for (constx of coll) {
+  for (const x of coll) {
     if (!f(x)) return false
   }
   return true
