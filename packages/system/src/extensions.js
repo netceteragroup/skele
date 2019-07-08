@@ -95,7 +95,7 @@ export const props = {
  * Tis is the most basic DSL for creating an extension object.
  *
  * @function
- * @param {symbol|[symbol]} slot the slot this extension contributes to
+ * @param {symbol|symbol[]} slot the slot this extension contributes to
  * @param {ExtensionFactory} factory the factory-fn used to build the extensions
  */
 export const ext = u.curry((slot, factory) => {
