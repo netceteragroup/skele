@@ -25,6 +25,7 @@ export const unitDescriptor = Symbol('unitDesc')
  *
  * @param {string} [ShortDesc] - optional description of the unit.
  * @param {...ExtOrExts} - extensions
+ * @returns {Unit}
  */
 export default function Unit(...args) {
   let desc

@@ -1,17 +1,29 @@
 'use strict'
 
-import invariant from 'invariant'
+import invariant from './invariant'
 
 import * as E from './extensions'
 import * as U from './util'
-import * as runitme from './runtime'
-import Unit from './unit'
+import Unit, * as unt from './unit'
 
 const specs = Symbol('specs')
 const index = Symbol('index')
 const insts = Symbol('insts')
 const extIdentifier = Symbol('extId')
 
+/**
+ * @typedef System
+ */
+
+/**
+ * Creates a new System out of the provided extensions.
+ *
+ * @param {string} [ShortDesc] - optional description of the unit.
+ * @param {...unt.ExtOrExts} - extensions
+ * @returns {System} - a newly constructed system
+ *
+ * @see Unit
+ */
 export default function System(...args) {
   return {
     [specs]: Unit(...args),
@@ -19,28 +31,88 @@ export default function System(...args) {
   }
 }
 
-export const lazyQuery = function*(inQ, sys) {
-  const q = E.parseQuery(inQ)
+/**
+ * Queries the system for the extensions satisyfing the provided query.
+ *
+ * @param {E.Query} q the query.
+ * @param {System} sys a system
+ * @return {*} the extension instances in the system satisfying the query. A
+ * query looking for many extensions ([slot], [slot, pred]) will return an empty
+ * array in there are no matching extensions. A query looking for a single
+ * extension (slot) will return undefined in such a caee.
+ */
+export const query = (q, sys) => {
+  invariant(() => isSystem(sys), 'You must provide a valid system')
+
+  q = E.parseQuery(q)
+  const specs = querySpecs(q, sys)
+
+  return E.isOne(q) ? instance(specs, sys) : Array.from(instances(specs, sys))
+}
+
+/**
+ * Queries the system for the the extension specifications satisfying the
+ * query. This method will not instantate any extensions.
+ *
+ *
+ * @param {E.Query} q the query.
+ * @param {System} sys a system
+ * @return {E.Extension|E.Extension[]} the extension instances in the system
+ * satisfying the query. A query looking for many extensions ([slot], [slot,
+ * pred]) will return an empty array in there are no matching extensions. A
+ * query looking for a single extension (slot) will return undefined in such a caee.
+ */
+export const querySpecs = (q, sys) => {
+  invariant(() => isSystem(sys), 'You must provide a valid system')
+
+  q = E.parseQuery(q)
 
   if (sys[index] == null) {
     buildIndex(sys)
   }
 
-  for (const ext of queryIndex(q, sys[index])) {
+  const specs = U.select(E.qFilter(q), sys[index][E.extOf(q)])
+
+  return E.isOne(q) ? U.last(specs) : specs
+}
+
+const buildIndex = sys => {
+  sys[index] = {}
+
+  const push = (x, slot) => {
+    if (sys[index][slot] == null) {
+      sys[index][slot] = []
+    }
+    sys[index][slot].push(x)
+  }
+
+  let cid = 0
+  for (let spec of unt.iterate(sys[specs])) {
+    spec = {
+      ...spec,
+      [extIdentifier]: cid,
+    }
+    cid += 1
+
+    for (const slot of E.extSlots(spec)) {
+      push(spec, slot)
+    }
+  }
+}
+const instances = function*(specs, sys) {
+  for (const ext of specs) {
     yield instance(ext, sys)
   }
 }
 
-export const query = (q, sys) => Array.from(lazyQuery(q, sys))
-
-// TODO buildIndex and queryIndex
-
 const instance = (ext, sys, path = []) => {
+  if (ext == null) return undefined
+
   const id = extId(ext)
 
   if (sys[insts][id] == null) {
     // check cycle
-    if (path.find(e => extId(e) === extId(ext)) != null) {
+    if (U.find(e => extId(e) === extId(ext), path) != null) {
       throw new Error(
         `Circular dependency detected in this extension chain ${[...path, ext]}`
       )
@@ -93,4 +165,5 @@ const buildDeps = (ext, sys, path) => {
 }
 
 const extId = ext => ext[extIdentifier]
-// OLD CODE
+
+const isSystem = sys => sys[specs] != null && sys[insts] != null

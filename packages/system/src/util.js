@@ -14,7 +14,6 @@ export const partial = (f, ...args) => (...rest) => f(...args, ...rest)
 export const complement = f => (...args) => !f(...args)
 
 export const prop = curry((p, obj) => obj[p])
-export const propd = curry((p, dflt, obj) => (obj[p] != null ? obj[p] : dflt))
 export const path = curry((ps, obj) => {
   let c = obj
 
@@ -26,7 +25,7 @@ export const path = curry((ps, obj) => {
   return c
 })
 
-export const map = curry((f, coll) => coll.map(f))
+export const map = curry((f, coll) => (coll || []).map(f))
 export const mapObjVals = curry((f, obj) => {
   let ret = {}
   for (const k in obj) {
@@ -38,7 +37,7 @@ export const mapObjVals = curry((f, obj) => {
 
 export const flatMap = curry((f, coll) => {
   let res = []
-  coll.forEach((v, i) => {
+  ;(coll || []).forEach((v, i) => {
     Array.prototype.push.apply(res, f(v, i))
   })
   return res
@@ -55,22 +54,31 @@ export const assoc = curry((p, value, obj) => ({ ...obj, [p]: value }))
 export const merge = curry((a, b) => ({ ...a, ...b }))
 export const update = curry((p, fn, obj) => assoc(p, fn(prop(p, obj)), obj))
 
-export const reject = curry((pred, coll) => coll.filter(complement(pred)))
+export const filter = curry((pred, coll) => (coll || []).filter(pred))
+export const find = curry((pred, coll) => (coll | []).find(pred))
+
+export const select = filter
+export const reject = curry((pred, coll) =>
+  (coll || []).filter(complement(pred))
+)
 export const flatten = coll =>
   coll.length <= 1 ? coll : coll[0].concat(...coll.slice(1))
 
 export const isNil = value => value == null
+
+export const always = x => () => x
 
 export const identity = x => x
 
 export const pipe = (...fs) => x => fs.reduce((r, f) => f(r), x)
 
 export const isEmpty = coll =>
-  coll == null ? true : Array.isArray(coll) ? coll.length > 0 : true
+  coll == null ? true : Array.isArray(coll) ? coll.length === 0 : true
 
 export const isSymbol = x => typeof x === 'symbol'
 
 export const first = coll => (isEmpty(coll) ? undefined : coll[0])
+export const last = coll => (isEmpty(coll) ? undefined : coll[coll.length - 1])
 export const flow = (value, ...fns) => {
   let v = value
   fns.forEach(f => {

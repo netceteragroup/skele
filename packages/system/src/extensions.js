@@ -120,8 +120,9 @@ export const ext = u.curry((slot, factory) => {
 /**
  * DSL function that modifies the property prop of each ext in exts.
  *
- * This is the most basic DSL fn used to modify extensions.
+ * This is the most basic modifier used to modify extensions.
  *
+ * @function
  * @param {string} prop the property to be modified
  * @param {*} [notFound] an optional value to be used if an ext doesn't have a
  * value under prop
@@ -147,6 +148,19 @@ export const modify = (prop, notFound, f, exts) => {
 
   return Array.isArray(exts) ? exts.map(upd) : upd(exts)
 }
+
+/**
+ * A modifier that sets the value of a certain property of exts to val
+ * @function
+ * @param {string} prop - the property
+ * @param {string} val - the value to be set
+ * @param {Extension[]|Extension} exts - the extensions to be modified
+ * @returns {Extension[]|Extension} the passed extensions with the specified
+ * property set
+ */
+export const set = u.curry((prop, val, exts) =>
+  modify(prop, null, () => val, exts)
+)
 
 /**
  * Adds a set of deps to the provided ext (or exts)
@@ -184,7 +198,9 @@ const every = () => true
  * @returns {CanonicalQuery} the canonical version of that query
  */
 export const parseQuery = q => {
-  if (u.isSymbol(q)) {
+  if (q[props.extOf] != null) {
+    return q
+  } else if (u.isSymbol(q)) {
     return {
       [props.extOf]: q,
       [props.one]: true,
@@ -201,8 +217,6 @@ export const parseQuery = q => {
       [props.one]: false,
       [props.qFilter]: q[1] != null ? q[1] : every,
     }
-  } else if (q[ext] != null) {
-    return q
   }
 
   invariant(false, `Invalid query ${q}`)
@@ -234,7 +248,7 @@ export const deps = u.prop(props.deps)
 export const extSlots = u.pipe(
   u.prop(props.extOf),
   u.when(u.isSymbol, s => [s]),
-  u.when(u.isEmpty, () => [])
+  u.when(u.isNil, u.always([]))
 )
 
 /**
@@ -245,16 +259,6 @@ export const extSlots = u.pipe(
  */
 export const extFactory = u.prop(props.ext)
 
-export const select = (query, exts) => {
-  invariant(
-    () => Array.isArray(query) && query.length === 2,
-    'The query must be a tuple'
-  )
-  const [ext, pred] = query
-
-  return u.isEmpty(exts)
-    ? []
-    : exts.filter(e => e[props.extOf] === ext && pred(e))
-}
-
-export const selectFirst = (query, exts) => u.first(select(query, exts))
+export const extOf = u.prop(props.extOf)
+export const qFilter = u.prop(props.qFilter)
+export const isOne = u.prop(props.one)
