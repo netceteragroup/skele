@@ -110,13 +110,15 @@ const instance = (ext, sys, path = []) => {
 
   const id = extId(ext)
 
+  // TODO try to format the circle better
+  if (U.find(e => extId(e) === id, path) != null) {
+    throw new Error(
+      `Circular dependency detected in this extension chain ${[...path, ext]}`
+    )
+  }
+
   if (sys[insts][id] == null) {
     // check cycle
-    if (U.find(e => extId(e) === id, path) != null) {
-      throw new Error(
-        `Circular dependency detected in this extension chain ${[...path, ext]}`
-      )
-    }
     const deps = buildDeps(ext, sys, [...path, ext])
 
     try {
@@ -136,24 +138,23 @@ const buildDeps = (ext, sys, path) => {
   if (depSpecs == null) return deps
 
   let responses = {}
-  for (const dep of depSpecs) {
+  for (const dep in depSpecs) {
     const depQuery = depSpecs[dep]
 
     Object.defineProperty(deps, dep, {
       enumerable: true,
-      writable: false,
 
       get: () => {
         const resp = responses[dep]
         if (resp === null) {
           return null
         } else if (typeof resp === 'undefined') {
-          const exts = query(depQuery, sys)
+          const exts = querySpecs(depQuery, sys)
 
           if (Array.isArray(exts)) {
-            responses[dep] = U.map(e => instance(e, sys, path))
+            responses[dep] = U.map(e => instance(e, sys, path), exts)
           } else if (ext != null) {
-            responses[dep] = instance(e, sys, path)
+            responses[dep] = instance(exts, sys, path)
           } else {
             respones[dep] = null
           }
@@ -162,6 +163,8 @@ const buildDeps = (ext, sys, path) => {
       },
     })
   }
+
+  return deps
 }
 
 const extId = ext => ext[extIdentifier]

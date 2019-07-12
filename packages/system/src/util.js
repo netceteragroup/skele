@@ -50,6 +50,15 @@ export const every = curry((f, coll) => {
   return true
 })
 
+export const objValues = obj => {
+  let res = []
+  for (const k in obj) {
+    res.push(obj[k])
+  }
+
+  return res
+}
+
 export const assoc = curry((p, value, obj) => ({ ...obj, [p]: value }))
 export const merge = curry((a, b) => ({ ...a, ...b }))
 export const update = curry((p, fn, obj) => assoc(p, fn(prop(p, obj)), obj))
@@ -76,6 +85,9 @@ export const isEmpty = coll =>
   coll == null ? true : Array.isArray(coll) ? coll.length === 0 : true
 
 export const isSymbol = x => typeof x === 'symbol'
+export const isTrue = x => !!x
+export const isBoolean = x => typeof x === 'boolean'
+export const isFunction = x => typeof x === 'function'
 
 export const first = coll => (isEmpty(coll) ? undefined : coll[0])
 export const last = coll => (isEmpty(coll) ? undefined : coll[coll.length - 1])

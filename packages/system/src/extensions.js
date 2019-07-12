@@ -230,6 +230,44 @@ export const parseQuery = q => {
  */
 export const parseDeps = u.mapObjVals(parseQuery)
 
+const optional = u.curry((pred, x) => typeof x === 'undefined' || pred(x))
+const oneOrMany = u.curry(
+  (pred, x) => (Array.isArray(x) && u.every(pred, x)) || pred(x)
+)
+export const isValidQuery = q => {
+  if (q[props.extOf] != null) {
+    return (
+      oneOrMany(u.isSymbol, q[props.extOf]) &&
+      optional(u.isFunction, q[props.qFilter]) &&
+      optional(u.isBoolean, q[props.one])
+    )
+  } else if (u.isSymbol(q)) {
+    return true
+  } else if (
+    Array.isArray(q) &&
+    q.length >= 0 &&
+    q.length <= 2 &&
+    u.isSymbol(q[0]) &&
+    optional(u.isFunction, q[1])
+  ) {
+    return true
+  }
+
+  return false
+}
+
+export const isValidDeps = deps => {
+  if (typeof deps === 'object') {
+    return u.flow(
+      deps,
+      u.objValues,
+      u.map(isValidQuery),
+      u.every(u.isTrue)
+    )
+  }
+  return false
+}
+
 /**
  * Gets the dependency declaration out of the extensions.
  * @function

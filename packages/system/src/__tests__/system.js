@@ -18,6 +18,13 @@ const mockExt = (slot, name, val) => {
   )
 }
 
+const mockExtDeps = (slot, deps, val) =>
+  U.flow(
+    E.ext(slot, deps => ({ val, deps })),
+    E.using(deps),
+    E.set('id', val)
+  )
+
 const propEq = (prop, v) => x => x[prop] === v
 
 describe('System', () => {
@@ -107,5 +114,81 @@ describe('System', () => {
         sys
       )
     ).toEqual(1)
+  })
+})
+
+describe('Extension Dependencies', () => {
+  const slot = Symbol('s')
+  const slot2 = Symbol('s2')
+  const slot3 = Symbol('s3')
+  const name = Symbol('name')
+
+  const u1 = Unit(
+    'U1',
+
+    mockExt(slot, 1),
+    mockExt(slot, 2),
+    mockExt(slot2, 3),
+
+    mockExtDeps(slot3, { d1: slot, n1: name }, 4)
+  )
+
+  const u2 = Unit(
+    'U2',
+
+    mockExt(slot, 5),
+    mockExtDeps(slot, { n1: [name] }, 10)
+  )
+
+  const sys = System(
+    'Sys',
+
+    u1,
+    u2,
+
+    mockExt(slot, name, 6),
+    mockExtDeps(slot3, { d1: [slot2], d2: [slot] }, 7)
+  )
+
+  test('deps', () => {
+    expect(query([slot3], sys)).toMatchObject([
+      {
+        val: 4,
+        deps: {
+          d1: 6,
+          n1: 6,
+        },
+      },
+      {
+        val: 7,
+        deps: {
+          d1: [3],
+          d2: [
+            1,
+            2,
+            5,
+            {
+              deps: {
+                n1: [6],
+              },
+              val: 10,
+            },
+            6,
+          ],
+        },
+      },
+    ])
+  })
+
+  test('no circular deps', () => {
+    const sys2 = System(
+      'sys2',
+
+      // circular
+      mockExtDeps(slot3, { c3: slot2 }, 7),
+      mockExtDeps(slot2, { c2: slot3 }, 11)
+    )
+
+    expect(() => query(slot2, sys2).deps.c2.deps.c3).toThrow()
   })
 })

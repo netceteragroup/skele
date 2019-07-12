@@ -105,7 +105,7 @@ const validateExt = (desc, ext) => {
     () => {
       const deps = E.deps(ext)
 
-      return deps == null || (Array.isArray(deps) && U.every(isDep, deps))
+      return deps == null || E.isValidDeps(deps)
     },
     'Invalid dependency specification: %s (at %s)',
     E.deps(ext),
