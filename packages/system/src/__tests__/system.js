@@ -72,6 +72,40 @@ describe('System', () => {
       id: 1,
     })
 
-    console.log(sys)
+    expect(querySpecs(unused, sys)).toBeUndefined()
+    expect(querySpecs([unused], sys)).toEqual([])
+    expect(
+      querySpecs(
+        {
+          [E.props.extOf]: unused,
+          [E.props.one]: true,
+          [E.props.qFilter]: propEq('id', 1),
+        },
+        sys
+      )
+    ).toBeUndefined()
+
+    expect(() => querySpecs(slot)).toThrow()
+    expect(() => querySpecs()).toThrow()
+    expect(() => querySpecs('foo', sys)).toThrow()
+    expect(() => querySpecs(1, sys)).toThrow()
+    expect(() => querySpecs([1, 2], sys)).toThrow()
+    expect(() => querySpecs([], sys)).toThrow()
+  })
+
+  test('query', () => {
+    expect(query(name, sys)).toEqual(3)
+    expect(query([slot], sys)).toEqual([1, 2, 4])
+    expect(query([slot, propEq('id', 1)], sys)).toEqual([1])
+    expect(
+      query(
+        {
+          [E.props.extOf]: slot,
+          [E.props.one]: true,
+          [E.props.qFilter]: propEq('id', 1),
+        },
+        sys
+      )
+    ).toEqual(1)
   })
 })

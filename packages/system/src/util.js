@@ -55,7 +55,7 @@ export const merge = curry((a, b) => ({ ...a, ...b }))
 export const update = curry((p, fn, obj) => assoc(p, fn(prop(p, obj)), obj))
 
 export const filter = curry((pred, coll) => (coll || []).filter(pred))
-export const find = curry((pred, coll) => (coll | []).find(pred))
+export const find = curry((pred, coll) => (coll || []).find(pred))
 
 export const select = filter
 export const reject = curry((pred, coll) =>

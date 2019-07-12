@@ -112,7 +112,7 @@ const instance = (ext, sys, path = []) => {
 
   if (sys[insts][id] == null) {
     // check cycle
-    if (U.find(e => extId(e) === extId(ext), path) != null) {
+    if (U.find(e => extId(e) === id, path) != null) {
       throw new Error(
         `Circular dependency detected in this extension chain ${[...path, ext]}`
       )
@@ -120,7 +120,7 @@ const instance = (ext, sys, path = []) => {
     const deps = buildDeps(ext, sys, [...path, ext])
 
     try {
-      sys[insts][extId(ext)] = E.extFactory(ext)(deps)
+      sys[insts][id] = E.extFactory(ext)(deps)
     } catch (e) {
       throw new Error(`Could not instantiate ext: ${ext}, reason ${e}`)
     }
@@ -166,4 +166,4 @@ const buildDeps = (ext, sys, path) => {
 
 const extId = ext => ext[extIdentifier]
 
-const isSystem = sys => sys[specs] != null && sys[insts] != null
+const isSystem = sys => sys != null && sys[specs] != null && sys[insts] != null
