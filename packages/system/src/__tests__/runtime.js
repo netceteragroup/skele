@@ -14,13 +14,13 @@ describe('runtime', () => {
     expect(() => runtime('fooo', f)).toThrow()
 
     expect(runtime(name, f)).toEqual({
-      [props.ext]: f,
+      [props.extFactory]: f,
       [props.extOf]: [slots.runtime, name],
     })
 
     expect(runtime(name, { dep1: n1 }, f)).toMatchObject({
       [props.extOf]: [slots.runtime, name],
-      [props.ext]: f,
+      [props.extFactory]: f,
       [props.deps]: {
         dep1: {
           [props.extOf]: n1,

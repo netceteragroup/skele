@@ -88,6 +88,12 @@ export const isSymbol = x => typeof x === 'symbol'
 export const isTrue = x => !!x
 export const isBoolean = x => typeof x === 'boolean'
 export const isFunction = x => typeof x === 'function'
+export const isEnumerated = curry((enumeration, x) => {
+  for (const k in enumeration) {
+    if (x === enumeration[k]) return true
+  }
+  return false
+})
 
 export const first = coll => (isEmpty(coll) ? undefined : coll[0])
 export const last = coll => (isEmpty(coll) ? undefined : coll[coll.length - 1])

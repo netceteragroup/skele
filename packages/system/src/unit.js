@@ -14,17 +14,17 @@ export const unitDescriptor = Symbol('unitDesc')
  */
 
 /**
- * @typedef {(E.Extension|Unit)[]} Unit
+ * @typedef {(E.Ext|Unit)[]} Unit
  * A unit is simply an array of extensions or other units.
  */
 
 /**
- * Creates a new Unit. a unit is simply a collection of extensions. You can
- * insert other units in place of an extension. All these will get flattened
- * into a single list during the creation of the system.
+ * Creates a new Unit. a unit is simply a collection of extension definitions.
+ * You can insert other units in place of an extension. All these will get
+ * flattened into a single list during the creation of the system.
  *
  * @param {string} [ShortDesc] - optional description of the unit.
- * @param {...ExtOrExts} - extensions
+ * @param {...ExtOrExts} - extension definitions
  * @returns {Unit}
  */
 export default function Unit(...args) {
@@ -56,7 +56,7 @@ const compoundDesc = (unit, descStack = []) => {
 export const unitDesc = U.prop(unitDescriptor)
 
 /**
- * A generator that will iterate through a unit's ext definitions in a 'flat
+ * A generator that will iterate through a unit's exts in a 'flat
  * manner.
  * @param {Unit} unit - the unit to be iterated
  */
@@ -103,8 +103,8 @@ const validateExt = (desc, ext) => {
 
   invariant(
     () => {
-      const deps = E.deps(ext)
-
+      // TODO: this should be better: tell which depq is invalid but w/o prod
+      // overhead
       return deps == null || E.isValidDeps(deps)
     },
     'Invalid dependency specification: %s (at %s)',

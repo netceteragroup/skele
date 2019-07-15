@@ -18,12 +18,12 @@ describe('Extension', () => {
 
         expect(ext(s, f)).toEqual({
           [props.extOf]: s,
-          [props.ext]: f,
+          [props.extFactory]: f,
         })
 
         expect(ext([s, n], f)).toEqual({
           [props.extOf]: [s, n],
-          [props.ext]: f,
+          [props.extFactory]: f,
         })
       })
     })
@@ -36,14 +36,14 @@ describe('Extension', () => {
       expect(forKind('foo', x)).toEqual({
         kind: 'foo',
         [props.extOf]: s,
-        [props.ext]: e,
+        [props.extFactory]: e,
       })
 
       expect(forKind('foo', [x])).toEqual([
         {
           kind: 'foo',
           [props.extOf]: s,
-          [props.ext]: e,
+          [props.extFactory]: e,
         },
       ])
     })
@@ -83,17 +83,17 @@ describe('Extension', () => {
 
       expect(named(name, x)).toEqual({
         [props.extOf]: [s, name],
-        [props.ext]: f,
+        [props.extFactory]: f,
       })
 
       expect(named(name, [x, x2])).toEqual([
         {
           [props.extOf]: [s, name],
-          [props.ext]: f,
+          [props.extFactory]: f,
         },
         {
           [props.extOf]: [s, name],
-          [props.ext]: f,
+          [props.extFactory]: f,
         },
       ])
     })

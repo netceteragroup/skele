@@ -6,33 +6,36 @@ import * as E from './extensions'
 import * as U from './util'
 import Unit, * as unt from './unit'
 
-const specs = Symbol('specs')
-const index = Symbol('index')
-const insts = Symbol('insts')
-const extIdentifier = Symbol('extId')
+const P = {
+  exts: Symbol('exts'),
+  defIndex: Symbol('index/def'),
+  topoIndex: Symbol('index/topo'),
+  insts: Symbol('insts'),
+  extId: Symbol('extId'),
+}
 
 /**
  * @typedef System
  */
 
 /**
- * Creates a new System out of the provided extensions.
+ * Creates a new System out of the provided extension definitions (exts).
  *
  * @param {string} [ShortDesc] - optional description of the unit.
- * @param {...unt.ExtOrExts} - extensions
+ * @param {...unt.ExtOrExts} - the extension definitions
  * @returns {System} - a newly constructed system
  *
  * @see Unit
  */
 export default function System(...args) {
   return {
-    [specs]: Unit(...args),
-    [insts]: {},
+    [P.exts]: Unit(...args),
+    [P.insts]: {},
   }
 }
 
 /**
- * Queries the system for the extensions satisyfing the provided query.
+ * Queries the system for the extensions satisyfing q.
  *
  * @param {E.Query} q the query.
  * @param {System} sys a system
@@ -51,13 +54,13 @@ export const query = (q, sys) => {
 }
 
 /**
- * Queries the system for the the extension specifications satisfying the
- * query. This method will not instantate any extensions.
+ * Queries the system for the the extension definitions. This method will not
+ *  instantate any extensions.
  *
  *
  * @param {E.Query} q the query.
  * @param {System} sys a system
- * @return {E.Extension|E.Extension[]} the extension instances in the system
+ * @return {E.Ext|E.Ext[]} the extension definitions (exts) in the system
  * satisfying the query. A query looking for many extensions ([slot], [slot,
  * pred]) will return an empty array in there are no matching extensions. A
  * query looking for a single extension (slot) will return undefined in such a caee.
@@ -67,30 +70,30 @@ export const querySpecs = (q, sys) => {
 
   q = E.parseQuery(q)
 
-  if (sys[index] == null) {
+  if (sys[P.defIndex] == null) {
     buildIndex(sys)
   }
 
-  const specs = U.select(E.qFilter(q), sys[index][E.extOf(q)])
+  const specs = U.select(E.qFilter(q), sys[P.defIndex][E.extOf(q)])
 
   return E.isOne(q) ? U.last(specs) : specs
 }
 
 const buildIndex = sys => {
-  sys[index] = {}
+  sys[P.defIndex] = {}
 
   const push = (x, slot) => {
-    if (sys[index][slot] == null) {
-      sys[index][slot] = []
+    if (sys[P.defIndex][slot] == null) {
+      sys[P.defIndex][slot] = []
     }
-    sys[index][slot].push(x)
+    sys[P.defIndex][slot].push(x)
   }
 
   let cid = 0
-  for (let spec of unt.iterate(sys[specs])) {
+  for (let spec of unt.iterate(sys[P.exts])) {
     spec = {
       ...spec,
-      [extIdentifier]: cid,
+      [P.extId]: cid,
     }
     cid += 1
 
@@ -117,18 +120,18 @@ const instance = (ext, sys, path = []) => {
     )
   }
 
-  if (sys[insts][id] == null) {
+  if (sys[P.insts][id] == null) {
     // check cycle
     const deps = buildDeps(ext, sys, [...path, ext])
 
     try {
-      sys[insts][id] = E.extFactory(ext)(deps)
+      sys[P.insts][id] = E.extFactory(ext)(deps)
     } catch (e) {
       throw new Error(`Could not instantiate ext: ${ext}, reason ${e}`)
     }
   }
 
-  return sys[insts][id]
+  return sys[P.insts][id]
 }
 
 const buildDeps = (ext, sys, path) => {
@@ -167,7 +170,7 @@ const buildDeps = (ext, sys, path) => {
   return deps
 }
 
-const extId = ext => ext[extIdentifier]
+const extId = ext => ext[P.extId]
 
 export const isSystem = sys =>
-  sys != null && sys[specs] != null && sys[insts] != null
+  sys != null && sys[P.exts] != null && sys[P.insts] != null

@@ -6,32 +6,47 @@ import * as u from './util'
 //
 // TODO think about what's curried and what not
 /**
- * @namespace
- *
- * Use these props ffor name s
+ * Property names found in Ext objects.
+ * @enum {String}
+ * @readonly
  */
 export const props = {
   /** Property name identifying a reference to a slot or slots. */
   extOf: '@@skele/extOf',
   /** Property name identifying a the extension factory */
-  ext: '@@skele/ext',
+  extFactory: '@@skele/extFactory',
   /** Property name identifying a dependencies object */
   deps: '@@skele/deps',
   /** Property name identifting a query filter function */
   qFilter: '@@skele/qFilter',
-  /** Priperty name identifying a wether a single extension is requested */
+  /** Priperty name identifying a whether a single extension is requested */
   one: '@@skele/one',
+  /** Property defining an order */
+  order: '@@skele/order',
 }
 
 /**
- * @typedef Extension - an extension object.
+ * Order constants, used in queries.
+ * @enum {symbol}
+ * @readonly
+ */
+export const order = {
+  /** Asks for results in the order as they have been defined */
+  definition: Symbol('order/definition'),
+  /** Asks for results in topological order. Exts with dependencies (dependants) will
+   * be placed after their dependencies. */
+  topological: Symbol('order/topological'),
+}
+
+/**
+ * @typedef Ext - an extension definition.
  *
- * Extension objects are central to skele/system. They declare a contribution to
- * an extension slot.
+ * Extension definitions (Exts for short) are central to skele/system.
+ * They declare an extension to an extension slot.
  *
  * @property {symbol|[symbol]} @@skele/extOf - the extenson slot (or slots) for
  * extension. Multiple slots are usually used to **name** an extesnion.
- * @property {ExtensionFactory} @@skele/ext - the factory function that is
+ * @property {ExtensionFactory} @@skele/extFactory - the factory function that is
  * used to produce the extension
  * @property {Deps} [@@skele/deps] - the depedency declearationffor
  */
@@ -60,7 +75,7 @@ export const props = {
  */
 
 /**
- * @typedef {symbol|[symbol]|[symbol, QFilter]} TerseQuery
+ * @typedef {symbol|[symbol]|[symbol, QFilter]|[symbol, QFilter, order]} TerseQuery
  *
  * The terse query format is the one normally used by end users to specify a
  * query. It can have the following forms:
@@ -69,12 +84,14 @@ export const props = {
  * - [sym] - meaning "all extensions contributed to the extension slot sym"
  * - [sym, pred] - meaining "all extensions contributed to the extension slot
  *   sym that match the predicate pred"
+ * - [sym, pred, order] - maning all extension contributed to sym filtered with
+ *   pred and returned in the specified order.
  */
 
 /**
  * @callback QFilter - a predicate fn  that returns true the provided extension
  * satisfies itt condition
- * @param {Extension} ext - the extension
+ * @param {Ext} ext - the extension definition
  * @returns {boolean}
  */
 
@@ -87,10 +104,12 @@ export const props = {
  * @property {QFilter} @@skele/qFilter - the predicate filtering the list of predicates
  * @property {boolean} @@skele/one - a property signifuying whether the query is
  * looking for just one extension (the last one contributed)
+ * @property {order} @@skele/order - the order in which the results need to be returned.
+ * defaults to order.definition
  */
 
 /**
- * Creates an extenions of the provided slot with the provided factory.
+ * Creates an Ext of the provided slot with the provided factory.
  *
  * Tis is the most basic DSL for creating an extension object.
  *
@@ -109,7 +128,7 @@ export const ext = u.curry((slot, factory) => {
 
   return {
     [props.extOf]: slot,
-    [props.ext]: factory,
+    [props.extFactory]: factory,
   }
 })
 /**
@@ -118,17 +137,25 @@ export const ext = u.curry((slot, factory) => {
  * @returns {*} value
  */
 /**
- * DSL function that modifies the property prop of each ext in exts.
+ * The essential modifier for exts. Modifiers are special functions that alter a
+ * certain property of one or more exts.
  *
- * This is the most basic modifier used to modify extensions.
+ * This is the most basic modifier used to modify exts; it takes a property,
+ * adefault value, an update fn and exts. It will:
+ *  - process the exts (or a single ext, if such was given) and
+ *  - will read the current value of prop in the ext
+ *  - will substitute it with the default value, if it is undefined
+ *  - will call f with this value and
+ *  - will return a new ext, where the value of prop will be the value returned
+ *    by f
  *
  * @function
  * @param {string} prop the property to be modified
  * @param {*} [notFound] an optional value to be used if an ext doesn't have a
  * value under prop
  * @param {UpdateFn} f the update function that does the modification
- * @param {Extension[]|Extension} exts an array of exts or a single ext
- * @returns {Extension[]|Extension} the modified extensioons (or a single one,
+ * @param {Ext[]|Ext} exts an array of exts or a single ext
+ * @returns {Ext[]|Ext} the modified extensions (or a single one,
  * if a single one was provided)
  */
 export const modify = (prop, notFound, f, exts) => {
@@ -154,8 +181,8 @@ export const modify = (prop, notFound, f, exts) => {
  * @function
  * @param {string} prop - the property
  * @param {string} val - the value to be set
- * @param {Extension[]|Extension} exts - the extensions to be modified
- * @returns {Extension[]|Extension} the passed extensions with the specified
+ * @param {Ext[]|Ext} exts - the extensions to be modified
+ * @returns {Ext[]|Ext} the passed extensions with the specified
  * property set
  */
 export const set = u.curry((prop, val, exts) =>
@@ -166,7 +193,7 @@ export const set = u.curry((prop, val, exts) =>
  * Adds a set of deps to the provided ext (or exts)
  * @function
  * @param {Deps} deps the set of deps to be added
- * @param {Extension[]|Extension} exts the extenison(s) to be modified
+ * @param {Ext[]|Ext} exts the extenison(s) to be modified
  */
 export const using = u.curry((deps, exts) =>
   modify(props.deps, {}, ds => ({ ...ds, ...parseDeps(deps) }), exts)
@@ -178,7 +205,7 @@ export const using = u.curry((deps, exts) =>
  *
  * @function
  * @param {symbol} name - the name applied
- * @param {Extension[]|Extension} - extensions
+ * @param {Ext[]|Ext} - extensions
  */
 export const named = u.curry((name, exts) =>
   modify(
@@ -189,7 +216,10 @@ export const named = u.curry((name, exts) =>
   )
 )
 // queries
-const every = () => true
+/**
+ * A predicate which always returns true.
+ */
+export const all = () => true
 
 /**
  * Parses a potentionally terse query into a caonooica.
@@ -199,23 +229,30 @@ const every = () => true
  */
 export const parseQuery = q => {
   if (q[props.extOf] != null) {
-    return q
+    return {
+      ...q,
+      [props.qFilter]: q[props.qFilter] || all,
+      [props.one]: q[props.one] || false,
+      [props.order]: q[props.order] || order.definition,
+    }
   } else if (u.isSymbol(q)) {
     return {
       [props.extOf]: q,
       [props.one]: true,
-      [props.qFilter]: every,
+      [props.qFilter]: all,
+      [props.order]: order.definition,
     }
   } else if (
     Array.isArray(q) &&
     q.length >= 0 &&
-    q.length <= 2 &&
+    q.length <= 3 &&
     u.isSymbol(q[0])
   ) {
     return {
       [props.extOf]: q[0],
       [props.one]: false,
-      [props.qFilter]: q[1] != null ? q[1] : every,
+      [props.qFilter]: q[1] != null ? q[1] : all,
+      [props.order]: q[2] != null ? q[2] : order.definition,
     }
   }
 
@@ -234,21 +271,24 @@ const optional = u.curry((pred, x) => typeof x === 'undefined' || pred(x))
 const oneOrMany = u.curry(
   (pred, x) => (Array.isArray(x) && u.every(pred, x)) || pred(x)
 )
+
 export const isValidQuery = q => {
   if (q[props.extOf] != null) {
     return (
       oneOrMany(u.isSymbol, q[props.extOf]) &&
       optional(u.isFunction, q[props.qFilter]) &&
-      optional(u.isBoolean, q[props.one])
+      optional(u.isBoolean, q[props.one]) &&
+      optional(u.isEnumerated(order), q[props.order])
     )
   } else if (u.isSymbol(q)) {
     return true
   } else if (
     Array.isArray(q) &&
     q.length >= 0 &&
-    q.length <= 2 &&
+    q.length <= 3 &&
     u.isSymbol(q[0]) &&
-    optional(u.isFunction, q[1])
+    optional(u.isFunction, q[1]) &&
+    optional(u.isEnumerated(order), q[2])
   ) {
     return true
   }
@@ -271,7 +311,7 @@ export const isValidDeps = deps => {
 /**
  * Gets the dependency declaration out of the extensions.
  * @function
- * @param {Extension} - the extension
+ * @param {Ext} - the extension definition
  * @returns {Deps}
  */
 export const deps = u.prop(props.deps)
@@ -280,7 +320,7 @@ export const deps = u.prop(props.deps)
  * Gets the extension slots to which the ext is pointing to.
  *
  * @function
- * @param {Extension} ext - the extesion
+ * @param {Ext} ext - the extesion
  * @returns {[symbol]} the extension slot
  */
 export const extSlots = u.pipe(
@@ -292,11 +332,12 @@ export const extSlots = u.pipe(
 /**
  * Gets the extension factory for the specified ext.
  * @function
- * @param {Extension} ext - the extension
+ * @param {Ext} ext - the extension definition
  * @returns {ExtensionFactory}
  */
-export const extFactory = u.prop(props.ext)
+export const extFactory = u.prop(props.extFactory)
 
 export const extOf = u.prop(props.extOf)
 export const qFilter = u.prop(props.qFilter)
 export const isOne = u.prop(props.one)
+export const qOrder = u.prop(props.order)
