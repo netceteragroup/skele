@@ -169,4 +169,5 @@ const buildDeps = (ext, sys, path) => {
 
 const extId = ext => ext[extIdentifier]
 
-const isSystem = sys => sys != null && sys[specs] != null && sys[insts] != null
+export const isSystem = sys =>
+  sys != null && sys[specs] != null && sys[insts] != null
