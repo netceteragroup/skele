@@ -1,18 +1,41 @@
 'use strict'
 
-import Unit, { start, stop } from './unit'
-import System, { Subsystem, using, after, contributions } from './system'
-import ExtensionSlot, { exportExtensions } from './extensions'
+import {
+  props as propNames,
+  order,
+  ext,
+  modify,
+  using,
+  set,
+  named,
+} from './extensions'
+import System, { query, queryExts } from './system'
+import { runtime, start, stop, slots as runtimeSlots } from './runtime'
+import Unit from './unit'
+
+const slots = {
+  /**
+   * The runtime extension slot.
+   */
+  runtime: runtimeSlots.runtime,
+}
 
 export {
-  Unit,
-  Subsystem,
   System,
-  ExtensionSlot,
+  Unit,
+  slots,
+  query,
+  queryExts,
   start,
   stop,
+  propNames,
+  order,
+  ext,
+  named,
+  modify,
+  set,
   using,
-  after,
-  contributions,
-  exportExtensions,
+  runtime,
 }
+
+export default System
