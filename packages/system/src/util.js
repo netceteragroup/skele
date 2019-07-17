@@ -95,6 +95,8 @@ export const isEnumerated = curry((enumeration, x) => {
   return false
 })
 
+export const reverse = coll =>
+  typeof coll === 'undefined' ? undefined : coll.reverse()
 export const first = coll => (isEmpty(coll) ? undefined : coll[0])
 export const last = coll => (isEmpty(coll) ? undefined : coll[coll.length - 1])
 export const flow = (value, ...fns) => {
@@ -120,61 +122,10 @@ export const splitWhen = (pred, list) => {
   return [prefix, Array.prototype.slice.call(list, idx)]
 }
 
-export const conformUnitDef = definition => {
-  invariant(
-    typeof definition === 'object' || typeof definition === 'function',
-    'You must provide an object or a function as the unit definition'
-  )
-}
+export const add = curry((x, set) => (set == null ? Set().add(x) : set.add(x)))
+export const has = curry((x, set) => set != null && set.has(x))
 
-export const conformSystemDef = def => {
-  invariant(
-    typeof def === 'object' || (Array.isArray(def) && conformEntries(def)),
-    'The system definition must be an object declaring the units'
-  )
-}
-
-export const conformSubsystemDef = def => {
-  invariant(
-    typeof def === 'function' ||
-      typeof def === 'object' ||
-      (Array.isArray(def) && conformEntries(def)),
-    `Invalid subsystem definition. You must provide an object, a [[key, value]] array or a fn.`
-  )
-}
-const conformEntries = arr => {
-  if (arr.length === 0) return true
-
-  arr.forEach(e => {
-    if (!Array.isArray(e)) return false
-    if (e.length !== 2) return false
-    if (typeof e[0] !== 'string') return false
-  })
-
-  return true
-}
-
-export function newSet() {
-  if (typeof Set === 'undefined') {
-    return []
-  } else {
-    return new Set()
-  }
-}
-
-export function addToSet(v, set) {
-  if (typeof Set === 'undefined') {
-    set.push(v)
-    return set
-  } else {
-    return set.add(v)
-  }
-}
-
-export function containedInSet(v, set) {
-  if (typeof Set === 'undefined') {
-    return set.indexOf(v) >= 0
-  } else {
-    return set.has(v)
-  }
-}
+export const tap = curry((m, x) => {
+  console.log(m, x)
+  return x
+})

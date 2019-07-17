@@ -47,21 +47,44 @@ export const runtime = (name, deps, def) => {
   )
 }
 
+/**
+ * Starts all the runtimes in the provided system.
+ *
+ * The method makes sure that if runtimes A is somethow a dependency of
+ * runtime B, A is started earlier than B.
+ *
+ * @param {S.System} sys - the system
+ * @returns {S.System} - the sysetem
+ */
 export const start = sys => {
   invariant(() => S.isSystem(sys), 'You must provide a system')
 
-  // TODO: this is wrong, runtimes need to be started in topological order,
-  // taking into account the whole system definition => we need a
-  // topologicalQuery fn in system
-  for (const r of S.query([slots.runtime], system)) {
-    if (r.start != null) r.start()
+  const runtimes = S.query([slots.runtime, E.all, E.order.topological], sys)
+  for (const r of runtimes) {
+    if (U.isFunction(r.start)) r.start()
   }
+
+  return sys
 }
 
+/**
+ * Stops all runtimes in the provided system.
+ *
+ * The method makes sure that if runtimes A is somethow a dependency of
+ * runtime B, B is stopped before A.
+ *
+ * @param {S.System} sys - the system
+ * @returns {S.System} - the sysetem
+ */
 export const stop = sys => {
   invariant(() => S.isSystem(sys), 'You must provide a system')
 
-  for (const r of S.query([slots.runtime], system)) {
-    if (r.start != null) r.stop()
+  const runtimes = U.reverse(
+    S.query([slots.runtime, E.all, E.order.topological], sys)
+  )
+  for (const r of runtimes) {
+    if (U.isFunction(r.stop)) r.stop()
   }
+
+  return sys
 }

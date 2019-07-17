@@ -1,6 +1,6 @@
 'use strict'
 
-import System, { query, querySpecs } from '../system'
+import System, { query, queryExts } from '../system'
 import Unit from '../unit'
 import * as E from '../extensions'
 import * as U from '../util'
@@ -51,7 +51,7 @@ describe('System', () => {
   const sys = System('System', u1, u2)
 
   test('querySpecs', () => {
-    expect(querySpecs([slot], sys)).toMatchObject([
+    expect(queryExts([slot], sys)).toMatchObject([
       {
         id: 1,
       },
@@ -62,12 +62,12 @@ describe('System', () => {
         id: 4,
       },
     ])
-    expect(querySpecs(slot, sys)).toMatchObject({
+    expect(queryExts(slot, sys)).toMatchObject({
       id: 4,
     })
-    expect(querySpecs([slot, propEq('id', 1)], sys)).toHaveLength(1)
+    expect(queryExts([slot, propEq('id', 1)], sys)).toHaveLength(1)
     expect(
-      querySpecs(
+      queryExts(
         {
           [E.props.extOf]: slot,
           [E.props.one]: true,
@@ -79,10 +79,10 @@ describe('System', () => {
       id: 1,
     })
 
-    expect(querySpecs(unused, sys)).toBeUndefined()
-    expect(querySpecs([unused], sys)).toEqual([])
+    expect(queryExts(unused, sys)).toBeUndefined()
+    expect(queryExts([unused], sys)).toEqual([])
     expect(
-      querySpecs(
+      queryExts(
         {
           [E.props.extOf]: unused,
           [E.props.one]: true,
@@ -92,12 +92,12 @@ describe('System', () => {
       )
     ).toBeUndefined()
 
-    expect(() => querySpecs(slot)).toThrow()
-    expect(() => querySpecs()).toThrow()
-    expect(() => querySpecs('foo', sys)).toThrow()
-    expect(() => querySpecs(1, sys)).toThrow()
-    expect(() => querySpecs([1, 2], sys)).toThrow()
-    expect(() => querySpecs([], sys)).toThrow()
+    expect(() => queryExts(slot)).toThrow()
+    expect(() => queryExts()).toThrow()
+    expect(() => queryExts('foo', sys)).toThrow()
+    expect(() => queryExts(1, sys)).toThrow()
+    expect(() => queryExts([1, 2], sys)).toThrow()
+    expect(() => queryExts([], sys)).toThrow()
   })
 
   test('query', () => {
@@ -190,5 +190,20 @@ describe('Extension Dependencies', () => {
     )
 
     expect(() => query(slot2, sys2).deps.c2.deps.c3).toThrow()
+  })
+
+  test('query with topological order', () => {
+    expect(query([slot, E.all, E.order.topological], sys)).toMatchObject([
+      1,
+      2,
+      6, // 6 comes before 10 because it's a dependency of it
+      5, // 5 is a dep of 4 (not in this slot) which has 6 as dep
+      {
+        val: 10,
+        deps: {
+          n1: [6],
+        },
+      },
+    ])
   })
 })

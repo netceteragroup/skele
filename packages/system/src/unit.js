@@ -103,6 +103,7 @@ const validateExt = (desc, ext) => {
 
   invariant(
     () => {
+      const deps = E.deps(ext)
       // TODO: this should be better: tell which depq is invalid but w/o prod
       // overhead
       return deps == null || E.isValidDeps(deps)

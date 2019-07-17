@@ -1,7 +1,7 @@
 'use strict'
 
 import invariant from './invariant'
-import * as u from './util'
+import * as U from './util'
 
 //
 // TODO think about what's curried and what not
@@ -117,12 +117,12 @@ export const order = {
  * @param {symbol|symbol[]} slot the slot this extension contributes to
  * @param {ExtensionFactory} factory the factory-fn used to build the extensions
  */
-export const ext = u.curry((slot, factory) => {
+export const ext = U.curry((slot, factory) => {
   invariant(typeof factory === 'function', 'The factory must be a function')
   invariant(
     () =>
-      u.isSymbol(slot) ||
-      (Array.isArray(slot) && slot.length > 0 && u.every(u.isSymbol, slot)),
+      U.isSymbol(slot) ||
+      (Array.isArray(slot) && slot.length > 0 && U.every(U.isSymbol, slot)),
     'Extension slot must be symbol|[symbols]'
   )
 
@@ -185,7 +185,7 @@ export const modify = (prop, notFound, f, exts) => {
  * @returns {Ext[]|Ext} the passed extensions with the specified
  * property set
  */
-export const set = u.curry((prop, val, exts) =>
+export const set = U.curry((prop, val, exts) =>
   modify(prop, null, () => val, exts)
 )
 
@@ -195,7 +195,7 @@ export const set = u.curry((prop, val, exts) =>
  * @param {Deps} deps the set of deps to be added
  * @param {Ext[]|Ext} exts the extenison(s) to be modified
  */
-export const using = u.curry((deps, exts) =>
+export const using = U.curry((deps, exts) =>
   modify(props.deps, {}, ds => ({ ...ds, ...parseDeps(deps) }), exts)
 )
 
@@ -207,7 +207,7 @@ export const using = u.curry((deps, exts) =>
  * @param {symbol} name - the name applied
  * @param {Ext[]|Ext} - extensions
  */
-export const named = u.curry((name, exts) =>
+export const named = U.curry((name, exts) =>
   modify(
     props.extOf,
     [],
@@ -217,9 +217,12 @@ export const named = u.curry((name, exts) =>
 )
 // queries
 /**
- * A predicate which always returns true.
+ * A predicate which always returns true. It's the defualt query predicate.
+ * @function
+ * @param {*} x - the predicate argument
+ * @returns {boolean} true, always
  */
-export const all = () => true
+export const all = U.always(true)
 
 /**
  * Parses a potentionally terse query into a caonooica.
@@ -235,7 +238,7 @@ export const parseQuery = q => {
       [props.one]: q[props.one] || false,
       [props.order]: q[props.order] || order.definition,
     }
-  } else if (u.isSymbol(q)) {
+  } else if (U.isSymbol(q)) {
     return {
       [props.extOf]: q,
       [props.one]: true,
@@ -246,7 +249,7 @@ export const parseQuery = q => {
     Array.isArray(q) &&
     q.length >= 0 &&
     q.length <= 3 &&
-    u.isSymbol(q[0])
+    U.isSymbol(q[0])
   ) {
     return {
       [props.extOf]: q[0],
@@ -265,30 +268,30 @@ export const parseQuery = q => {
  * @param {Deps} deps - a set of dependencies
  * @return {Deps} the same object but with canonical querys
  */
-export const parseDeps = u.mapObjVals(parseQuery)
+export const parseDeps = U.mapObjVals(parseQuery)
 
-const optional = u.curry((pred, x) => typeof x === 'undefined' || pred(x))
-const oneOrMany = u.curry(
-  (pred, x) => (Array.isArray(x) && u.every(pred, x)) || pred(x)
+const optional = U.curry((pred, x) => typeof x === 'undefined' || pred(x))
+const oneOrMany = U.curry(
+  (pred, x) => (Array.isArray(x) && U.every(pred, x)) || pred(x)
 )
 
 export const isValidQuery = q => {
   if (q[props.extOf] != null) {
     return (
-      oneOrMany(u.isSymbol, q[props.extOf]) &&
-      optional(u.isFunction, q[props.qFilter]) &&
-      optional(u.isBoolean, q[props.one]) &&
-      optional(u.isEnumerated(order), q[props.order])
+      oneOrMany(U.isSymbol, q[props.extOf]) &&
+      optional(U.isFunction, q[props.qFilter]) &&
+      optional(U.isBoolean, q[props.one]) &&
+      optional(U.isEnumerated(order), q[props.order])
     )
-  } else if (u.isSymbol(q)) {
+  } else if (U.isSymbol(q)) {
     return true
   } else if (
     Array.isArray(q) &&
     q.length >= 0 &&
     q.length <= 3 &&
-    u.isSymbol(q[0]) &&
-    optional(u.isFunction, q[1]) &&
-    optional(u.isEnumerated(order), q[2])
+    U.isSymbol(q[0]) &&
+    optional(U.isFunction, q[1]) &&
+    optional(U.isEnumerated(order), q[2])
   ) {
     return true
   }
@@ -298,11 +301,11 @@ export const isValidQuery = q => {
 
 export const isValidDeps = deps => {
   if (typeof deps === 'object') {
-    return u.flow(
+    return U.flow(
       deps,
-      u.objValues,
-      u.map(isValidQuery),
-      u.every(u.isTrue)
+      U.objValues,
+      U.map(isValidQuery),
+      U.every(U.isTrue)
     )
   }
   return false
@@ -314,7 +317,7 @@ export const isValidDeps = deps => {
  * @param {Ext} - the extension definition
  * @returns {Deps}
  */
-export const deps = u.prop(props.deps)
+export const deps = U.prop(props.deps)
 
 /**
  * Gets the extension slots to which the ext is pointing to.
@@ -323,10 +326,10 @@ export const deps = u.prop(props.deps)
  * @param {Ext} ext - the extesion
  * @returns {[symbol]} the extension slot
  */
-export const extSlots = u.pipe(
-  u.prop(props.extOf),
-  u.when(u.isSymbol, s => [s]),
-  u.when(u.isNil, u.always([]))
+export const extSlots = U.pipe(
+  U.prop(props.extOf),
+  U.when(U.isSymbol, s => [s]),
+  U.when(U.isNil, U.always([]))
 )
 
 /**
@@ -335,9 +338,9 @@ export const extSlots = u.pipe(
  * @param {Ext} ext - the extension definition
  * @returns {ExtensionFactory}
  */
-export const extFactory = u.prop(props.extFactory)
+export const extFactory = U.prop(props.extFactory)
 
-export const extOf = u.prop(props.extOf)
-export const qFilter = u.prop(props.qFilter)
-export const isOne = u.prop(props.one)
-export const qOrder = u.prop(props.order)
+export const extOf = U.prop(props.extOf)
+export const qFilter = U.prop(props.qFilter)
+export const isOne = U.prop(props.one)
+export const qOrder = U.prop(props.order)
