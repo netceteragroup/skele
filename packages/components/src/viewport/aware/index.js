@@ -5,7 +5,10 @@ import { UIManager, findNodeHandle } from 'react-native'
 import PropTypes from 'prop-types'
 import * as Utils from '../utils'
 
-export default (WrappedComponent, { isInViewport = Utils.isInViewport } = {}) => {
+export default (
+  WrappedComponent,
+  { isInViewport = Utils.isInViewport } = {}
+) => {
   return class extends React.Component {
     constructor(props, context) {
       super(props, context)
