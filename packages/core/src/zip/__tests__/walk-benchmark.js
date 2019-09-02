@@ -4,7 +4,7 @@
 
 import { Suite } from 'benchmark'
 import I from 'immutable'
-import R from 'ramda'
+import * as R from 'ramda'
 
 import * as zip from '..'
 import * as data from '../../data'

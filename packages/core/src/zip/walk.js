@@ -1,6 +1,6 @@
 'use strict'
 
-import R from 'ramda'
+import * as R from 'ramda'
 import * as zip from './impl'
 
 const _postwalk = (f, zipper) => _walk(_postwalk.bind(undefined, f), f, zipper)
