@@ -2,6 +2,7 @@
 
 import 'raf/polyfill'
 import 'jest-enzyme'
+import 'jest-extended'
 import I from 'immutable'
 import jestFetchMock from 'jest-fetch-mock'
 import { configure } from 'enzyme'
