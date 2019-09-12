@@ -1,7 +1,5 @@
 'use strict'
 
-import invariant from 'invariant'
-
 export function curry(fn, args = []) {
   return (..._args) =>
     (rest => (rest.length >= fn.length ? fn(...rest) : curry(fn, rest)))([
@@ -36,10 +34,11 @@ export const mapObjVals = curry((f, obj) => {
 })
 
 export const flatMap = curry((f, coll) => {
+  coll = coll || []
   let res = []
-  ;(coll || []).forEach((v, i) => {
+  for (const i = 0; i < coll.length; i++) {
     Array.prototype.push.apply(res, f(v, i))
-  })
+  }
   return res
 })
 
@@ -101,9 +100,9 @@ export const first = coll => (isEmpty(coll) ? undefined : coll[0])
 export const last = coll => (isEmpty(coll) ? undefined : coll[coll.length - 1])
 export const flow = (value, ...fns) => {
   let v = value
-  fns.forEach(f => {
+  for (f of fns) {
     v = f(v)
-  })
+  }
   return v
 }
 
