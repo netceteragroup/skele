@@ -1,0 +1,37 @@
+{
+  "name": "@skele/system",
+  "version": "1.0.0-alpha.38",
+  "description": "A small framework managing the lifecycle and dependencies of software comnponents.",
+  "react-native": "index.mjs",
+  "main": "index",
+  "module": "index.mjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netceteragroup/skele.git",
+    "directory": "packages/system"
+  },
+  "keywords": [
+    "dependency injection",
+    "plugin",
+    "architecture",
+    "netcetera"
+  ],
+  "files": [
+    "README.md",
+    "package.json",
+    "index.js",
+    "index.mjs",
+    "dist/"
+  ],
+
+  "author": "netcetera",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/netceteragroup/skele/issues"
+  },
+  "homepage": "https://github.com/netceteragroup/skele/packages/system",
+  "dependencies": {},
+  "publishConfig": {
+    "access": "public"
+  }
+}
