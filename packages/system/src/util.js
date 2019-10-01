@@ -100,7 +100,7 @@ export const first = coll => (isEmpty(coll) ? undefined : coll[0])
 export const last = coll => (isEmpty(coll) ? undefined : coll[coll.length - 1])
 export const flow = (value, ...fns) => {
   let v = value
-  for (f of fns) {
+  for (const f of fns) {
     v = f(v)
   }
   return v
