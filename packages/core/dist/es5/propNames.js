@@ -1,0 +1,1 @@
+'use strict';Object.defineProperty(exports,"__esModule",{value:true});Object.defineProperty(exports,"children",{enumerable:true,get:function get(){return _data.childrenProperty;}});exports.metadata=void 0;var _data=require("./data");var metadata='@@skele/metadata';exports.metadata=metadata;

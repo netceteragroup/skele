@@ -1,0 +1,1 @@
+Object.defineProperty(exports,"__esModule",{value:true});exports.define=define;exports.default=void 0;var _layer=_interopRequireDefault(require("./layer"));function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function define(configuration){return new _layer.default(configuration,null,false);}var _default={define:define};exports.default=_default;

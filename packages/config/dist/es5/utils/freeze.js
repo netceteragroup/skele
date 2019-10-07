@@ -1,0 +1,1 @@
+Object.defineProperty(exports,"__esModule",{value:true});exports.default=deepFreeze;function deepFreeze(obj){Object.entries(obj).forEach(function(subObj){var prop=subObj[1];if(typeof prop==='object'&&prop!==null)deepFreeze(prop);});return Object.freeze(obj);}

@@ -64,12 +64,18 @@ export default class ViewportTracker extends WithEvents(
       })
   }
 
+  setOffset = ({ x, y }) => {
+    if (x) this._viewportOffsetX = x
+    if (y) this._viewportOffsetY = y
+    this._onViewportChange(false)
+  }
+
   render() {
     return React.cloneElement(React.Children.only(this.props.children), {
       ref: this._onRef,
       onLayout: this._onLayout,
       onContentSizeChange: this._onContentSizeChange,
-      onScroll: this._onScroll,
+      ...(this.props.pragmaticSetOffset ? {} : { onScroll: this._onScroll }),
     })
   }
 

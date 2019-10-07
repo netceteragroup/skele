@@ -1,0 +1,1 @@
+'use strict';Object.defineProperty(exports,"__esModule",{value:true});exports.isSubclassOf=isSubclassOf;function isSubclassOf(SubClass,ParentClass){return SubClass.prototype instanceof ParentClass||SubClass===ParentClass;}
