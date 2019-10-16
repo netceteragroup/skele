@@ -1,7 +1,7 @@
 {
   "name": "@skele/system",
   "version": "1.0.0-alpha.38",
-  "description": "A small framework managing the lifecycle and dependencies of software comnponents.",
+  "description": "A small framework for building apps/systems in a plugin architectural style.",
   "react-native": "index.mjs",
   "main": "index",
   "module": "index.mjs",
@@ -23,7 +23,6 @@
     "index.mjs",
     "dist/"
   ],
-
   "author": "netcetera",
   "license": "MIT",
   "bugs": {
