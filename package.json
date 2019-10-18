@@ -73,7 +73,7 @@
     "lerna": "^2.4.0",
     "metro-react-native-babel-preset": "^0.55.0",
     "microtime": "^3.0.0",
-    "prettier": "1.14.3",
+    "prettier": "^1.18.2",
     "prettier-eslint": "8.8.2",
     "prettier-eslint-cli": "^4.3.0",
     "prop-types": "^15.6.0",
