@@ -2,9 +2,8 @@
   "name": "@skele/system",
   "version": "1.0.0-alpha.38",
   "description": "A small framework managing the lifecycle and dependencies of software comnponents.",
-  "react-native": "index.mjs",
-  "main": "index",
-  "module": "index.mjs",
+  "main": "index.js",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/netceteragroup/skele.git",
@@ -19,9 +18,7 @@
   "files": [
     "README.md",
     "package.json",
-    "index.js",
-    "index.mjs",
-    "dist/"
+    "index.js"
   ],
 
   "author": "netcetera",
