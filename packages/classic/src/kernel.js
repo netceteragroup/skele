@@ -106,7 +106,25 @@ class Kernel {
 
     return {
       dispatch(action) {
-        self.dispatch(actions.atCursor(self.query(path), action))
+        const element = self.query(path)
+        if (element) {
+          self.dispatch(actions.atCursor(element, action))
+        } else if (
+          element === undefined &&
+          action.type &&
+          action.type.startsWith('.')
+        ) {
+          while (path.length) {
+            const parentPath = path.slice(0, -1)
+            const parentElement = self.query(parentPath)
+            const isIndexed = I.Iterable.isIndexed(parentElement)
+            if (parentElement && !isIndexed) {
+              self.dispatch(actions.atCursor(parentElement, action))
+              break
+            }
+            path.pop()
+          }
+        }
       },
 
       query(subPath) {
