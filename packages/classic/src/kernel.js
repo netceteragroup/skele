@@ -110,19 +110,19 @@ class Kernel {
         if (element) {
           self.dispatch(actions.atCursor(element, action))
         } else if (
-          element === undefined &&
+          element == null &&
           action.type &&
           action.type.startsWith('.')
         ) {
-          while (path.length) {
-            const parentPath = path.slice(0, -1)
+          let ppath = [...path]
+          while (ppath.length > 0) {
+            const parentPath = ppath.slice(0, -1)
             const parentElement = self.query(parentPath)
-            const isIndexed = I.Iterable.isIndexed(parentElement)
-            if (parentElement && !isIndexed) {
+            if (data.isElement(parentElement)) {
               self.dispatch(actions.atCursor(parentElement, action))
               break
             }
-            path.pop()
+            ppath.pop()
           }
         }
       },
