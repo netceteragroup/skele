@@ -101,12 +101,22 @@ class Kernel {
     })
   }
 
-  focusOn(path) {
+  focusOn(path, originalAction) {
     const self = this
 
     return {
       dispatch(action) {
-        self.dispatch(actions.atCursor(self.query(path), action))
+        if (originalAction) {
+          const meta = actions.actionMeta(action)
+          self.dispatch(
+            actions.atCursor(self.query(path), {
+              ...action,
+              [actions.actionMetaProperty]: { ...meta, cause: originalAction },
+            })
+          )
+        } else {
+          self.dispatch(actions.atCursor(self.query(path), action))
+        }
       },
 
       query(subPath) {
@@ -114,7 +124,10 @@ class Kernel {
       },
 
       focusOn(subPath) {
-        return self.focusOn(data.asList(path).concat(data.asList(subPath)))
+        return self.focusOn(
+          data.asList(path).concat(data.asList(subPath)),
+          originalAction
+        )
       },
 
       get config() {

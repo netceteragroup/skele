@@ -137,6 +137,14 @@ describe('effects API', function() {
         await sleep(50)
 
         expect(specificEffect3).toHaveBeenCalled()
+
+        // assert cause (originalAction) preservation
+        const action = specificEffect3.mock.calls[0][1]
+        const actionMeta = actions.actionMeta(action)
+        const { cause } = actionMeta
+        expect(cause).toBeDefined()
+        expect(cause.type).toBe('fireOnSub')
+        expect(action.type).toBe('toggle3')
       })
     })
 
