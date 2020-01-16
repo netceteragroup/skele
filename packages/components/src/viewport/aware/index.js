@@ -5,7 +5,10 @@ import { UIManager, findNodeHandle } from 'react-native'
 import PropTypes from 'prop-types'
 import * as Utils from '../utils'
 
-export default WrappedComponent => {
+export default (
+  WrappedComponent,
+  { isInViewport = Utils.isInViewport } = {}
+) => {
   return class extends React.Component {
     constructor(props, context) {
       super(props, context)
@@ -49,14 +52,14 @@ export default WrappedComponent => {
           () => {},
           (offsetX, offsetY, width, height) => {
             if (!this._isMounted) return
-            const inVerticalViewport = Utils.isInViewport(
+            const inVerticalViewport = isInViewport(
               info.viewportOffsetY,
               info.viewportHeight,
               offsetY,
               height,
               this.props.preTriggerRatio
             )
-            const inHorizontalViewport = Utils.isInViewport(
+            const inHorizontalViewport = isInViewport(
               info.viewportOffsetX,
               info.viewportWidth,
               offsetX,
@@ -75,14 +78,14 @@ export default WrappedComponent => {
           }
         )
       } else {
-        const inVerticalViewport = Utils.isInViewport(
+        const inVerticalViewport = isInViewport(
           info.viewportOffsetY,
           info.viewportHeight,
           this.state.componentOffsetY,
           this.state.componentHeight,
           this.props.preTriggerRatio
         )
-        const inHorizontalViewport = Utils.isInViewport(
+        const inHorizontalViewport = isInViewport(
           info.viewportOffsetX,
           info.viewportWidth,
           this.state.componentOffsetX,
