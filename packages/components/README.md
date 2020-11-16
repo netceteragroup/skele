@@ -25,6 +25,24 @@ render() {
 }
 ```
 
+##### Creating a reference to ScrollView with functional components
+
+If you're trying to create a reference using functional components to the `ScrollView` which is being tracked, you can do the following:
+
+```
+  const scrollView = useRef()
+  
+  return (
+    <Viewport.Tracker>
+      <ScrollView scrollEventThrottle={16} ref={ref => (scrollView.current = ref)}>
+        { this.props.children }
+      </ScrollView>
+    </Viewport.Tracker>
+  )
+```
+
+using `ref={scrollView}` [doesn't currently work](https://github.com/netceteragroup/skele/issues/153).
+
 ### Viewport Aware
 
 A higher-order component that processes the information communicated by the viewport tracker.
